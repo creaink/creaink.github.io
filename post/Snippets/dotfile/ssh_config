@@ -1,0 +1,9 @@
+# ~/.ssh/config
+# e.g.: ssh hst, ~/.ssh/authorized_keys
+
+Host hst
+Hostname test.hashworld.top
+Port 22
+User xiezhou
+IdentityFile ~/.ssh/id_rsa
+

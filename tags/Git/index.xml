@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Git on Creaink - Build something for life</title>
+    <link>http://localhost:1313/tags/Git.html</link>
+    <description>Recent content in Git on Creaink - Build something for life</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 08 Jan 2019 19:27:12 +0800</lastBuildDate>
+    
+	<atom:link href="http://localhost:1313/tags/Git/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Hugo 搭建博客实践</title>
+      <link>http://localhost:1313/post/Devtools/Hugo/Hugo-intro.html</link>
+      <pubDate>Tue, 08 Jan 2019 19:27:12 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/Devtools/Hugo/Hugo-intro.html</guid>
+      <description>&lt;p&gt;如何利用 Hugo 构建一个方便于 markdown 发表博客和记笔记的统一工程，这篇文章给出了我实践中的一种思路：利用 Git 的 submodule 组合了笔记仓库、GitHub Pages仓库、Hugo 主题仓库、Hugo 博客仓库等四个 Git 仓库，构成一个利用开源工具实现的的分布式博客和笔记方案。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

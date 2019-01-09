@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Linux Namespace 技术与 Docker 原理浅析 - Creaink - Build something for life</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Creaink" /><meta name="description" content="这片文章的起因是源于一个 YouTube 上的视频 Golang UK Conf. 2016 - Liz Rice - What is a container, really? Let&amp;rsquo;s write one in Go from scratch，看了之后觉得很不错，一个主题可以贯穿起来很多 Linux 的知识，也对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助，这里我做了些修改和扩展然后再分享给大家。
+" /><meta name="keywords" content="Linux, Namespace, Docker, Container" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.52 with even 4.0.0" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/Computer/Linux/Linux-namespace.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.56003f67.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Linux Namespace 技术与 Docker 原理浅析" />
+<meta property="og:description" content="这片文章的起因是源于一个 YouTube 上的视频 Golang UK Conf. 2016 - Liz Rice - What is a container, really? Let&rsquo;s write one in Go from scratch，看了之后觉得很不错，一个主题可以贯穿起来很多 Linux 的知识，也对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助，这里我做了些修改和扩展然后再分享给大家。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/Computer/Linux/Linux-namespace.html" /><meta property="article:published_time" content="2019-01-08T20:49:33&#43;08:00"/>
+<meta property="article:modified_time" content="2019-01-08T20:49:33&#43;08:00"/>
+
+<meta itemprop="name" content="Linux Namespace 技术与 Docker 原理浅析">
+<meta itemprop="description" content="这片文章的起因是源于一个 YouTube 上的视频 Golang UK Conf. 2016 - Liz Rice - What is a container, really? Let&rsquo;s write one in Go from scratch，看了之后觉得很不错，一个主题可以贯穿起来很多 Linux 的知识，也对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助，这里我做了些修改和扩展然后再分享给大家。">
+
+
+<meta itemprop="datePublished" content="2019-01-08T20:49:33&#43;08:00" />
+<meta itemprop="dateModified" content="2019-01-08T20:49:33&#43;08:00" />
+<meta itemprop="wordCount" content="5541">
+
+
+
+<meta itemprop="keywords" content="Linux,Namespace,Docker,Container," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux Namespace 技术与 Docker 原理浅析"/>
+<meta name="twitter:description" content="这片文章的起因是源于一个 YouTube 上的视频 Golang UK Conf. 2016 - Liz Rice - What is a container, really? Let&rsquo;s write one in Go from scratch，看了之后觉得很不错，一个主题可以贯穿起来很多 Linux 的知识，也对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助，这里我做了些修改和扩展然后再分享给大家。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Creaink</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/links.html">
+        <li class="mobile-menu-item">Links</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Creaink</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/links.html">Links</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Linux Namespace 技术与 Docker 原理浅析</h1>
+
+      <div class="post-meta">
+        <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-01-08 </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 5541 words </span>
+          <span class="more-meta"> <i class="iconfont icon-clock"></i> 12 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#namespace-初识">namespace 初识</a>
+<ul>
+<li><a href="#查看进程-namespace">查看进程 namespace</a></li>
+<li><a href="#linux-系统调用">Linux 系统调用</a></li>
+<li><a href="#linux-进程">Linux 进程</a></li>
+</ul></li>
+<li><a href="#namespace-实践">namespace 实践</a>
+<ul>
+<li><a href="#docker-是虚拟机吗">docker 是虚拟机吗</a></li>
+<li><a href="#版本-zero">版本 zero</a></li>
+<li><a href="#版本-one">版本 one</a></li>
+<li><a href="#版本-two">版本 two</a></li>
+<li><a href="#版本-three">版本 three</a></li>
+<li><a href="#版本-next">版本 next</a></li>
+</ul></li>
+<li><a href="#参考">参考</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>这片文章的起因是源于一个 YouTube 上的视频 <a href="https://www.youtube.com/watch?v=HPuvDm8IC-4">Golang UK Conf. 2016 - Liz Rice - What is a container, really? Let&rsquo;s write one in Go from scratch</a>，看了之后觉得很不错，一个主题可以贯穿起来很多 Linux 的知识，也对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助，这里我做了些修改和扩展然后再分享给大家。</p>
+
+<p>要想把这些讲清楚需要涉及到的知识点和命令都不少，怎奈鄙人才疏学浅，难免会有纰漏，有错误的地方还请大家多多指正。</p>
+
+<h2 id="namespace-初识">namespace 初识</h2>
+
+<p>Docker 是一个基于 namespace、cgroup、Union FS 等等技术的一个开源容器引擎，很多人都会觉得 Docker 是个新兴技术，其实不然，其主要隔离技术 Namespace 技术早在 Linux 内核版本为 2.6 时候就差不多完成了（像 Ubuntu 16.04 发行版本的内核基本上都是 4.4，CentOS 7 则普遍 3.10 ）。</p>
+
+<p>Linux Namespace 是 Linux 提供的一种内核级别环境隔离的方法。</p>
+
+<p>要想实现隔离的效果，需要完成的东西又有哪些呢？其实如果你安装了 gcc 工具链（安装 golang 之后就会有了），那么使用 <code>man namespaces</code> 命令就可以了解到 namespace 技术的大概，也可查看<a href="http://man7.org/linux/man-pages/man7/namespaces.7.html">在线手册</a>。</p>
+
+<p>这里简单地搬运了些知识点，首先是 Linux 提供的具体的隔离内容：</p>
+
+<table>
+<thead>
+<tr>
+<th>Namespace</th>
+<th>系统调用参数</th>
+<th>内核版本</th>
+<th>隔离内容</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>UTS (Unix Time-sharing System)</td>
+<td>CLONE_NEWUTS</td>
+<td>Linux 2.4.19</td>
+<td>主机名与域名</td>
+</tr>
+
+<tr>
+<td>IPC (Inter-Process Communication)</td>
+<td>CLONE_NEWIPC</td>
+<td>Linux 2.6.19</td>
+<td>信号量、消息队列和共享内存</td>
+</tr>
+
+<tr>
+<td>PID (Process ID)</td>
+<td>CLONE_NEWPID</td>
+<td>Linux 2.6.19</td>
+<td>进程编号</td>
+</tr>
+
+<tr>
+<td>Network</td>
+<td>CLONE_NEWNET</td>
+<td>Linux 2.6.24</td>
+<td>网络设备、网络栈、端口等等</td>
+</tr>
+
+<tr>
+<td>Mount</td>
+<td>CLONE_NEWNS</td>
+<td>Linux 2.6.29</td>
+<td>挂载点（文件系统）</td>
+</tr>
+
+<tr>
+<td>User</td>
+<td>CLONE_NEWUSER</td>
+<td>Linux 3.8</td>
+<td>用户和用户组</td>
+</tr>
+</tbody>
+</table>
+
+<p>还设计到三个系统调用(system call)的 API：</p>
+
+<ul>
+<li>clone()：用来创建新进程，与 fork 创建新进程不同的是，clone 创建进程时候运行传递如 CLONE_NEW* 的 namespace 隔离参数，来控制子进程所共享的内容，更多内容请查看<a href="http://man7.org/linux/man-pages/man2/clone.2.html">clone 手册</a></li>
+<li>setns()：让某个进程脱离某个 namespace</li>
+<li>unshare()：让某个进程加入某个 namespace 之中</li>
+</ul>
+
+<h3 id="查看进程-namespace">查看进程 namespace</h3>
+
+<p><code>/proc/[pid]/ns/</code> 目录下包含了某个进程的 namespace 所属，在 shell 中 <code>$$</code> 为当前进程 PID 所以可以：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ ls -l /proc/<span class="nv">$$</span>/ns
+total <span class="m">0</span>
+lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Jan  <span class="m">5</span> <span class="m">00</span>:13 cgroup -&gt; cgroup:<span class="o">[</span><span class="m">4026531835</span><span class="o">]</span>
+lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Jan  <span class="m">4</span> <span class="m">06</span>:18 ipc -&gt; ipc:<span class="o">[</span><span class="m">4026531839</span><span class="o">]</span>
+lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Jan  <span class="m">4</span> <span class="m">06</span>:18 mnt -&gt; mnt:<span class="o">[</span><span class="m">4026531840</span><span class="o">]</span>
+lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Jan  <span class="m">4</span> <span class="m">06</span>:18 net -&gt; net:<span class="o">[</span><span class="m">4026531957</span><span class="o">]</span>
+lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Jan  <span class="m">4</span> <span class="m">06</span>:18 pid -&gt; pid:<span class="o">[</span><span class="m">4026531836</span><span class="o">]</span>
+lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Jan  <span class="m">4</span> <span class="m">06</span>:18 user -&gt; user:<span class="o">[</span><span class="m">4026531837</span><span class="o">]</span>
+lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Jan  <span class="m">4</span> <span class="m">06</span>:18 uts -&gt; uts:<span class="o">[</span><span class="m">4026531838</span><span class="o">]</span>
+
+$ readlink /proc/<span class="nv">$$</span>/ns/uts
+uts:<span class="o">[</span><span class="m">4026531838</span><span class="o">]</span>
+$ readlink /proc/<span class="nv">$PPID</span>/ns/uts
+uts:<span class="o">[</span><span class="m">4026531838</span><span class="o">]</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><code>/proc/[pid]/mounts</code> 目录展现了进程的挂载点，而 <code>/proc/[pid]/mountinfo</code> 里的内容更详细。</p>
+
+<h3 id="linux-系统调用">Linux 系统调用</h3>
+
+<p>操作系统的进程空间可分为用户空间和内核空间，它们需要不同的执行权限。其中系统调用运行在内核空间。</p>
+
+<p>系统调用，指运行在用户空间的程序向操作系统内核请求需要更高权限运行的服务。系统调用提供用户程序与操作系统之间的接口。大多数系统交互式操作需求在内核态运行。如设备IO操作或者进程间通信。</p>
+
+<p><img src="imgs/Linux_kernel_System_Call_Interface_and_glibc.png" alt="维基百科图" /></p>
+
+<p>也就是说，如果自己程序生成的可执行文件，除了一些简单的变量加来加去之外，大多数有意思的功能都是通过系统调用来完成的，平时没有感知到，是因为库函数、动态链接库封装屏蔽了这些。</p>
+
+<p><strong>程序设计中没有什么是加一层解决不了的，如果有那就再加一层</strong>。所以 syscall 可以作为一个兼容层、移植层，可以通过实现一组 syscall 接口，用来来模拟 Linux。</p>
+
+<p>Linux 中提供了两个工具： <code>starce</code> 和 <code>ptrace</code> 用来调试监控某个进程的系统调用。</p>
+
+<h3 id="linux-进程">Linux 进程</h3>
+
+<p>Linux 下可以通过 <code>ps -ef</code> 命令打印出当前操作系统中正在执行的进程，其实还有一个更有意思的命令 <code>pstree</code> ，这个命令会以树的形式输出当前的进程。</p>
+
+<p>为什么这些进程会形成一个树的形状？这是因为在 Linux 内核启动之后只会有一个 pid 为 0 的 运行在内核态的 <code>idle</code> 进程，随后在系统启动过程中，会通过该进程 fork 出 PID 为 1 的 <code>init</code> 进程和 PID 为 2 的 <code>kthreadd</code> 进程。</p>
+
+<p><code>init</code> 进程负责初始化系统，并最后运行在用户空间。在系统启动完成完成后，init将变为守护进程监视系统其他进程。<code>init</code> 有不同实现，如最初的 init 到 System V 再到 Systemd，常用的 service 命令就是最初由 init 实现的，用来管理各种服务的守护进程，关于 init 的演进可以参考 <a href="/Computer/Linux/Linux-init.md">linux 系统管理程序</a>。</p>
+
+<p><code>kthreadd</code> 内核线程都是直接或者间接的以 kthreadd 为父进程，该进程负责管理和调度其他的内核进程。</p>
+
+<p>在 <code>ps -ef</code> 命令下可以看到这些进程， <code>pstree</code> 可以看到用户进程，还有一个知识点就是用户空间的进程 PID 都是大于 1000 的。</p>
+
+<p>Uinx 的哲学中接口的设计都是高度正交的，通过 fork 和 exec系列的组合就可以完成多进程的操作。</p>
+
+<p><code>fork()</code> 默认会进程复制当前进程自身（代码段、数据段、环境变量等等）来快速创建子进程，子进程会从调用 fork() 的地方开始执行，也就是在代码的 fork() 处进行了分叉。fork() 返回值在父进程中为创建的子进程的 PID，在子进程返回 0 ，出现错误返回负值，可以通过返回值来进行区别操作（如父进程里 wait 子进程）。</p>
+
+<p><code>exec 系列</code> 会用一个新的程序来替换现在的整个进程，其会将程序整个加载到现在的进程中，然后从头开始运行，如更新了 bash 的某些配置之后可以用 <code>exec bash</code> 命令来利用新 bash 线程替换掉当前的进程。</p>
+
+<p>此外还有两个<strong>有名的进程</strong>：</p>
+
+<p><strong>孤儿进程</strong>：个父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。孤儿进程将被 init 进程(进程号为1)所收养，并由 init 进程对它们完成状态收集工作。</p>
+
+<p><strong>僵尸进程</strong>：一个进程使用 fork 创建子进程，如果子进程退出，而父进程并没有调用 wait 或 waitpid 获取（处理）子进程的状态信息，那么子进程的进程描述符仍然保存在系统中。这种进程称之为僵死进程，在 <code>top</code> 命令里是可以看到。</p>
+
+<p>所以通过一顿高度正交的 fork exec 操作，会形成一颗进程树，这里可以通过 pstree 演示下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ pstree -pa <span class="nv">$$</span>
+zsh,1680
+  └─pstree,130454 -pa <span class="m">1680</span>
+$ sleep 10s <span class="p">&amp;</span>
+<span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="m">130554</span>
+$ pstree -pa <span class="nv">$$</span>
+zsh,1680
+  ├─pstree,130562 -pa <span class="m">1680</span>
+  └─sleep,130554 10s</code></pre></td></tr></table>
+</div>
+</div>
+<p>其实在执行 <code>pstree -pa $$</code> 就可以看到他是基于当前终端的子进程。</p>
+
+<h2 id="namespace-实践">namespace 实践</h2>
+
+<p>为了最好的体验还是在 Linux 内核 3.8 以上的系统上进行（这里使用的 Ubuntu server 16.04, Linux 4.4）。为了方便，使用 golang 来演示循序渐进的达到 Docker 的体验。</p>
+
+<h3 id="docker-是虚拟机吗">docker 是虚拟机吗</h3>
+
+<p>由前面的 namespace 的知识可以知道 Docker 是比虚拟机的虚拟化程度更弱、效率更高的线程级别的隔离，下面的示例可以验证这一点。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ docker run alpine sleep 1m <span class="p">&amp;</span>
+$ pstree -pa <span class="nv">$$</span>
+zsh,1680
+  ├─docker,7314 run alpine sleep 1m
+  │   ├─<span class="o">{</span>docker<span class="o">}</span>,7315
+  │   ├─<span class="o">{</span>docker<span class="o">}</span>,7316
+  │   ├─<span class="o">{</span>docker<span class="o">}</span>,7317
+  │   ├─<span class="o">{</span>docker<span class="o">}</span>,7318
+  │   ├─<span class="o">{</span>docker<span class="o">}</span>,7321
+  │   ├─<span class="o">{</span>docker<span class="o">}</span>,7324
+  │   └─<span class="o">{</span>docker<span class="o">}</span>,7325
+  └─pstree,7431 -pa <span class="m">1680</span>
+$ ps -ef <span class="p">|</span>grep <span class="s2">&#34;sleep 1m&#34;</span>
+creaink    <span class="m">7314</span>   <span class="m">1680</span>  <span class="m">0</span> <span class="m">03</span>:56 pts/1    <span class="m">00</span>:00:00 docker run alpine sleep 1m
+root       <span class="m">7362</span>   <span class="m">7344</span>  <span class="m">0</span> <span class="m">03</span>:56 ?        <span class="m">00</span>:00:00 sleep 1m</code></pre></td></tr></table>
+</div>
+</div>
+<p>上面的例子使用 alpine 镜像运行了 <code>sleep 1m</code> 这个命令即休眠一分钟，直接使用 <code>pstree</code> 可以证实最后其虚拟化程度也就是线程级别的。后面的 <code>ps</code> 命令揭示的是其实这里有两个命令运行着 <code>sleep 1m</code>，这是因为 docker 分为 docker daemon 和 docker client，docker(docker client) 命令通过 REST API 将用户的命令传递给 dockerd(docker daemon)，也就是最后的实际工作的进程是 dockerd 下的子进程，这就是为什么在终端里运行 docker 运行容器之后，而关闭终端（父进程）容器也不会被终止掉。</p>
+
+<h3 id="版本-zero">版本 zero</h3>
+
+<p>先来一个基础的版本，实现一个简单的功能：将传递给程序的命令利用子进程运行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;fmt&#34;</span>
+    <span class="s">&#34;os&#34;</span>
+    <span class="s">&#34;os/exec&#34;</span>
+    <span class="s">&#34;syscall&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="s">&#34;run&#34;</span><span class="p">:</span>
+        <span class="nf">run</span><span class="p">()</span>
+    <span class="k">default</span><span class="p">:</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;do nothing, exit!!!&#34;</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">run</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;running %v\n&#34;</span><span class="p">,</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+    <span class="nx">cmd</span> <span class="o">:=</span> <span class="nx">exec</span><span class="p">.</span><span class="nf">Command</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span><span class="o">...</span><span class="p">)</span>
+    <span class="nx">cmd</span><span class="p">.</span><span class="nx">Stdin</span> <span class="p">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stdin</span>
+    <span class="nx">cmd</span><span class="p">.</span><span class="nx">Stdout</span> <span class="p">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span>
+    <span class="nx">cmd</span><span class="p">.</span><span class="nx">Stderr</span> <span class="p">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span>
+
+    <span class="nf">must</span><span class="p">(</span><span class="nx">cmd</span><span class="p">.</span><span class="nf">Run</span><span class="p">())</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">must</span><span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>命名该程序为 docker-1.go 之后就可以使用 <code>go run docker-1.go run echo hello</code> 来 <em>代理</em> 运行命令一些命令。</p>
+
+<p>甚至可以直接使用 <code>go run docker-1.go run /bin/bash</code> 来将子进程的 shell 衔接到当前终端上，注意 shell prompt 的变化（由 zsh 变为 bash 样式），在下面的例子中将尝试更改 hostname：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ go run docker-0.go run /bin/bash
+running <span class="o">[</span>/bin/bash<span class="o">]</span>
+creaink@ubuntu:~/share$ hostname
+ubuntu
+creaink@ubuntu:~/share$ sudo hostname docker
+creaink@ubuntu:~/share$ hostname
+docker
+creaink@ubuntu:~/share$ <span class="nb">exit</span>
+<span class="c1"># 这里的 hostname 也跟着变了</span>
+$ hostname
+docker</code></pre></td></tr></table>
+</div>
+</div>
+<p>通过最后的命令可以看到 hostname 也跟着变了，这里就没有实现前面提到的 UTS 隔离。</p>
+
+<h3 id="版本-one">版本 one</h3>
+
+<p>可以为 cmd 加上 SysProcAttr，利用 CLONE_NEWUTS 参数来实现其子进程的 UTS 隔离，zero 版本更改的部分如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">run</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span>    <span class="nx">cmd</span><span class="p">.</span><span class="nx">Stderr</span> <span class="p">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span>
+
+    <span class="nx">cmd</span><span class="p">.</span><span class="nx">SysProcAttr</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">syscall</span><span class="p">.</span><span class="nx">SysProcAttr</span><span class="p">{</span>
+        <span class="nx">Cloneflags</span><span class="p">:</span> <span class="nx">syscall</span><span class="p">.</span><span class="nx">CLONE_NEWUTS</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="nf">must</span><span class="p">(</span><span class="nx">cmd</span><span class="p">.</span><span class="nf">Run</span><span class="p">())</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上述更改之后的文件存为 docker-1.go 然后探究：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ sudo share go run docker-1.go run /bin/bash
+running <span class="o">[</span>/bin/bash<span class="o">]</span>
+root@ubuntu:~/share$ readlink /proc/<span class="nv">$PPID</span>/ns/uts
+uts:<span class="o">[</span><span class="m">4026531838</span><span class="o">]</span>
+<span class="c1"># 与父进程的 namespace uts 已经不同了</span>
+root@ubuntu:~/share$ readlink /proc/<span class="nv">$$</span>/ns/uts
+uts:<span class="o">[</span><span class="m">4026532634</span><span class="o">]</span>
+<span class="c1"># 更改 hostname 也不会变化了</span>
+root@ubuntu:~/share$ sudo hostname docker
+root@ubuntu:~/share$ hostname
+docker
+root@ubuntu:~/share$ <span class="nb">exit</span>
+$ hostname
+ubuntu</code></pre></td></tr></table>
+</div>
+</div>
+<p>通过上面的 <code>readlink /proc/[PID]/ns/uts</code> 和 hostname 可以看出来，在新的进程里已经实现了 UTS 的隔离了。那么 <code>CLONE_NEWUTS</code> 这个参数 go 是如何在创建子进程时候传入的呢？答案是利用了 clone 系统调用来完成的，这里可以简单的利用 strace 命令追踪下系统调用：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># go run 系统调用有干扰项，这里编译下</span>
+$ go build docker-1.go
+<span class="c1"># 这里我们只关心 clone，利用 grep 过滤下</span>
+$ strace ./docker-1 run <span class="nb">echo</span> hi <span class="p">|&amp;</span> grep <span class="s2">&#34;clone\|execv&#34;</span>
+execve<span class="o">(</span><span class="s2">&#34;./docker-1&#34;</span>, <span class="o">[</span><span class="s2">&#34;./docker-1&#34;</span>, <span class="s2">&#34;run&#34;</span>, <span class="s2">&#34;echo&#34;</span>, <span class="s2">&#34;hi&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">26</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
+clone<span class="o">(</span><span class="nv">child_stack</span><span class="o">=</span>0xc820035fc0, <span class="nv">flags</span><span class="o">=</span>CLONE_VM<span class="p">|</span>CLONE_FS<span class="p">|</span>CLONE_FILES<span class="p">|</span>CLONE_SIGHAND<span class="p">|</span>CLONE_THREAD<span class="o">)</span> <span class="o">=</span> <span class="m">15932</span>
+clone<span class="o">(</span><span class="nv">child_stack</span><span class="o">=</span>0xc820031fc0, <span class="nv">flags</span><span class="o">=</span>CLONE_VM<span class="p">|</span>CLONE_FS<span class="p">|</span>CLONE_FILES<span class="p">|</span>CLONE_SIGHAND<span class="p">|</span>CLONE_THREAD<span class="o">)</span> <span class="o">=</span> <span class="m">15933</span>
+clone<span class="o">(</span><span class="nv">child_stack</span><span class="o">=</span>0xc820033fc0, <span class="nv">flags</span><span class="o">=</span>CLONE_VM<span class="p">|</span>CLONE_FS<span class="p">|</span>CLONE_FILES<span class="p">|</span>CLONE_SIGHAND<span class="p">|</span>CLONE_THREAD<span class="o">)</span> <span class="o">=</span> <span class="m">15934</span>
+clone<span class="o">(</span><span class="nv">child_stack</span><span class="o">=</span><span class="m">0</span>, <span class="nv">flags</span><span class="o">=</span>CLONE_NEWUTS<span class="p">|</span>SIGCHLD<span class="o">)</span> <span class="o">=</span> -1 EPERM <span class="o">(</span>Operation not permitted<span class="o">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>前面的三个 clone 其实是 go 创建的一些自己的进程（可能用 c 来实现会更干净些），可以在 root 用户下开两个终端一个 <code>strace ./docker-1 run sleep 10s |&amp; grep &quot;clone\|execv&quot;</code>， 另一个 <code>watch pstree -pa [PID]</code> （这里的 PID 是前面终端的 PID）观察验证。可以看到这三个 clone 的调用采用的是默认的参数：<code>CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD</code>，其含义可在上面提到的 <strong>clone 手册</strong> 里查阅到。</p>
+
+<p>最后的一个 clone 系统调用参数就很明显的是在程序里自行设定的 <code>CLONE_NEWUTS</code>，SIGCHLD 参数默认要添加上的：共享信号，即子进程的生命周期发生变化时候会通过 SIGCHLD 信号告知父进程。</p>
+
+<h3 id="版本-two">版本 two</h3>
+
+<p>这一版本要要在上个版本实现了 UTS 隔离的情况下进而实现 PID 隔离，很容易会想到在调用时候加上 <code>CLONE_NEWPID</code> 即可实现。为了检验，就需要在代理生成的子进程下再生成一个子进程：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 在 main 中加上 child 的 case
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span>    <span class="k">case</span> <span class="s">&#34;child&#34;</span><span class="p">:</span>
+        <span class="nf">child</span><span class="p">()</span>
+    <span class="c1">// ...
+</span><span class="c1"></span>    <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// run 修改为下面
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">run</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">cmd</span> <span class="o">:=</span> <span class="nx">exec</span><span class="p">.</span><span class="nf">Command</span><span class="p">(</span><span class="s">&#34;/proc/self/exe&#34;</span><span class="p">,</span> <span class="nb">append</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;child&#34;</span><span class="p">},</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">...</span><span class="p">)</span><span class="o">...</span><span class="p">)</span>
+    <span class="nx">cmd</span><span class="p">.</span><span class="nx">Stdin</span> <span class="p">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stdin</span>
+    <span class="nx">cmd</span><span class="p">.</span><span class="nx">Stdout</span> <span class="p">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span>
+    <span class="nx">cmd</span><span class="p">.</span><span class="nx">Stderr</span> <span class="p">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span>
+
+    <span class="nx">cmd</span><span class="p">.</span><span class="nx">SysProcAttr</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">syscall</span><span class="p">.</span><span class="nx">SysProcAttr</span><span class="p">{</span>
+        <span class="nx">Cloneflags</span><span class="p">:</span> <span class="nx">syscall</span><span class="p">.</span><span class="nx">CLONE_NEWUTS</span> <span class="p">|</span> <span class="nx">syscall</span><span class="p">.</span><span class="nx">CLONE_NEWPID</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="nf">must</span><span class="p">(</span><span class="nx">cmd</span><span class="p">.</span><span class="nf">Run</span><span class="p">())</span>
+<span class="p">}</span>
+<span class="c1">// 加一个函数 child
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">child</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;running %v as pid: %d\n&#34;</span><span class="p">,</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Getpid</span><span class="p">())</span>
+    <span class="nx">cmd</span> <span class="o">:=</span> <span class="nx">exec</span><span class="p">.</span><span class="nf">Command</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span><span class="o">...</span><span class="p">)</span>
+    <span class="nx">cmd</span><span class="p">.</span><span class="nx">Stdin</span> <span class="p">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stdin</span>
+    <span class="nx">cmd</span><span class="p">.</span><span class="nx">Stdout</span> <span class="p">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span>
+    <span class="nx">cmd</span><span class="p">.</span><span class="nx">Stderr</span> <span class="p">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span>
+
+    <span class="nf">must</span><span class="p">(</span><span class="nx">syscall</span><span class="p">.</span><span class="nf">Sethostname</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&#34;InNamespace&#34;</span><span class="p">)))</span>
+
+    <span class="nf">must</span><span class="p">(</span><span class="nx">cmd</span><span class="p">.</span><span class="nf">Run</span><span class="p">())</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上面的程序需要解释下的是 linux 系统中有个符号链接：<code>/proc/self/exe</code> 它代表当前程序，所以在 run 函数里面调用程序本身并加上 child 参数，以实现 <strong>隔一层</strong> 进程完成预设命令的指向，方便观察结果。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 进入到子进程所创建的 shell 中，输出当前 PID，可以看到已经实现隔离</span>
+$ sudo go run docker-2.go run /bin/bash
+running <span class="o">[</span>/bin/bash<span class="o">]</span> as pid: <span class="m">1</span>
+root@InNamespace:~/share$ <span class="nb">echo</span> <span class="nv">$$</span>
+<span class="m">5</span>
+root@InNamespace:~/share$ ps
+   PID TTY          TIME CMD
+ <span class="m">18868</span> pts/1    <span class="m">00</span>:00:00 sudo
+ <span class="m">18869</span> pts/1    <span class="m">00</span>:00:00 go
+ <span class="m">18886</span> pts/1    <span class="m">00</span>:00:00 docker-2
+ <span class="m">18890</span> pts/1    <span class="m">00</span>:00:00 exe
+ <span class="m">18894</span> pts/1    <span class="m">00</span>:00:00 bash
+ <span class="m">18973</span> pts/1    <span class="m">00</span>:00:00 ps</code></pre></td></tr></table>
+</div>
+</div>
+<p>上面出现了两个矛盾的结果： 运行输出了 <code>running [/bin/bash] as pid: 1</code> 和 <code>echo $$</code> 的 PID 明显是隔离出来的（用户空间的进程不可能小于 1000）而 ps 显示的进程 PID 明显是没有隔离出来的。</p>
+
+<p>其实这时候是已经实现了隔离，而 <code>ps</code> 命令显示的 PID 不对，甚至 <code>ps -ef</code> 还可以查看到整个系统的所有进程，这是因为 <code>ps</code> 命令只是简单的查看了文件系统里的 <code>/proc</code> 目录而给出内容信息，这时候进程的文件系统是继承于父进程的，所以虽然已经位于新的 PID 命名空间了，但是 <code>ps</code> 还无法正常工作。</p>
+
+<p>所以可以尝试挂载虚拟文件夹 proc 到本地一个文件夹下查看检验下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ sudo go run docker-2.go run /bin/bash
+root@InNamespace:~/share$ mkdir proc
+root@InNamespace:~/share$ mount -t proc proc proc
+<span class="c1"># 这时候 share/proc 里的内容是正常的，但是 ps 还是查看的 /proc 下的内容</span>
+root@InNamespace:~/share$ ls proc
+<span class="m">1</span>          cmdline    execdomains  kallsyms     loadavg  mtrr          slabinfo       timer_list         zoneinfo
+<span class="m">22</span>         consoles   fb           kcore        locks    net           softirqs       timer_stats
+<span class="m">5</span>          cpuinfo    filesystems  keys         mdstat   pagetypeinfo  stat           tty
+...
+
+<span class="c1"># 但是退出之后到宿主机（父进程）上查看其挂载点</span>
+root@InNamespace:~/share$ <span class="nb">exit</span>
+$ mount
+...
+proc on /mnt/hgfs/share/proc <span class="nb">type</span> proc <span class="o">(</span>rw,relatime<span class="o">)</span>
+proc on /mnt/hgfs/share/proc <span class="nb">type</span> proc <span class="o">(</span>rw,relatime<span class="o">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>自制容器（子进程）其内的挂载操作会直接影响宿主机（父进程）挂载点，并且 <code>/proc</code> 下的内容需要重新挂载，所以挂载点需要进行进一步地隔离。</p>
+
+<h3 id="版本-three">版本 three</h3>
+
+<p>自然的想到为 clone 进程时候加上 <code>CLONE_NEWNS</code> 即可达到挂载点隔离的效果，使用该参数之后创建子进程会复制一份父进程的挂载挂载点，之后子进程里的挂载操作不会影响到父进程的挂载点。但是同时要处理挂载 <code>/proc</code> 目录的问题，除了挂载点能不能直接更换所继承的文件系统？</p>
+
+<p>从下面 Docker 分层文件系统中示意图可以看到，用户空间的文件系统(rootfs)是可以更换的，通过 chroot 系统调用可以更改(jail)当前正在运行的进程及其子进程的根目录。</p>
+
+<!-- ![文件系统](/Devtools/Docker/imgs/2018-11-08-15-33-50.png) -->
+
+<p><img src="/post/Devtools/Docker/imgs/2018-11-08-15-33-50.png" alt="文件系统" /></p>
+
+<p>所以这里找来了一个非常精简的 <a href="http://dl-cdn.alpinelinux.org/alpine/v3.8/releases/x86_64/alpine-minirootfs-3.8.2-x86_64.tar.gz">alpine rootfs</a>, 解压到 <code>/var/lib/alpine</code> 目录下以备后用。</p>
+
+<p>所以更改之后的第三版本是这样的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">run</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// ..
+</span><span class="c1"></span>    <span class="nx">cmd</span><span class="p">.</span><span class="nx">SysProcAttr</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">syscall</span><span class="p">.</span><span class="nx">SysProcAttr</span><span class="p">{</span>
+        <span class="nx">Cloneflags</span><span class="p">:</span> <span class="nx">syscall</span><span class="p">.</span><span class="nx">CLONE_NEWUTS</span> <span class="p">|</span> <span class="nx">syscall</span><span class="p">.</span><span class="nx">CLONE_NEWPID</span> <span class="p">|</span> <span class="nx">syscall</span><span class="p">.</span><span class="nx">CLONE_NEWNS</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="c1">// ..
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">child</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// ..
+</span><span class="c1"></span>    <span class="nf">must</span><span class="p">(</span><span class="nx">syscall</span><span class="p">.</span><span class="nf">Sethostname</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&#34;InNamespace&#34;</span><span class="p">)))</span>
+
+    <span class="nf">must</span><span class="p">(</span><span class="nx">syscall</span><span class="p">.</span><span class="nf">Chroot</span><span class="p">(</span><span class="s">&#34;/var/lib/alpine&#34;</span><span class="p">))</span>
+    <span class="nf">must</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nf">Chdir</span><span class="p">(</span><span class="s">&#34;/&#34;</span><span class="p">))</span>
+    <span class="nf">must</span><span class="p">(</span><span class="nx">syscall</span><span class="p">.</span><span class="nf">Mount</span><span class="p">(</span><span class="s">&#34;proc&#34;</span><span class="p">,</span> <span class="s">&#34;proc&#34;</span><span class="p">,</span> <span class="s">&#34;proc&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">))</span>
+
+    <span class="nf">must</span><span class="p">(</span><span class="nx">cmd</span><span class="p">.</span><span class="nf">Run</span><span class="p">())</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>更改之后的文件命名为 docker-3.go ，由于之前没隔离而有挂载 proc，所以需要记得 <code>umount proc</code>，随后：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 运行 bash 会出错，这是因为更换了 alpine 的 rootfs 之后只有没有了 bash 命令</span>
+$ sudo go run docker-3.go run /bin/bash
+panic: fork/exec /bin/bash: no such file or directory
+$ sudo go run docker-3.go run /bin/sh
+<span class="c1"># 进入容器（子进程shell）后发现 PID 正常了，ps 能够直接使用</span>
+<span class="c1"># alpine 的 shell 提示符更改下</span>
+/ <span class="c1"># export PS1=&#39;root@$(hostname):$(pwd)$ &#39;</span>
+root@InNamespace:/ $ ps
+PID   USER     TIME   COMMAND
+    <span class="m">1</span> root       <span class="m">0</span>:00 /proc/self/exe child /bin/sh
+    <span class="m">6</span> root       <span class="m">0</span>:00 /bin/sh
+    <span class="m">9</span> root       <span class="m">0</span>:00 ps
+<span class="c1"># mount 显示的挂载点也非常简单，也就是在程序里自行挂载的 proc，这时候 top 也是正常的</span>
+root@InNamespace:/ $ cat /proc/self/mountinfo
+<span class="m">237</span> <span class="m">147</span> <span class="m">0</span>:64 / /proc rw,relatime shared:88 - proc proc rw
+root@InNamespace:/ $ <span class="nb">exit</span>
+$ mount
+...
+proc on /var/lib/alpine/proc <span class="nb">type</span> proc <span class="o">(</span>rw,relatime<span class="o">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>自制容器里 ps 已经能够正常工作了，但退出退出容器后，却发现容器内的挂载是会传播到父进程的，这是因为 systemd 将默认的 mount namespace 的事件传播机制定义成了 <code>MS_SHARED</code>，可以使用 <code>findmnt -o TARGET,PROPAGATION</code> 命令查看目录的 propagation。总体的有：共享挂载（shared mount）、从属挂载（slave mount）和私有挂载（private mount）</p>
+
+<p>在 <code>sudo unshare --mount --uts /bin/bash</code> 里是可以的隔离挂载的，这是因为改变了 mount 的 propagation 为 private。如何改变呢，只需要利用 mount 系统调用更改下父目录，其下的子目录就会更变传播方式，如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 利用 root 用户探究下为什么可以实现挂载的隔离</span>
+$ strace unshare --mount --uts /bin/echo hi <span class="p">|&amp;</span> grep mount
+execve<span class="o">(</span><span class="s2">&#34;/usr/bin/unshare&#34;</span>, <span class="o">[</span><span class="s2">&#34;unshare&#34;</span>, <span class="s2">&#34;--mount&#34;</span>, <span class="s2">&#34;--uts&#34;</span>, <span class="s2">&#34;/bin/echo&#34;</span>, <span class="s2">&#34;hi&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">26</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
+mount<span class="o">(</span><span class="s2">&#34;none&#34;</span>, <span class="s2">&#34;/&#34;</span>, NULL, MS_REC<span class="p">|</span>MS_PRIVATE, NULL<span class="o">)</span> <span class="o">=</span> <span class="m">0</span>
+
+<span class="c1"># 照葫芦画瓢</span>
+$ strace mount --make-rshared / <span class="p">|&amp;</span> grep mount
+execve<span class="o">(</span><span class="s2">&#34;/bin/mount&#34;</span>, <span class="o">[</span><span class="s2">&#34;mount&#34;</span>, <span class="s2">&#34;--make-rshared&#34;</span>, <span class="s2">&#34;/&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">21</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
+open<span class="o">(</span><span class="s2">&#34;/lib/x86_64-linux-gnu/libmount.so.1&#34;</span>, O_RDONLY<span class="p">|</span>O_CLOEXEC<span class="o">)</span> <span class="o">=</span> <span class="m">3</span>
+mount<span class="o">(</span><span class="s2">&#34;none&#34;</span>, <span class="s2">&#34;/&#34;</span>, NULL, MS_REC<span class="p">|</span>MS_SHARED, NULL<span class="o">)</span> <span class="o">=</span> <span class="m">0</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>但是在 syscall 当中就需要手动的以 private 的方式 mount 一遍根目录以达到效果（要在 chroot 之前）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">child</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// ..
+</span><span class="c1"></span>    <span class="nf">must</span><span class="p">(</span><span class="nx">syscall</span><span class="p">.</span><span class="nf">Sethostname</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&#34;InNamespace&#34;</span><span class="p">)))</span>
+
+    <span class="nf">must</span><span class="p">(</span><span class="nx">syscall</span><span class="p">.</span><span class="nf">Mount</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;/&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">syscall</span><span class="p">.</span><span class="nx">MS_PRIVATE</span><span class="p">|</span><span class="nx">syscall</span><span class="p">.</span><span class="nx">MS_REC</span><span class="p">),</span> <span class="s">&#34;&#34;</span><span class="p">))</span>
+    <span class="nf">must</span><span class="p">(</span><span class="nx">syscall</span><span class="p">.</span><span class="nf">Chroot</span><span class="p">(</span><span class="s">&#34;/var/lib/alpine&#34;</span><span class="p">))</span>
+    <span class="nf">must</span><span class="p">(</span><span class="nx">syscall</span><span class="p">.</span><span class="nf">Mount</span><span class="p">(</span><span class="s">&#34;proc&#34;</span><span class="p">,</span> <span class="s">&#34;/proc&#34;</span><span class="p">,</span> <span class="s">&#34;proc&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">))</span>
+    <span class="nf">must</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nf">Chdir</span><span class="p">(</span><span class="s">&#34;/&#34;</span><span class="p">))</span>
+
+    <span class="nf">must</span><span class="p">(</span><span class="nx">cmd</span><span class="p">.</span><span class="nf">Run</span><span class="p">())</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>最后运行一下是可以发现，隔离有效的，可以在其内使用 <code>mount --bind a b</code> 试试。处理 chroot 更换更目录还可以使用 PivotRoot + mount MS_BIND 的方式，<a href="https://gist.github.com/julz/c0017fa7a40de0543001">参考</a>。</p>
+
+<h3 id="版本-next">版本 next</h3>
+
+<p>其实到最后会发现，容器就是一些按一定规则被限制继承父进程的某些资源的子进程。</p>
+
+<p>如果后续继续完善其他的 namespace 然后再加以 cgroups 限制 CPU、内存、磁盘、网络等，然后在加上分层存储 Union FS，可能就是完成了一个真正意义上的简化的 Docker。</p>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="https://blog.yadutaf.fr/2013/12/22/introduction-to-linux-namespaces-part-1-uts/">C 版本的实践</a></li>
+<li><a href="https://segmentfault.com/a/1190000006912742">shell 版本的实践</a></li>
+
+<li><p><a href="https://woosley.github.io/2017/08/18/mount-namespace-in-golang.html">一个 go 版本实现</a></p></li>
+
+<li><p><a href="https://stackoverflow.com/questions/22889241/linux-understanding-the-mount-namespace-clone-clone-newns-flag">CLONE_NEWNS</a></p></li>
+
+<li><p><a href="https://gist.github.com/julz/c0017fa7a40de0543001">PivotRoot + mount</a></p></li>
+
+<li><p><a href="http://man7.org/linux/man-pages/man2/mount.2.html">mount propagation</a></p></li>
+
+<li><p><a href="https://lwn.net/Articles/689856">mount propagation in namespace</a></p></li>
+
+<li><p><a href="https://stackoverflow.com/questions/45557831/golang-mount-namespace-mounted-volume-are-not-cleared-after-the-process-exits">stackoverflow mount share</a></p></li>
+
+<li><p>《自己动手写Docker》</p></li>
+</ul>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-01-08</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div><footer class="post-footer">
+      <div class="post-tags">
+        <div style="margin-bottom:5px">
+          <i class="iconfont icon-folder-open"></i>
+            <a href="/categories/Linux/">Linux</a>
+            </div>
+        <div>
+          <i class="iconfont icon-label"></i>
+            <a href="/tags/Linux/">Linux</a>
+            <a href="/tags/Namespace/">Namespace</a>
+            <a href="/tags/Docker/">Docker</a>
+            <a href="/tags/Container/">Container</a>
+            </div>
+      </div>
+
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/Devtools/Hugo/Hugo-intro.html">
+            <span class="next-text nav-default">Hugo 搭建博客实践</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="lv-container" data-id="city" data-uid="MTAyMC80MjAzOS8xODU4Ng">
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+
+        if (typeof LivereTower === 'function') { return; }
+
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+    <noscript>Please enable JavaScript to view the comments powered by <a href="https://livere.com/">LiveRe.</a></noscript>
+    </div>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="gcreaink@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/creaink" class="iconfont icon-github" title="github"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-131846852-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+// 将设置放入此文件中以覆盖默认设置
+{
+    // 启用要发送给 Microsoft 的使用情况数据和错误。
+    "telemetry.enableTelemetry": false,
+	// 此选项需重启才可生效。
+    "telemetry.enableCrashReporter": false,
+
+    "editor.renderIndentGuides": true,  // 缩进线
+    "editor.fontSize": 12,  // 字号
+    "editor.insertSpaces": true,    // 使用空格缩进
+    "editor.minimap.enabled": false,    // 右侧minimap
+
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.startupEditor": "newUntitledFile",
+    "workbench.colorTheme": "One Dark Pro Vivid",
+    "workbench.statusBar.visible": true,
+    "workbench.activityBar.visible": true,
+    "workbench.sideBar.location": "left",
+    "workbench.colorCustomizations": {
+        "editorCursor.foreground": "#FFF"
+    },
+    "workbench.settings.editor": "json",
+    "window.titleBarStyle": "custom",
+
+
+    // python
+    "python.formatting.provider": "autopep8",
+    "python.pythonPath": "/Users/creaink/storge/hashworld/venv/bin/python3",
+
+    // auto activate venv in terminal
+	"terminal.integrated.shellArgs.windows": [
+		// "powershell -noexit -command \"& {cd $env:VSCODE_CWD/zmxx; . ../venv/Scripts/activate}\""
+	],
+    "terminal.integrated.shellArgs.linux": [
+       //  "--rcfile", "/home/jacob/miniconda3/envs/vscode/etc/bash.bashrc"
+    ],
+
+    // pylint
+	"python.linting.pylintArgs": [
+		// load plugins
+        "--load-plugins",
+		"pylint_django",
+
+		// disable some hints
+        "--disable=W0312",	// use tab
+        "--disable=W5102",
+		"--disable=C0330",	// continue tabs
+		"--disable=C0111", // missing doc
+
+		// django project add PYTHONPATH
+		"--init-hook",
+		"import sys; sys.path.insert(0, './extra_apps')",
+		"--init-hook",
+        "import sys; sys.path.insert(0, './apps')",
+	],
+
+    // markdown lint
+    "markdownlint.config": {
+        "default": true,
+        "MD007": { "indent": 4 },
+        "no-hard-tabs": false
+    },
+
+    // markdown mpe
+    "pasteImage.path": "${currentFileDir}/imgs",
+    "markdown-preview-enhanced.enableScriptExecution": true,
+    "markdown-preview-enhanced.codeBlockTheme": "one-light.css",
+    "todo-tree.flat": false,
+    "todo-tree.expanded": true,
+
+}

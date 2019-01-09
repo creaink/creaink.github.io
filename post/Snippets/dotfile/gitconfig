@@ -1,0 +1,21 @@
+# ~/.gitconfig
+[user]
+	name = creaink
+	email = 455372644@qq.com
+
+[alias]
+	ci = commit
+	br = branch
+	co = checkout
+	st = status
+    hide = update-index --assume-unchanged
+    unhide = update-index --no-assume-unchanged
+
+[core]
+#	windows crlf auto covert to lf
+	autocrlf = true
+
+# [https]
+# 	proxy = 'socks5://127.0.0.1:1080'
+#[http]
+#	proxy = 'socks5://127.0.0.1:1080'
