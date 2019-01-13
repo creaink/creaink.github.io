@@ -23,10 +23,10 @@
 
 
 
-<meta name="generator" content="Hugo 0.52 with even 4.0.0" />
+<meta name="generator" content="Hugo 0.53 with even 4.0.0" />
 
 
-<link rel="canonical" href="http://localhost:1313/post/Devtools/Hugo/Hugo-intro.html" />
+<link rel="canonical" href="http://creaink.github.io/post/Devtools/Hugo/Hugo-intro.html" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -41,7 +41,7 @@
 <meta property="og:title" content="Hugo 搭建博客实践" />
 <meta property="og:description" content="利用 Hugo 结合 git submodule 搭建方便个人笔记和博客同步的静态站点" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://localhost:1313/post/Devtools/Hugo/Hugo-intro.html" /><meta property="article:published_time" content="2019-01-08T19:27:12&#43;08:00"/>
+<meta property="og:url" content="http://creaink.github.io/post/Devtools/Hugo/Hugo-intro.html" /><meta property="article:published_time" content="2019-01-08T19:27:12&#43;08:00"/>
 <meta property="article:modified_time" content="2019-01-08T19:27:12&#43;08:00"/>
 
 <meta itemprop="name" content="Hugo 搭建博客实践">
@@ -50,7 +50,7 @@
 
 <meta itemprop="datePublished" content="2019-01-08T19:27:12&#43;08:00" />
 <meta itemprop="dateModified" content="2019-01-08T19:27:12&#43;08:00" />
-<meta itemprop="wordCount" content="3236">
+<meta itemprop="wordCount" content="3544">
 
 
 
@@ -132,8 +132,8 @@
 
       <div class="post-meta">
         <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-01-08 </span>
-          <span class="more-meta"> <i class="iconfont icon-book"></i> 3236 words </span>
-          <span class="more-meta"> <i class="iconfont icon-clock"></i> 7 mins read </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 3544 words </span>
+          <span class="more-meta"> <i class="iconfont icon-clock"></i> 8 mins read </span>
         
       </div>
     </header>
@@ -181,7 +181,7 @@
 
 <h2 id="安装">安装</h2>
 
-<p>如果不需要二次定制的话，得益于 go 的特性，只需在 <a href="https://github.com/gohugoio/hugo/releases">releases</a> 里下载相应平台的可执行文件，复制或者链接到 PATH 的搜索路径下即可。</p>
+<p>如果不需要二次定制的话，得益于 go 的特性，只需在 <a href="https://github.com/gohugoio/hugo/releases" target="_blank">releases</a> 里下载相应平台的可执行文件，复制或者链接到 PATH 的搜索路径下即可。</p>
 
 <p>如果使用源码安装可以使用下面的方式，推荐使用发版本安装。</p>
 <div class="highlight"><div class="chroma">
@@ -267,9 +267,9 @@ blog
 
 <h3 id="使用主题">使用主题</h3>
 
-<p>刚新建的 hugo 站点直接使用 <code>hugo server</code> 是跑不起来的，hugo 没有自带主题，所以需要在 <a href="https://themes.gohugo.io/">hugo themes</a> 找一个主题然后解压到 <code>themes</code> 文件夹下。</p>
+<p>刚新建的 hugo 站点直接使用 <code>hugo server</code> 是跑不起来的，hugo 没有自带主题，所以需要在 <a href="https://themes.gohugo.io/" target="_blank">hugo themes</a> 找一个主题然后解压到 <code>themes</code> 文件夹下。</p>
 
-<p>我的推荐方式是 fork 一个主题到你的 GitHub 上，然后使用 git submodule 的方式添加到 themes 里。比如这里我用的一个简洁风格主题 <a href="https://github.com/olOwOlo/hugo-theme-even">even</a>，然后：</p>
+<p>我的推荐方式是 fork 一个主题到你的 GitHub 上，然后使用 git submodule 的方式添加到 themes 里。比如这里我用的一个简洁风格主题 <a href="https://github.com/olOwOlo/hugo-theme-even" target="_blank">even</a>（这个项目源于 <a href="https://github.com/ahonn/hexo-theme-even" target="_blank">hexo-theme-even</a>），然后：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
@@ -318,9 +318,15 @@ $ git pull even master</code></pre></td></tr></table>
 </span><span class="lnt">13
 </span><span class="lnt">14
 </span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-toml" data-lang="toml"><span class="c"># HTML head title</span>
+<pre class="chroma"><code class="language-toml" data-lang="toml"><span class="c"># 这个是需要改的</span>
+<span class="nx">baseURL</span> <span class="p">=</span> <span class="s2">&#34;http://creaink.github.io/&#34;</span>
+
+<span class="c"># HTML head title</span>
 <span class="nx">title</span>
 
 <span class="c"># footer 里的 author</span>
@@ -337,7 +343,7 @@ $ git pull even master</code></pre></td></tr></table>
 <span class="p">[</span><span class="nx">params</span><span class="p">.</span><span class="nx">social</span><span class="p">]</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>之后更改下位于 <code>themes/even/static/</code> 站点的图标，可以找一找适合做 favicon 的图然后在 <a href="https://www.favicon-generator.org/">favicon generator</a> 生成各种尺寸的替换目录下（也可放于顶级 layout 目录下）的东西。</p>
+<p>之后更改下位于 <code>themes/even/static/</code> 站点的图标，可以找一找适合做 favicon 的图然后在 <a href="https://www.favicon-generator.org/" target="_blank">favicon generator</a> 生成各种尺寸的替换目录下（也可放于顶级 layout 目录下）的东西。</p>
 
 <p>最后我还做了些其他的定制和修改，如在配置文件里：</p>
 <div class="highlight"><div class="chroma">
@@ -366,9 +372,17 @@ $ git pull even master</code></pre></td></tr></table>
 </span><span class="lnt">22
 </span><span class="lnt">23
 </span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-toml" data-lang="toml"><span class="c"># 谷歌分析，分析站点访问</span>
+<pre class="chroma"><code class="language-toml" data-lang="toml"><span class="c"># 文章内连接用新标签打开</span>
+<span class="p">[</span><span class="nx">blackfriday</span><span class="p">]</span>
+  <span class="nx">hrefTargetBlank</span> <span class="p">=</span> <span class="kc">true</span>
+
+<span class="c"># 谷歌分析，分析站点访问</span>
 <span class="nx">googleAnalytics</span>
 
 <span class="c"># 来必力评论</span>
@@ -419,7 +433,7 @@ $ git pull even master</code></pre></td></tr></table>
 
 <h3 id="部署到-github-pages">部署到 GitHub Pages</h3>
 
-<p>hugo 生成的静态文件会存放到 <code>public</code> 文件夹下，按照上面的套路，可以将其也作为 submodule 添加。步骤和前面的一致，也可参考 <a href="https://gohugo.io/hosting-and-deployment/hosting-on-github/">hosting on github</a>。</p>
+<p>hugo 生成的静态文件会存放到 <code>public</code> 文件夹下，按照上面的套路，可以将其也作为 submodule 添加。步骤和前面的一致，也可参考 <a href="https://gohugo.io/hosting-and-deployment/hosting-on-github/" target="_blank">hosting on github</a>。</p>
 
 <p>最后整个静态博客可能会使用到四个代码仓库，结构如下：</p>
 <div class="highlight"><div class="chroma">
@@ -460,11 +474,13 @@ $ git pull even master</code></pre></td></tr></table>
 
 <p><strong>图片问题</strong>，在写 markdown 笔记的时候我常常用相对路径来存一些简单的图片到本地，但是到 hugo 上，笔记工程是在 <code>post</code> 目录下，这样绝对路径肯定是不对的了，相对路径由文章 hello 于是 <code>/post/hello/</code> 的样式导致相对路径也不对。</p>
 
-<p>不过可以使用 <code>uglyurls = true</code> 配置使得其路径变为 <code>/post/hello.html</code> ，这样图片的相对路径就对了。但是，本地的图片不会有 draft 的配置，总是会在生成静态文件时候一股脑生成到 public 文件夹下，不过除了使用图床存图片好像也没有其他解决方法了，这样的话上文提到的菜单栏的 URL 就要更改下了，如 <code>url = &quot;/about.index&quot;</code>。</p>
+<p>不过可以使用 <code>uglyurls = true</code> 配置使得其路径变为 <code>/post/hello.html</code> ，这样图片的相对路径就对了。但是，本地的图片不会有 draft 的配置，总是会在生成静态文件时候一股脑生成到 public 文件夹下，不过除了使用图床存图片好像也没有其他解决方法了，这样的话上文提到的菜单栏的 URL 就要更改下了，如 <code>url = &quot;/about.html&quot;</code>，同时 tag 和 catalog 的页面的每一个 term 也会出现问题（even主题的锅），参考 <a href="https://github.com/gohugoio/hugo/issues/1989" target="_blank">uglyurl</a>，比较蛋疼的是 hugo 作者不在模板里提供 uglyurl 这个参数的获取，只能够自己使用 <a href="https://github.com/heavywatal/hugo-theme-nonblog/commit/e4a397891b70f0faa636a7903f3cf0b3f9f8661d" target="_blank">Params.uglyURLs</a> 冗余一遍然后修改模板。</p>
 
 <p>同时大小写敏感导致找不到图片的问题可以使用 <code>disablePathToLower = true</code> 配置来解决。</p>
 
 <p><strong>markdown 引用</strong>，传统的 <code>[ref](rel/to/file.md)</code> 在静态站点上并用不了，能想出的解决方法就是当为发布的文章时候，把传统的注释掉然后换上站点上的绝对路径🤣。</p>
+
+<p><strong>自动更新修改日期</strong>，参考 <a href="https://gohugo.io/getting-started/configuration/#configure-dates" target="_blank">configure-dates</a>，只要是 <code>enableGitInfo = true</code> 那么 lastmod 是可以自动设置为该文件的 commit 时间，但是有一个问题就是 hugo 现在还不指定哪一个 repo 的 git，不知道以后有没有解决方法。</p>
 
 <h2 id="hugo-特性">hugo 特性</h2>
 
@@ -551,7 +567,14 @@ $ git pull even master</code></pre></td></tr></table>
 </span><span class="w"></span>---</code></pre></td></tr></table>
 </div>
 </div>
-<p>这些配置是可以指定默认值，不必每一篇都这样设置，设置默认值也很简单，在 <code>config.toml</code> 里配置的既是默认的配置。</p>
+<p>有些配置是可以指定默认值，不必每一篇都这样设置，可以参考 <a href="https://gohugo.io/getting-started/configuration/#configure-front-matter" target="_blank">configure-front-matter</a>。</p>
+
+<p>这里夹带点自己对博客的 categories 和 keywords 的理解：</p>
+
+<ul>
+<li><code>categories</code>: 目录，文章所属的系列，关键词越少越好，也可理解为专栏。</li>
+<li><code>tags</code>: 标签，文章所涉及到的技术、内容、知识点，关键词越多越好。</li>
+</ul>
 
 <h3 id="内容摘要">内容摘要</h3>
 
@@ -568,8 +591,8 @@ $ git pull even master</code></pre></td></tr></table>
 <h2 id="参考">参考</h2>
 
 <ul>
-<li><a href="https://blog.olowolo.com/post/hugo-quick-start/">Hugo 从入门到会用</a></li>
-<li><a href="https://gohugo.io/documentation/">Hugo Docs</a></li>
+<li><a href="https://blog.olowolo.com/post/hugo-quick-start/" target="_blank">Hugo 从入门到会用</a></li>
+<li><a href="https://gohugo.io/documentation/" target="_blank">Hugo Docs</a></li>
 </ul>
     </div>
 
@@ -635,9 +658,9 @@ $ git pull even master</code></pre></td></tr></table>
 
     <footer id="footer" class="footer">
       <div class="social-links">
-      <a href="gcreaink@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="mailto:gcreaink@gmail.com" class="iconfont icon-email" title="email"></a>
       <a href="https://github.com/creaink" class="iconfont icon-github" title="github"></a>
-  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+  <a href="http://creaink.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
 </div>
 
 <div class="copyright">

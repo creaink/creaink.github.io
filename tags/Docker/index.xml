@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Docker on Creaink - Build something for life</title>
-    <link>http://localhost:1313/tags/Docker.html</link>
+    <link>http://creaink.github.io/tags/Docker.html</link>
     <description>Recent content in Docker on Creaink - Build something for life</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Tue, 08 Jan 2019 20:49:33 +0800</lastBuildDate>
     
-	<atom:link href="http://localhost:1313/tags/Docker/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://creaink.github.io/tags/Docker/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Linux Namespace 技术与 Docker 原理浅析</title>
-      <link>http://localhost:1313/post/Computer/Linux/Linux-namespace.html</link>
+      <link>http://creaink.github.io/post/Computer/Linux/Linux-namespace.html</link>
       <pubDate>Tue, 08 Jan 2019 20:49:33 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/Computer/Linux/Linux-namespace.html</guid>
-      <description>&lt;p&gt;这片文章的起因是源于一个 YouTube 上的视频 &lt;a href=&#34;https://www.youtube.com/watch?v=HPuvDm8IC-4&#34;&gt;Golang UK Conf. 2016 - Liz Rice - What is a container, really? Let&amp;rsquo;s write one in Go from scratch&lt;/a&gt;，看了之后觉得很不错，一个主题可以贯穿起来很多 Linux 的知识，也对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助，这里我做了些修改和扩展然后再分享给大家。&lt;/p&gt;</description>
+      <guid>http://creaink.github.io/post/Computer/Linux/Linux-namespace.html</guid>
+      <description>&lt;p&gt;这片文章的起因是源于一个 YouTube 上的视频 &lt;a href=&#34;https://www.youtube.com/watch?v=HPuvDm8IC-4&#34; target=&#34;_blank&#34;&gt;Golang UK Conf. 2016 - Liz Rice - What is a container, really? Let&amp;rsquo;s write one in Go from scratch&lt;/a&gt;，看了之后觉得很不错，一个主题可以贯穿起来很多 Linux 的知识，也对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助，这里我做了些修改和扩展然后再分享给大家。&lt;/p&gt;</description>
     </item>
     
   </channel>
