@@ -3,6 +3,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://creaink.github.io/post/Backend/JavaWeb/Spring/Spring-framework-di.html</loc>
+    <lastmod>2019-01-18T20:49:33+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>http://creaink.github.io/post/Computer/Windows/win-msys2.html</loc>
     <lastmod>2019-01-12T16:42:33+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -38,6 +45,12 @@
   </url>
   
   <url>
+    <loc>http://creaink.github.io/googlea3bf3ca992017c7b.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>http://creaink.github.io/categories.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
@@ -52,7 +65,7 @@
   
   <url>
     <loc>http://creaink.github.io/</loc>
-    <lastmod>2019-01-12T16:42:33+08:00</lastmod>
+    <lastmod>2019-01-18T20:49:33+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
@@ -81,6 +94,13 @@
   <url>
     <loc>http://creaink.github.io/categories/Hugo.html</loc>
     <lastmod>2019-01-08T19:27:12+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://creaink.github.io/tags/JavaWeb.html</loc>
+    <lastmod>2019-01-18T20:49:33+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
@@ -122,7 +142,7 @@
   
   <url>
     <loc>http://creaink.github.io/post.html</loc>
-    <lastmod>2019-01-12T16:42:33+08:00</lastmod>
+    <lastmod>2019-01-18T20:49:33+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
@@ -130,6 +150,20 @@
   <url>
     <loc>http://creaink.github.io/tags/Shell.html</loc>
     <lastmod>2019-01-12T16:42:33+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://creaink.github.io/tags/Spring.html</loc>
+    <lastmod>2019-01-18T20:49:33+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://creaink.github.io/categories/Spring.html</loc>
+    <lastmod>2019-01-18T20:49:33+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>

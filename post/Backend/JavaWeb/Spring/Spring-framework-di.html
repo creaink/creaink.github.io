@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Spring framework 之依赖注入 - Creaink - Build something for life</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Creaink" /><meta name="description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助" /><meta name="keywords" content="Spring, Spring framework, JavaWeb, DI, IoC" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.53 with even 4.0.0" />
+
+
+<link rel="canonical" href="http://creaink.github.io/post/Backend/JavaWeb/Spring/Spring-framework-di.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.56003f67.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Spring framework 之依赖注入" />
+<meta property="og:description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://creaink.github.io/post/Backend/JavaWeb/Spring/Spring-framework-di.html" /><meta property="article:published_time" content="2019-01-18T20:49:33&#43;08:00"/>
+<meta property="article:modified_time" content="2019-01-18T20:49:33&#43;08:00"/>
+
+<meta itemprop="name" content="Spring framework 之依赖注入">
+<meta itemprop="description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助">
+
+
+<meta itemprop="datePublished" content="2019-01-18T20:49:33&#43;08:00" />
+<meta itemprop="dateModified" content="2019-01-18T20:49:33&#43;08:00" />
+<meta itemprop="wordCount" content="5359">
+
+
+
+<meta itemprop="keywords" content="Spring,JavaWeb," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Spring framework 之依赖注入"/>
+<meta name="twitter:description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Creaink</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/links.html">
+        <li class="mobile-menu-item">Links</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Creaink</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/links.html">Links</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Spring framework 之依赖注入</h1>
+
+      <div class="post-meta">
+        <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-01-18 </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 5359 words </span>
+          <span class="more-meta"> <i class="iconfont icon-clock"></i> 11 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#测试代码搭建">测试代码搭建</a></li>
+<li><a href="#配置方式">配置方式</a>
+<ul>
+<li><a href="#bean-生存范围和生命周期">bean 生存范围和生命周期</a></li>
+<li><a href="#autowire-自动装配">autowire 自动装配</a></li>
+</ul></li>
+<li><a href="#注解方式">注解方式</a>
+<ul>
+<li><a href="#autowired">Autowired</a></li>
+<li><a href="#resource">Resource</a></li>
+<li><a href="#component">Component</a></li>
+<li><a href="#注解细则">注解细则</a></li>
+</ul></li>
+<li><a href="#javaconfig">JavaConfig</a>
+<ul>
+<li><a href="#配置类的测试">配置类的测试</a></li>
+<li><a href="#配置的模块化">配置的模块化</a></li>
+<li><a href="#环境抽象">环境抽象</a></li>
+<li><a href="#处理外部值">处理外部值</a>
+<ul>
+<li><a href="#environment-properties">Environment&amp;Properties</a></li>
+<li><a href="#spel-表达式">SpEL 表达式</a></li>
+</ul></li>
+<li><a href="#配置类细则">配置类细则</a></li>
+</ul></li>
+<li><a href="#参考">参考</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>Spring framework 系列之依赖注入</p>
+
+<h2 id="测试代码搭建">测试代码搭建</h2>
+
+<p>面向接口编程，接口的实现就可以通过依赖注入进来，这种模式又叫做依赖注入或者控制反转：</p>
+
+<ul>
+<li>IOC (inversion of control) 控制反转</li>
+<li>DI (dependency injection) 依赖注入</li>
+</ul>
+
+<p>为了阐述 Spring 的依赖注入，先规划下这样的场景，在 Service 里为了减小耦合，使用 Dao 的接口变量来操作数据库，这时候这个 Service 是 has Dao 的结构。</p>
+
+<p>新建一个工程名为 demo 的 maven 项目，部分示例代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// path: src/main/java/demo/service/UserService.java
+</span><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserService</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">UserDAO</span> <span class="n">userDAO</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">UserService</span><span class="o">(</span><span class="n">UserDAO</span> <span class="n">userDAO</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">userDAO</span> <span class="o">=</span> <span class="n">userDAO</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">userDAO</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">user</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">UserDAO</span> <span class="nf">getUserDAO</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">userDAO</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserDAO</span><span class="o">(</span><span class="n">UserDAO</span> <span class="n">userDAO</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">userDAO</span> <span class="o">=</span> <span class="n">userDAO</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>接口和接口的实现如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// path: src/main/java/demo/dao/UserDao.java
+</span><span class="c1"></span><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserDAO</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">save</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="c1">// path: src/main/java/demo/dao/impl/UserDAOImpl.java
+</span><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDAOImpl</span> <span class="kd">implements</span> <span class="n">UserDAO</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">save</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;user saved!&#34;</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>相应的实体类（POJO）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// path: src/main/java/demo/entity/User.java
+</span><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">password</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUsername</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">username</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUsername</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">username</span> <span class="o">=</span> <span class="n">username</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getPassword</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">password</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPassword</span><span class="o">(</span><span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">password</span> <span class="o">=</span> <span class="n">password</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>spring 的依赖利用 maven 下面的两种方式，推荐使用新方式，老方式在 jdk 1.8 时候会有 <code>…… are only available on JDK 1.5 and higher</code> 的错误，<a href="https://blog.csdn.net/catoop/article/details/49300853" target="_blank">参见</a>，而新的方式是把 Spring 拆解成为 Spring core、Spring beans、Spring contexts 等。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- 这是较为新的方式，spring 的版本应该是 5 左右 --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>RELEASE<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+
+<span class="c">&lt;!-- 老方式，这个最后停留在 2.5.6，Nov, 2008 --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>RELEASE<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>常规的方式是在 service 代码里初始化时候 new 一个接口实现，然后传递给接口变量。这样代码入侵程度较高。spring 的 IOC/DI 提供了较好的解决方案，以上面代码为例下面进行讲解。</p>
+
+<h2 id="配置方式">配置方式</h2>
+
+<p>创建 <code>src/main/resources/bean.xml</code> 文件，内容如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">&#34;http://www.springframework.org/schema/beans&#34;</span>
+       <span class="na">xmlns:xsi=</span><span class="s">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+       <span class="na">xsi:schemaLocation=</span><span class="s">&#34;
+</span><span class="s">        http://www.springframework.org/schema/beans
+</span><span class="s">        http://www.springframework.org/schema/beans/spring-beans.xsd&#34;</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;u&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.dao.impl.UserDAOImpl&#34;</span> <span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;userService&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.service.UserService&#34;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&#34;userDAO&#34;</span> <span class="na">ref=</span><span class="s">&#34;u&#34;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+<span class="nt">&lt;/beans&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><code>bean</code> 的可以理解为最终会由 spring 根据指定的 class 参数 new 出来的对象，而子节点 <code>property</code> 对应着该对象中由 name 指定名称的某个属性，ref 参数指定了其依赖（即 UserDAOImpl）。</p>
+
+<p>spring 会在创建 userService 这个 bean 时候将根据反射调用 userDAO 属性的 set 方法（<strong>需要注入的属性 get/set 方法</strong>），将提前创建完成的 UserDAOImpl 的 bean 赋值给其属性。这了就实现了 bean 的装配、依赖注入。</p>
+
+<p>最后在测试代码里可以编写下面的测试用例用于后续的测试。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// src/test/java/demo/service/UserServiceTest.java
+</span><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserServiceTest</span> <span class="o">{</span>
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAdd</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="c1">// 加载配置文件，实现 beans.xml 文件里 bean 的构造和装配
+</span><span class="c1"></span>        <span class="n">ApplicationContext</span> <span class="n">ctx</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassPathXmlApplicationContext</span><span class="o">(</span><span class="s">&#34;beans.xml&#34;</span><span class="o">);</span>
+        <span class="c1">// 根据 id/name 获取 bean，也可根据 class 获取
+</span><span class="c1"></span>        <span class="n">UserService</span> <span class="n">service</span> <span class="o">=</span> <span class="o">(</span><span class="n">UserService</span><span class="o">)</span><span class="n">ctx</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">&#34;userService&#34;</span><span class="o">);</span>
+        <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="k">new</span> <span class="n">User</span><span class="o">();</span>
+        <span class="n">user</span><span class="o">.</span><span class="na">setUsername</span><span class="o">(</span><span class="s">&#34;zhangsan&#34;</span><span class="o">);</span>
+        <span class="n">user</span><span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="s">&#34;zhangsan&#34;</span><span class="o">);</span>
+        <span class="n">service</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">user</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>测试用例使用 junit，所以需要添加 maven 依赖：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.junit.jupiter<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>junit-jupiter-api<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>RELEASE<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>spring 有三种注入方法：</p>
+
+<ol>
+<li><p><strong>setter 注入</strong>，也就是上面的使用，使用自动生成的 get/set 即可，这种方式是最主要的</p></li>
+
+<li><p><strong>构造方法注入</strong>，需要提前写好构造方法，bean 会将以参数的形式传递传入，所以需要自己完成(ide也可以自动生成属性在构造里的业务)属性赋值的业务。配置需要更改如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;userService&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.service.UserService&#34;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;constructor-arg&gt;</span>
+    <span class="c">&lt;!-- 参考已经初始化的 bean --&gt;</span>
+    <span class="nt">&lt;ref</span> <span class="na">bean=</span><span class="s">&#34;u&#34;</span><span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- 重新初始化一个 bean --&gt;</span>
+    <span class="c">&lt;!-- &lt;bean class=&#34;demo.dao.impl.UserDAOImpl&#34; /&gt; --&gt;</span>
+<span class="nt">&lt;/constructor-arg&gt;</span>
+<span class="nt">&lt;/bean&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>除了 bean 的注入也可以直接使用<strong>简单属性值注入</strong>，构造函数参数不只一个的时候，可以使用 index 属性指定参数顺序，或者根据 type</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">&#34;0&#34;</span> <span class="na">value=</span><span class="s">&#34;12&#34;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">&#34;1&#34;</span> <span class="na">value=</span><span class="s">&#34;34&#34;</span><span class="nt">&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>spring 3.0 之后可以使用命名空间 c 的方式将构造参数简化，但是这种方式不支持集合。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- 需要加入命名空间 --&gt;</span>
+...
+xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
+...
+
+<span class="c">&lt;!-- 为构造方法中名为 ver 的参数注入名为 BeanName 的 bean --&gt;</span>
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;u&#34;</span> <span class="na">c:ver-ref=</span><span class="s">&#34;BeanName&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.dao.impl.UserDaoImpl&#34;</span> <span class="nt">&gt;</span>
+<span class="c">&lt;!-- 为构造方法中的第 0(第一个)个参数注入名为 BeanName 的 bean --&gt;</span>
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;u&#34;</span> <span class="na">c:ver:_0-ref=</span><span class="s">&#34;BeanName&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.dao.impl.UserDaoImpl&#34;</span> <span class="nt">&gt;</span>
+<span class="c">&lt;!-- 为构造方法中名为 ver 的参数注入值 123 --&gt;</span>
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;u&#34;</span> <span class="na">c:ver=</span><span class="s">&#34;123&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.dao.impl.UserDaoImpl&#34;</span> <span class="nt">&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>同样的可以使用命名空间 p 来替代简单的 property 标签，语法和 s 命名空间类似。</p></li>
+
+<li><p><strong>接口注入</strong>，这个使用不多，就不再浪费篇幅。</p></li>
+</ol>
+
+<p>注入类型除了上面提到的 bean 和简单的值类型，还可以是集合类型：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">name=</span><span class="s">&#34;xxx&#34;</span> <span class="na">class=</span><span class="s">&#34;xxx&#34;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&#34;sets&#34;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;set&gt;</span>
+              <span class="nt">&lt;value&gt;</span>1<span class="nt">&lt;/value&gt;</span>
+              <span class="nt">&lt;value&gt;</span>2<span class="nt">&lt;/value&gt;</span>
+          <span class="nt">&lt;/set&gt;</span>
+      <span class="nt">&lt;/property&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&#34;lists&#34;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;list&gt;</span>
+              <span class="nt">&lt;value&gt;</span>1<span class="nt">&lt;/value&gt;</span>
+              <span class="nt">&lt;value&gt;</span>2<span class="nt">&lt;/value&gt;</span>
+
+          <span class="nt">&lt;/list&gt;</span>
+      <span class="nt">&lt;/property&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&#34;maps&#34;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;map&gt;</span>
+              <span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">&#34;1&#34;</span> <span class="na">value=</span><span class="s">&#34;1&#34;</span><span class="nt">&gt;&lt;/entry&gt;</span>
+              <span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">&#34;2&#34;</span> <span class="na">value=</span><span class="s">&#34;2&#34;</span><span class="nt">&gt;&lt;/entry&gt;</span>
+          <span class="nt">&lt;/map&gt;</span>
+      <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/bean&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="bean-生存范围和生命周期">bean 生存范围和生命周期</h3>
+
+<p>实例化的 bean 在装配时候其生生存范围是非常重要的，实际应用中会使用到的有两种：</p>
+
+<ul>
+<li>singleton，单例，即只会创建一个，<strong>默认值</strong>。</li>
+<li>prototype，原型，每次有 ref 时候会创建一个 bean。</li>
+</ul>
+
+<p>在配置里可以使用 scope 属性来指定，如 <code>&lt;bean id=&quot;u&quot; class=&quot;demo.dao.impl.UserDAOImpl&quot; scope=&quot;prototype&quot; /&gt;</code>。</p>
+
+<p>spring 默认情况下 bean 会全部初始化生成，可以在 bean 标签上加上 <code>lazy-init=&quot;true&quot;</code> 来实现依赖时候的懒加载。</p>
+
+<p>由于 bean 的声明周期由 spring 来管理，所以可以声明式的将指定其初始化和销毁时候调用的方法，如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"> <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;userService&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.service.UserService&#34;</span> <span class="na">init-method=</span><span class="s">&#34;init&#34;</span> <span class="na">destroy-method=</span><span class="s">&#34;destroy&#34;</span><span class="nt">/&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>需要注意的是这只适用于 scope 为 prototype 的情况下，在实验时候需要显式的调用 <code>ctx.destroy();</code> 才能触发销毁。</p>
+
+<h3 id="autowire-自动装配">autowire 自动装配</h3>
+
+<p>userService 的 bean 需要注入的 bean 除了通过 property 子标签显式指定，还可以通过 autowire 属性进行自动装配，自动装配方式如下几种</p>
+
+<ul>
+<li>no, 默认模式</li>
+<li>byName, 根据名称，通过 bean 的 name 值来匹配需要装配 bean 下同名的属性名的值</li>
+<li>byType, 根据类型，根据 bean 的类型匹配需要装配 bean 下同名同类型的属性，在有多个该类型的 bean 时候，会冲突</li>
+<li>constructor, 构造函数</li>
+</ul>
+
+<h2 id="注解方式">注解方式</h2>
+
+<p>使用注解之前需要修改下 <code>beans.xml</code>配置文件，添加上 context 的提示，并引入 <code>&lt;context:annotation-config /&gt;</code> 这个标签会初始化一些用于处理注解的 bean。</p>
+
+<blockquote>
+<p>The implicitly registered post-processors include AutowiredAnnotationBeanPostProcessor, CommonAnnotationBeanPostProcessor, PersistenceAnnotationBeanPostProcessor, and the aforementioned RequiredAnnotationBeanPostProcessor.</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">&#34;http://www.springframework.org/schema/beans&#34;</span>
+       <span class="na">xmlns:xsi=</span><span class="s">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+       <span class="na">xmlns:context=</span><span class="s">&#34;http://www.springframework.org/schema/context&#34;</span>
+       <span class="na">xsi:schemaLocation=</span><span class="s">&#34;http://www.springframework.org/schema/beans
+</span><span class="s">        http://www.springframework.org/schema/beans/spring-beans.xsd
+</span><span class="s">        http://www.springframework.org/schema/context
+</span><span class="s">        http://www.springframework.org/schema/context/spring-context.xsd&#34;</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;context:annotation-config</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;u&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.dao.impl.UserDAOImpl&#34;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">name=</span><span class="s">&#34;userService&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.service.UserService&#34;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/beans&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="autowired">Autowired</h3>
+
+<p>上面的配置就舍弃了在配置里组装 bean，只是声明了 bean，那么在 java 代码里就需要使用注解来完成装配的功能。在 UserService.java 中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// 推荐的是在 setter 方法上使用注解
+</span><span class="c1"></span><span class="nd">@Autowired</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserDao</span><span class="o">(</span><span class="n">UserDao</span> <span class="n">userDao</span><span class="o">)</span>
+
+<span class="c1">// 或者在属性上使用注解
+</span><span class="c1"></span><span class="nd">@Autowired</span>
+<span class="kd">private</span> <span class="n">UserDao</span> <span class="n">userDao</span><span class="o">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><code>@Autowired</code> 注解是根据参数类型而非名称来进行装配的，所以可以修饰多个参数的 set 方法，或者构造函数，所以这里的方法名就没有配置方式的那么严谨了。<strong>如果出现多个同类型的 bean 如果其中一个指定了和参数类似名一致的 name ，spring 会自动装配该 bean</strong>，如果没有指定 name 那么可以使用 <code>@Qualifier</code> 注解指定其需要注入的 bean 名称，使用注解之后其匹配权重最高：类型 &lt; 名称 &lt;  Qualifier注解：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// 假如有 name 为 u1 u2 的两个 bean
+</span><span class="c1"></span><span class="nd">@Autowired</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserDao</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;u2&#34;</span><span class="o">)</span> <span class="n">UserDao</span> <span class="n">userDao</span><span class="o">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>默认的 <code>@Autowired</code> 是 required = true 的，可以使用 <code>@Autowired(required=false)</code> ，这样就不一定需要需要注入。为了规范性，就有 <code>@Required</code> 这个单独的注解，声明式的要求注入。</p>
+
+<h3 id="resource">Resource</h3>
+
+<p>Resource 注解是 JSR-250 规范里的，spring 里实现了该注解，该注解基于所修饰的属性、set方法的 <strong>名称</strong> 来装配，也可以利用 name 参数显式指定名称：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// 由于是规范，这里导入的包是 javax
+</span><span class="c1"></span><span class="kn">import</span> <span class="nn">javax.annotation.Resource</span><span class="o">;</span>
+<span class="o">...</span>
+<span class="nd">@Resource</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#34;userDao1&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserDao</span><span class="o">(</span><span class="n">UserDao</span> <span class="n">userDao</span><span class="o">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在 JSR-300 规范里还可以使用  <code>@Inject</code> 和 <code>@Named</code>，由于 Inject 没有 required 属性，所以需要使用 <code>@Nullable</code> 来指定其可不用注入。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Inject</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setMovieFinder</span><span class="o">(</span><span class="nd">@Named</span><span class="o">(</span><span class="s">&#34;main&#34;</span><span class="o">)</span> <span class="n">MovieFinder</span> <span class="n">movieFinder</span><span class="o">)</span>
+
+<span class="nd">@Inject</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setMovieFinder</span><span class="o">(</span><span class="nd">@Nullable</span> <span class="n">MovieFinder</span> <span class="n">movieFinder</span><span class="o">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><code>@javax.inject.Named</code> 和 <code>@javax.annotation.ManagedBean</code> 还可以用于声明 bean，类似于下面将要提到的 <code>@Component</code>。</p>
+
+<h3 id="component">Component</h3>
+
+<p>除了装配关系可以使用注解完成，bean 的声明也是可以使用注解来完成的，需要在 beans.xml 里添加上扫描的包的路径，以实现 bean 的发现。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;context:annotation-config</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!-- 递归扫描该包 --&gt;</span>
+<span class="nt">&lt;context:component-scan</span> <span class="na">base-package=</span><span class="s">&#34;demo&#34;</span><span class="nt">/&gt;</span>
+
+<span class="c">&lt;!-- bean 声明也不需要了 --&gt;</span>
+<span class="c">&lt;!-- &lt;bean id=&#34;u&#34; class=&#34;demo.dao.impl.UserDAOImpl&#34; /&gt;
+</span><span class="c">&lt;bean name=&#34;userService&#34; class=&#34;demo.service.UserService&#34;/&gt; --&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>实际上使用 <code>&lt;context:component-scan&gt;</code> 时候是默认能使了 <code>&lt;context:annotation-config /&gt;</code> 了的。</p>
+
+<blockquote>
+<p>The use of <code>&lt;context:component-scan&gt;</code> implicitly enables the functionality of <code>&lt;context:annotation-config&gt;</code>. There is usually no need to include the <code>&lt;context:annotation-config&gt;</code> element when using <code>&lt;context:component-scan&gt;</code>.</p>
+</blockquote>
+
+<p>之后为需要用 spring 来接管的 bean 添加上注解</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// 如果不指定名字，以类名的为名(首字母小写)
+</span><span class="c1"></span><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserService</span> <span class="o">{}</span>
+
+<span class="c1">// 这里就必须指定下名字了
+</span><span class="c1"></span><span class="nd">@Component</span><span class="o">(</span><span class="s">&#34;userDao&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDaoImpl</span> <span class="kd">implements</span> <span class="n">UserDao</span> <span class="o">{}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>除了 <code>@Component</code> 实际上还可以使用 ，<code>@Repository</code> <code>@Service</code> <code>@Controller</code> 来注解，3 个注释分别和持久层（DAO）、业务层和控制层（Web 层）相对应，实质上是没有区别的只是语义显得明确些，这一点这会在 Spring MVC 里体现的淋漓尽致。</p>
+
+<h3 id="注解细则">注解细则</h3>
+
+<p>对应配置方式，注解方式还有下面的些细节：</p>
+
+<ul>
+<li><code>@Scope(&quot;xxx&quot;)</code> 注解为该 bean 指定生存范围</li>
+<li><code>@PostConstruct</code> 对应 init-method</li>
+<li><code>@PreDestroy</code> 对应 destroy-method</li>
+<li><code>@Lazy</code> 对应配置式里的懒加载</li>
+</ul>
+
+<h2 id="javaconfig">JavaConfig</h2>
+
+<p>在第三方库不可修改的情况下，要想将里面的资源装配到自己的应用上，使用注解的自动装配的入侵代码的方式是不容易实现的，这时候需要使用显式的装配。显式装配有两种可选方案：JavaConfig 和 XML ，XML 配置式前面已经提到，下面介绍 JavaConfig 的方式。</p>
+
+<p>JavaConfig 的方式就是需要自己实现 <strong>第三方到自己的转换</strong> 的过程，JavaConfig 又称 配置类，实现步骤分为以下几部：</p>
+
+<ol>
+<li>创建一个配置类，使用 <code>@Configuration</code> 来注解</li>
+<li>在该类中，创建多个返回第三方对象的方法，并用 <code>@Bean</code> 注解，最后如不使用注解里的 name 属性显式指定名称，返回的对象会以 ID 名为 <strong>方法名</strong> 为标识放入 Spring 的容器池/上下文(context)中，以供装配。</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// demo.dao.impl.UserDaoConfig
+</span><span class="c1"></span><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDaoConfig</span> <span class="o">{</span>
+
+    <span class="c1">// 或者指定名称 @Bean(name=&#34;userDao&#34;)
+</span><span class="c1"></span>    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">UserDao</span> <span class="nf">userDao</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">UserDaoImpl</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>之后去掉 UserDaoImpl 的 Component 的注解，在测试用例中发现也是能够完成装配的。</p>
+
+<h3 id="配置类的测试">配置类的测试</h3>
+
+<p>编写测试类的时候可以不使用 beans.xml 文件而使用 JavaConfig 的方式初始化 Spring context，如下代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@org.junit.jupiter.api.Test</span>
+<span class="kt">void</span> <span class="nf">javaConfig</span><span class="o">()</span> <span class="o">{</span>
+    <span class="c1">// 这里获取配置类和需要注入的类，构成上下文，完成自动注入
+</span><span class="c1"></span>   <span class="n">ApplicationContext</span> <span class="n">ctx</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AnnotationConfigApplicationContext</span><span class="o">(</span><span class="n">UserDaoConfig</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">UserService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+   <span class="c1">// 以 class 的方式获取 bean 不用强制转换
+</span><span class="c1"></span>   <span class="n">UserService</span> <span class="n">userService</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">UserService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+   <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="k">new</span> <span class="n">User</span><span class="o">();</span>
+   <span class="n">user</span><span class="o">.</span><span class="na">setUsername</span><span class="o">(</span><span class="s">&#34;Jack&#34;</span><span class="o">);</span>
+   <span class="n">userService</span><span class="o">.</span><span class="na">addUser</span><span class="o">(</span><span class="n">user</span><span class="o">);</span>
+   <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>要是嫌麻烦的还可以以下面的方式完成 spring 上下文的构建，在测试类里面手动扫描包：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// test.java
+</span><span class="c1"></span>
+<span class="c1">// 提升下接口，才会有 scan 方法
+</span><span class="c1"></span><span class="n">AnnotationConfigApplicationContext</span> <span class="n">ctx</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AnnotationConfigApplicationContext</span><span class="o">();</span>
+<span class="n">ctx</span><span class="o">.</span><span class="na">scan</span><span class="o">(</span><span class="s">&#34;demo&#34;</span><span class="o">);</span>
+<span class="n">ctx</span><span class="o">.</span><span class="na">refresh</span><span class="o">();</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在配置类里指定需要扫描的包完成 Spring context 的构建，之后只需要指定配置类 <code>AnnotationConfigApplicationContext(UserDaoConfig.class)</code> 即可，不需要书写多个 bean 的类。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
+<span class="nd">@ComponentScan</span><span class="o">(</span><span class="n">basePackages</span> <span class="o">=</span> <span class="s">&#34;demo&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDaoConfig</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="配置的模块化">配置的模块化</h3>
+
+<p>使用 <code>@Import</code> 注解可以实现配置的模块化</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConfigA</span> <span class="o">{</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">A</span> <span class="nf">a</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">A</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="nd">@Configuration</span>
+<span class="nd">@Import</span><span class="o">(</span><span class="n">ConfigA</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConfigB</span> <span class="o">{</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">B</span> <span class="nf">b</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">B</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>之后就只需要 <code>AnnotationConfigApplicationContext(ConfigB.class)</code> 即可，该注解可以以 list 的方式导入多个配置类。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Import</span><span class="o">({</span><span class="n">ServiceConfig</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">RepositoryConfig</span><span class="o">.</span><span class="na">class</span><span class="o">})</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>使用 <code>@ImportResource</code> 注解可以将配置类需要的 xml 方式什么的上下文导入，如</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
+<span class="nd">@Import</span><span class="o">(</span><span class="n">ServiceConfig</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@ImportResource</span><span class="o">(</span><span class="s">&#34;classpath:beans.xml&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">D</span><span class="o">{</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">A</span> <span class="nf">a</span><span class="o">(){</span>
+        <span class="o">...</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>如果需要在 xml 里使用 JavaConfig/xml 也非常方便</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- 引入 xml 作为子模块 --&gt;</span>
+<span class="nt">&lt;import</span> <span class="na">resource=</span><span class="s">&#34;new-beans.xml&#34;</span><span class="nt">&gt;</span>
+
+<span class="c">&lt;!-- 引入 JavaConfig 作为子模块 --&gt;</span>
+<span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&#34;xxx.xxxConfig&#34;</span><span class="nt">&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>纵观前面的示例可以看出 spring 的 xml 配置式、JavaConfig、注解方式可以混搭在一起。</p>
+
+<h3 id="环境抽象">环境抽象</h3>
+
+<p>开发过程中经常会遇到生产和开发的环境切换问题，特别是数据库的连接，为了方便在不同环境下激活不同的 beans , spring 中可以使用 <code>@Progfile</code> 注解来限定 bean 加入上 Spring 下文的条件。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// profile 为 development 时候启用
+</span><span class="c1"></span><span class="nd">@Configuration</span>
+<span class="nd">@Profile</span><span class="o">(</span><span class="s">&#34;development&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">StandaloneDataConfig</span> <span class="o">{</span>
+    <span class="o">...</span>
+<span class="o">}</span>
+<span class="c1">// profile 为 production 时候启用
+</span><span class="c1"></span><span class="nd">@Configuration</span>
+<span class="nd">@Profile</span><span class="o">(</span><span class="s">&#34;production&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">StandaloneDataConfig</span> <span class="o">{</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>同时你还可以使用 <code>!</code> <code>&amp;</code> <code>|</code> 的语法衔接 profile。除了修饰配置类，还可以直接修饰 Bean 一级别。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Bean</span>
+<span class="nd">@Profile</span><span class="o">(</span><span class="s">&#34;development|test&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">A</span> <span class="nf">a</span><span class="o">(){</span>
+  <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在 xml 中使用的话，需要使用内嵌的 <code>&lt;beans&gt;</code> 标签加上 <code>profile=&quot;xxx&quot;</code> 属性来完成，这时候 profile 的与或非的关系就由 <code>&lt;beans&gt;</code> 的树形结构来表示了。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">&#34;http://www.springframework.org/schema/beans&#34;</span>
+    <span class="na">xmlns:xsi=</span><span class="s">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+    <span class="na">xmlns:jdbc=</span><span class="s">&#34;http://www.springframework.org/schema/jdbc&#34;</span>
+    <span class="na">xmlns:jee=</span><span class="s">&#34;http://www.springframework.org/schema/jee&#34;</span>
+    <span class="na">xsi:schemaLocation=</span><span class="s">&#34;...&#34;</span><span class="nt">&gt;</span>
+    <span class="c">&lt;!-- 这里的解构就表现了 production&amp;us-east --&gt;</span>
+    <span class="nt">&lt;beans</span> <span class="na">profile=</span><span class="s">&#34;production&#34;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;beans</span> <span class="na">profile=</span><span class="s">&#34;us-east&#34;</span><span class="nt">&gt;</span>
+            ...
+        <span class="nt">&lt;/beans&gt;</span>
+    <span class="nt">&lt;/beans&gt;</span>
+<span class="nt">&lt;/beans&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>当前激活 profile 目标由两个独立的属性决定 <code>spring.profiles.active</code> 和 <code>spring.profiles.default</code>, 如果 active 为空，使用 default 值，而默认情况下 active 是为空。而设定这两个参数的方法有下列多种</p>
+
+<ul>
+<li>作为 DispatcherServlet 的初始化参数。</li>
+<li>作为 web 应用的上下文，即在 servlet 配置中设置 <code>&lt;init-param&gt;</code> <code>&lt;context-param&gt;</code> 的 active 或者 default 的参数。</li>
+<li>作为 JNDI 条目(<code>java:comp/env/entries)</code>)。</li>
+<li>作为系统的环境变量。</li>
+<li>作为 JVM 的系统属性，即 <code>-Dspring.profiles.active=&quot;profile1,profile2&quot;</code>。</li>
+<li>在集成测试上使用 <code>@ActiveProfile</code> 的配置。</li>
+</ul>
+
+<p>在构建上下文时候设置</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// 需要使用 AnnotationConfigApplicationContext，需要在开始构建上下文之前设置
+</span><span class="c1"></span><span class="n">AnnotationConfigApplicationContext</span> <span class="n">ctx</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AnnotationConfigApplicationContext</span><span class="o">();</span>
+<span class="n">ctx</span><span class="o">.</span><span class="na">getEnvironment</span><span class="o">().</span><span class="na">setActiveProfiles</span><span class="o">(</span><span class="s">&#34;development&#34;</span><span class="o">);</span>
+<span class="n">ctx</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">SomeConfig</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">StandaloneDataConfig</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">JndiDataConfig</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">ctx</span><span class="o">.</span><span class="na">refresh</span><span class="o">();</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>或者给配置类加上配置注解 <code>@PropertySource</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
+<span class="nd">@ComponentScan</span><span class="o">(</span><span class="n">basePackages</span> <span class="o">=</span> <span class="s">&#34;demo&#34;</span><span class="o">)</span>
+<span class="nd">@PropertySource</span><span class="o">(</span><span class="s">&#34;classpath:application.properties&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDaoConfig</span> <span class="o">{</span>
+
+    <span class="nd">@Bean</span>
+    <span class="nd">@Profile</span><span class="o">(</span><span class="s">&#34;dev&#34;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">UserDao</span> <span class="nf">userDao</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">UserDaoImpl</span><span class="o">(</span><span class="s">&#34;7&#34;</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在 <code>src/main/resources/application.properties</code> 文件里</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-properties" data-lang="properties"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-properties" data-lang="properties">spring.profiles.active=dev</code></pre></td></tr></table>
+</div>
+</div>
+<p>值得注意的几点</p>
+
+<ul>
+<li>没有限定 profile 的资源都是默认加入上下文的。</li>
+<li>设置 profile 是同时含多个的，如上面的举例 <code>-Dspring.profiles.active=&quot;profile1,profile2&quot;</code>。</li>
+</ul>
+
+<h3 id="处理外部值">处理外部值</h3>
+
+<p>处理外部值最简单方式是声明属性源（使用 <code>@PropertySource</code>），之后通过注入 spring 注入 env 成员变量，或是是使用占位符 <code>@Value(&quot;${}&quot;)</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
+<span class="nd">@ComponentScan</span><span class="o">(</span><span class="n">basePackages</span> <span class="o">=</span> <span class="s">&#34;demo&#34;</span><span class="o">)</span>
+<span class="nd">@PropertySource</span><span class="o">(</span><span class="s">&#34;classpath:application.properties&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDaoConfig</span> <span class="o">{</span>
+    <span class="c1">// Autowired 以类型注入属性变量，以供程序后续使用
+</span><span class="c1"></span>    <span class="nd">@Autowired</span>
+    <span class="n">Environment</span> <span class="n">env</span><span class="o">;</span>
+    <span class="c1">// 直接将属性值注入，以供使用
+</span><span class="c1"></span>    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${spring.profiles.active}&#34;</span><span class="o">)</span>
+    <span class="n">String</span> <span class="n">actice</span><span class="o">;</span>
+
+    <span class="nd">@Bean</span>
+    <span class="nd">@Profile</span><span class="o">(</span><span class="s">&#34;dev&#34;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">UserDao</span> <span class="nf">userDao</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// 手动获取和自动 Value 注入
+</span><span class="c1"></span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">env</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&#34;spring.profiles.active&#34;</span><span class="o">)</span> <span class="o">+</span> <span class="s">&#34;, &#34;</span> <span class="o">+</span> <span class="n">actice</span><span class="o">);</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">UserDaoImpl</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>除了属性值之外，<code>@Value</code> 注解还可以注入简单值，这样注解方式也是可以直接注入 value 的，将其应用到构造函数参数上也是可以实现 <strong>构造函数参数的简单值注入</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;hello&#34;</span><span class="o">)</span>
+<span class="n">String</span> <span class="n">val</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="nf">ImConstructor</span><span class="o">(</span><span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;hello&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>对应 xml 的配置，需要这样</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;context:property-placeholder</span> <span class="na">location=</span><span class="s">&#34;classpath:foo.properties&#34;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;u&#34;</span> <span class="na">class=</span><span class="s">&#34;xxx&#34;</span> <span class="na">value=</span><span class="s">&#34;${spring.profiles.active}&#34;</span> <span class="nt">/&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="environment-properties">Environment&amp;Properties</h4>
+
+<p>org.springframework.core.env.Environment 接口提供了多种获取和检查属性值的方式，包括提供默认值，提供转换类，检查是否存在</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kt">boolean</span> <span class="nf">containsProperty</span><span class="o">(</span><span class="n">String</span> <span class="n">var1</span><span class="o">);</span>
+<span class="nd">@Nullable</span>
+<span class="n">String</span> <span class="nf">getProperty</span><span class="o">(</span><span class="n">String</span> <span class="n">var1</span><span class="o">);</span>
+<span class="n">String</span> <span class="nf">getProperty</span><span class="o">(</span><span class="n">String</span> <span class="n">var1</span><span class="o">,</span> <span class="n">String</span> <span class="n">var2</span><span class="o">);</span>
+<span class="nd">@Nullable</span>
+<span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">getProperty</span><span class="o">(</span><span class="n">String</span> <span class="n">var1</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">var2</span><span class="o">);</span>
+<span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">getProperty</span><span class="o">(</span><span class="n">String</span> <span class="n">var1</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">var2</span><span class="o">,</span> <span class="n">T</span> <span class="n">var3</span><span class="o">);</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Properties 文件里是可以衔接系统环境变量的，如有系统环境变量 <code>ENV_MYSQL_HOST=localhost</code> <code>ENV_MYSQL_PORT=3306</code> 可以在 properties 文件里引用。properties 还支持数组，和 Random，支持以 <code>${}</code> 的方式引用其他的属性</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-properties" data-lang="properties"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-properties" data-lang="properties">mysql.url = ${ENV_MYSQL_HOST}:${ENV_MYSQL_PORT}/&#34;nameofDB&#34;
+mysql.host = ${ENV_MYSQL_HOST}
+
+base.module.elementToSearch = 1,2,3,4,5,6
+
+database.host = ${mysql.host}</code></pre></td></tr></table>
+</div>
+</div>
+<p><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html" target="_blank">spring 默认 properties</a>，<a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html" target="_blank">properties文档</a>，除了 properties 格式的配置文件，还可以是有 yaml 文件来编写配置。</p>
+
+<h4 id="spel-表达式">SpEL 表达式</h4>
+
+<p>类似于与占位符的 <code>${}</code> 形式，SpEL(Spring Expression Language) 为 <code>#{}</code>，其中为表达式。SpEL 用法较多，见<a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#expressions" target="_blank">文档</a>，下面简单介绍几种用法</p>
+
+<ul>
+<li>引用其他其他 bean 的属性、调用方法，如 <code>#{userDao.version}</code> <code>#{userDao.getSomething()}</code></li>
+<li>字面量，如 <code>#{3.14}</code> 为浮点数类型，<code>#{Hello}</code> 为字符串类型，<code>#{false}</code> 为 Boolean</li>
+<li>表达式中支持运算符，支持包的引入，如 <code>#{T(java.lang.Math).PI * 2}</code></li>
+<li>正则表达式</li>
+<li>计算集合类型，索引，过滤，投影</li>
+</ul>
+
+<p>借助 SpEL 表达式可以方便的利用 <code>@Value</code> 注入 map 数据</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-propertiesq" data-lang="propertiesq"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-propertiesq" data-lang="propertiesq">propertyname={key1:&#39;value1&#39;,key2:&#39;value2&#39;,....}</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;#{${propertyname}}&#34;</span><span class="o">)</span>  <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">propertyname</span><span class="o">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="配置类细则">配置类细则</h3>
+
+<ul>
+<li><p>可以使用 <code>@Bean(initMethod = &quot;init&quot;)</code> 和 <code>@Bean(destroyMethod = &quot;cleanup&quot;)</code> 指定生命周期的钩子。</p></li>
+
+<li><p>同样使用 <code>@Scope(&quot;prototype&quot;)</code> 指定其生存范围</p></li>
+
+<li><p>可以指定多个名称 <code>@Bean({&quot;dataSource&quot;, &quot;subsystemA-dataSource&quot;, &quot;subsystemB-dataSource&quot;})</code></p></li>
+
+<li><p>如果需要其他的 bean 来完成，直接使用方法即可（spring 会拦截该方法，直接注入上下文空间中的 bean）：</p></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Config</span> <span class="o">{</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">A</span> <span class="nf">a</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">A</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">B</span> <span class="nf">b</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// 这里的方法调用会被 spring 拦截，并注入
+</span><span class="c1"></span>        <span class="k">return</span> <span class="k">new</span> <span class="n">B</span><span class="o">(</span><span class="n">a</span><span class="o">());</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 这里的传参会被 spring 拦截，并注入
+</span><span class="c1"></span>    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">C</span> <span class="nf">c</span><span class="o">(</span><span class="n">A</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">C</span><span class="o">(</span><span class="n">a</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li><p>同样的，如果需要其他的 bean 来完成，也可以通过参数的类型注入，当有多个时候相同类型的 bean 时候，参数可以使用 <code>@Qualifier</code> 注解来区分类型。</p></li>
+
+<li><p>除了使用 <code>@Qualifier</code> 来区别 autowire 时候多个同类型对象，还可以对 <code>@Component</code> 上附加加上 <code>@Primary</code> 注解声明其自动装配时候的权重。</p></li>
+</ul>
+
+<h2 id="参考">参考</h2>
+
+<p>JSR-300 与 Spring 的注解对比</p>
+
+<table>
+<thead>
+<tr>
+<th>Spring</th>
+<th>javax.inject.*</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>@Autowired</td>
+<td>@Inject</td>
+</tr>
+
+<tr>
+<td>@Component</td>
+<td>@Named / @ManagedBean</td>
+</tr>
+
+<tr>
+<td>@Scope(&ldquo;singleton&rdquo;)</td>
+<td>@Singleton</td>
+</tr>
+
+<tr>
+<td>@Qualifier</td>
+<td>@Qualifier / @Named</td>
+</tr>
+
+<tr>
+<td>@Value</td>
+<td>-</td>
+</tr>
+
+<tr>
+<td>@Required</td>
+<td>-</td>
+</tr>
+
+<tr>
+<td>@Lazy</td>
+<td>-</td>
+</tr>
+
+<tr>
+<td>ObjectFactory</td>
+<td>Provider</td>
+</tr>
+</tbody>
+</table>
+
+<ul>
+<li><a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#spring-core" target="_blank">spring doc</a></li>
+<li><a href="https://docs.spring.io/spring/docs/4.0.x/spring-framework-reference/html/overview.html" target="_blank">spring4 overview</a></li>
+<li>《Spring 实战》</li>
+</ul>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-01-18</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div><footer class="post-footer">
+      <div class="post-tags">
+        <div style="margin-bottom:5px">
+          <i class="iconfont icon-folder-open"></i>
+            <a href="/categories/Spring/">Spring</a>
+            </div>
+        <div>
+          <i class="iconfont icon-label"></i>
+            <a href="/tags/Spring/">Spring</a>
+            <a href="/tags/JavaWeb/">JavaWeb</a>
+            </div>
+      </div>
+
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/Computer/Windows/win-msys2.html">
+            <span class="next-text nav-default">MSYS2 和 mintty 打造 Windows 下 Linux 工具体验</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="lv-container" data-id="city" data-uid="MTAyMC80MjAzOS8xODU4Ng">
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+
+        if (typeof LivereTower === 'function') { return; }
+
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+    <noscript>Please enable JavaScript to view the comments powered by <a href="https://livere.com/">LiveRe.</a></noscript>
+    </div>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:gcreaink@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/creaink" class="iconfont icon-github" title="github"></a>
+  <a href="http://creaink.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-131846852-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>
