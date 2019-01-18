@@ -1,2 +1,2 @@
 User-agent: *
-Sitemap: http://creaink.github.io/sitemap.xml
+Sitemap: https://creaink.github.io/sitemap.xml
