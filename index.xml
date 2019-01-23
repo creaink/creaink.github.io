@@ -6,10 +6,19 @@
     <description>Recent content on Creaink - Build something for life</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 18 Jan 2019 20:49:33 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 23 Jan 2019 14:05:00 +0800</lastBuildDate>
     
 	<atom:link href="https://creaink.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Spring framework 之面向切面编程</title>
+      <link>https://creaink.github.io/post/Backend/JavaWeb/Spring/Spring-framework-aop.html</link>
+      <pubDate>Wed, 23 Jan 2019 14:05:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/post/Backend/JavaWeb/Spring/Spring-framework-aop.html</guid>
+      <description>&lt;p&gt;AOP(Aspect-Oriented-Programming) 面向切面编程，其原理是使用动态代理去间接的调用接口，以方便代理者在代理调用过程前后加入私货（重复代码）的处理，以简化代码。也达到了在线性逻辑当中，以非入侵方式的切开线性逻辑加入自己的逻辑面（切面），是对面向对象的思维方式的一种有力的补充。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Spring framework 之依赖注入</title>
@@ -17,7 +26,7 @@
       <pubDate>Fri, 18 Jan 2019 20:49:33 +0800</pubDate>
       
       <guid>https://creaink.github.io/post/Backend/JavaWeb/Spring/Spring-framework-di.html</guid>
-      <description>&lt;p&gt;Spring framework 系列之依赖注入&lt;/p&gt;</description>
+      <description>&lt;p&gt;Spring framework 系列之依赖注入，将对象之间的依赖关系减弱，进而其实例化也交给 Spring，Spring 维护一个上下文，并以声明式的方式对依赖进行满足（注入），进一步的强化面向接口编程的思想。&lt;/p&gt;</description>
     </item>
     
     <item>

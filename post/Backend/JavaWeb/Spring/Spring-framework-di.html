@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="Creaink" /><meta name="description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助" /><meta name="keywords" content="Spring, Spring framework, JavaWeb, DI, IoC" />
+<meta name="author" content="Creaink" /><meta name="description" content="Spring framework 系列之依赖注入" /><meta name="keywords" content="Spring, Spring framework, JavaWeb, DI, IoC, 依赖注入" />
 
 
 
@@ -39,25 +39,25 @@
 
 
 <meta property="og:title" content="Spring framework 之依赖注入" />
-<meta property="og:description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助" />
+<meta property="og:description" content="Spring framework 系列之依赖注入" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://creaink.github.io/post/Backend/JavaWeb/Spring/Spring-framework-di.html" /><meta property="article:published_time" content="2019-01-18T20:49:33&#43;08:00"/>
 <meta property="article:modified_time" content="2019-01-18T20:49:33&#43;08:00"/>
 
 <meta itemprop="name" content="Spring framework 之依赖注入">
-<meta itemprop="description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助">
+<meta itemprop="description" content="Spring framework 系列之依赖注入">
 
 
 <meta itemprop="datePublished" content="2019-01-18T20:49:33&#43;08:00" />
 <meta itemprop="dateModified" content="2019-01-18T20:49:33&#43;08:00" />
-<meta itemprop="wordCount" content="5359">
+<meta itemprop="wordCount" content="5536">
 
 
 
 <meta itemprop="keywords" content="Spring,JavaWeb," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Spring framework 之依赖注入"/>
-<meta name="twitter:description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助"/>
+<meta name="twitter:description" content="Spring framework 系列之依赖注入"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -132,8 +132,8 @@
 
       <div class="post-meta">
         <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-01-18 </span>
-          <span class="more-meta"> <i class="iconfont icon-book"></i> 5359 words </span>
-          <span class="more-meta"> <i class="iconfont icon-clock"></i> 11 mins read </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 5536 words </span>
+          <span class="more-meta"> <i class="iconfont icon-clock"></i> 12 mins read </span>
         
       </div>
     </header>
@@ -177,7 +177,7 @@
   </div>
 </div>
     <div class="post-content">
-      <p>Spring framework 系列之依赖注入</p>
+      <p>Spring framework 系列之依赖注入，将对象之间的依赖关系减弱，进而其实例化也交给 Spring，Spring 维护一个上下文，并以声明式的方式对依赖进行满足（注入），进一步的强化面向接口编程的思想。</p>
 
 <h2 id="测试代码搭建">测试代码搭建</h2>
 
@@ -307,7 +307,7 @@
 <span class="o">}</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>spring 的依赖利用 maven 下面的两种方式，推荐使用新方式，老方式在 jdk 1.8 时候会有 <code>…… are only available on JDK 1.5 and higher</code> 的错误，<a href="https://blog.csdn.net/catoop/article/details/49300853" target="_blank">参见</a>，而新的方式是把 Spring 拆解成为 Spring core、Spring beans、Spring contexts 等。</p>
+<p>spring 的依赖利用 maven 下面的两种方式，推荐使用新方式，老方式在 jdk 1.8 时候会有 <code>…… are only available on JDK 1.5 and higher</code> 的错误，<a href="https://blog.csdn.net/catoop/article/details/49300853" target="_blank">参见</a>，而新的方式是把 spring 拆解成为 Spring core、Spring beans、Spring contexts 等。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
@@ -776,7 +776,7 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 
 <ol>
 <li>创建一个配置类，使用 <code>@Configuration</code> 来注解</li>
-<li>在该类中，创建多个返回第三方对象的方法，并用 <code>@Bean</code> 注解，最后如不使用注解里的 name 属性显式指定名称，返回的对象会以 ID 名为 <strong>方法名</strong> 为标识放入 Spring 的容器池/上下文(context)中，以供装配。</li>
+<li>在该类中，创建多个返回第三方对象的方法，并用 <code>@Bean</code> 注解，最后如不使用注解里的 name 属性显式指定名称，返回的对象会以 ID 名为 <strong>方法名</strong> 为标识放入spring 的容器池/上下文(context)中，以供装配。</li>
 </ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -967,7 +967,7 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 
 <h3 id="环境抽象">环境抽象</h3>
 
-<p>开发过程中经常会遇到生产和开发的环境切换问题，特别是数据库的连接，为了方便在不同环境下激活不同的 beans , spring 中可以使用 <code>@Progfile</code> 注解来限定 bean 加入上 Spring 下文的条件。</p>
+<p>开发过程中经常会遇到生产和开发的环境切换问题，特别是数据库的连接，为了方便在不同环境下激活不同的 beans , spring 中可以使用 <code>@Profile</code> 注解来限定 bean 加入上 spring 下文的条件。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
@@ -1119,6 +1119,8 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 <li>设置 profile 是同时含多个的，如上面的举例 <code>-Dspring.profiles.active=&quot;profile1,profile2&quot;</code>。</li>
 </ul>
 
+<p><code>spring.profiles.active</code> 配置除了在代码里根据 <code>@Profile</code> 区分加入上下文的资源，还可以将配置分块，根据场景引入不同的配置（连接信息等），<a href="/Backend/SpringBoot/Spring-boot-mvc.md##配置文件">参见</a>。</p>
+
 <h3 id="处理外部值">处理外部值</h3>
 
 <p>处理外部值最简单方式是声明属性源（使用 <code>@PropertySource</code>），之后通过注入 spring 注入 env 成员变量，或是是使用占位符 <code>@Value(&quot;${}&quot;)</code></p>
@@ -1234,7 +1236,7 @@ base.module.elementToSearch = 1,2,3,4,5,6
 database.host = ${mysql.host}</code></pre></td></tr></table>
 </div>
 </div>
-<p><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html" target="_blank">spring 默认 properties</a>，<a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html" target="_blank">properties文档</a>，除了 properties 格式的配置文件，还可以是有 yaml 文件来编写配置。</p>
+<p><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html" target="_blank">spring 默认 properties</a>，<a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html" target="_blank">properties文档</a>，除了 properties 格式的配置文件，还可以使用 yaml 文件来编写配置。</p>
 
 <h4 id="spel-表达式">SpEL 表达式</h4>
 
@@ -1248,13 +1250,13 @@ database.host = ${mysql.host}</code></pre></td></tr></table>
 <li>计算集合类型，索引，过滤，投影</li>
 </ul>
 
-<p>借助 SpEL 表达式可以方便的利用 <code>@Value</code> 注入 map 数据</p>
+<p>借助 SpEL 表达式可以方便的利用 <code>@Value</code> 注入 map 数据：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-propertiesq" data-lang="propertiesq"><span class="lnt">1
+<pre class="chroma"><code class="language-properties" data-lang="properties"><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-propertiesq" data-lang="propertiesq">propertyname={key1:&#39;value1&#39;,key2:&#39;value2&#39;,....}</code></pre></td></tr></table>
+<pre class="chroma"><code class="language-properties" data-lang="properties">propertyname={key1:&#39;value1&#39;,key2:&#39;value2&#39;,....}</code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1269,9 +1271,9 @@ database.host = ${mysql.host}</code></pre></td></tr></table>
 <ul>
 <li><p>可以使用 <code>@Bean(initMethod = &quot;init&quot;)</code> 和 <code>@Bean(destroyMethod = &quot;cleanup&quot;)</code> 指定生命周期的钩子。</p></li>
 
-<li><p>同样使用 <code>@Scope(&quot;prototype&quot;)</code> 指定其生存范围</p></li>
+<li><p>同样使用 <code>@Scope(&quot;prototype&quot;)</code> 指定其生存范围。</p></li>
 
-<li><p>可以指定多个名称 <code>@Bean({&quot;dataSource&quot;, &quot;subsystemA-dataSource&quot;, &quot;subsystemB-dataSource&quot;})</code></p></li>
+<li><p>可以指定多个名称 <code>@Bean({&quot;dataSource&quot;, &quot;subsystemA-dataSource&quot;, &quot;subsystemB-dataSource&quot;})</code>。</p></li>
 
 <li><p>如果需要其他的 bean 来完成，直接使用方法即可（spring 会拦截该方法，直接注入上下文空间中的 bean）：</p></li>
 </ul>
@@ -1329,7 +1331,7 @@ database.host = ${mysql.host}</code></pre></td></tr></table>
 
 <h2 id="参考">参考</h2>
 
-<p>JSR-300 与 Spring 的注解对比</p>
+<p>JSR-300 与 spring 的注解对比</p>
 
 <table>
 <thead>
@@ -1383,8 +1385,8 @@ database.host = ${mysql.host}</code></pre></td></tr></table>
 </table>
 
 <ul>
-<li><a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#spring-core" target="_blank">spring doc</a></li>
 <li><a href="https://docs.spring.io/spring/docs/4.0.x/spring-framework-reference/html/overview.html" target="_blank">spring4 overview</a></li>
+<li><a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#beans" target="_blank">The IoC Container</a></li>
 <li>《Spring 实战》</li>
 </ul>
     </div>
@@ -1418,7 +1420,11 @@ database.host = ${mysql.host}</code></pre></td></tr></table>
 
       
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/Backend/JavaWeb/Spring/Spring-framework-aop.html">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Spring framework 之面向切面编程</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
         <a class="next" href="/post/Computer/Windows/win-msys2.html">
             <span class="next-text nav-default">MSYS2 和 mintty 打造 Windows 下 Linux 工具体验</span>
             <span class="next-text nav-mobile">Next</span>
