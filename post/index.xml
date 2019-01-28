@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Creaink - Build something for life</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 23 Jan 2019 14:05:00 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 28 Jan 2019 10:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://creaink.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Spring Boot：（一）工程搭建</title>
+      <link>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-intro.html</link>
+      <pubDate>Mon, 28 Jan 2019 10:00:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-intro.html</guid>
+      <description>&lt;p&gt;Spring Boot 让我们的 Spring 应用变的更轻量化，可以仅仅依靠一个 Java 类来运行一个 Spring 引用。你也可以打包你的应用为 jar 并通过使用 &lt;code&gt;java -jar&lt;/code&gt; 命令来运行你的 Spring Web应用（这一点非常方便 dockerized）。而不需要从 servlet 开始一步步的写 xml 配置文件，而 Spring Boot 的提供的各种 starter 更是会自动配置，避免了各种繁琐的 xml 文件的编写，方便了各种模块的快速集成。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Spring framework 之面向切面编程</title>
