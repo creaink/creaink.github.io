@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Spring Boot：（二）MVC - Creaink - Build something for life</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Creaink" /><meta name="description" content="Spring Boot 入门之 Spring MVC" /><meta name="keywords" content="Spring, Spring Boot, JavaWeb, Spring Boot 2, Spring MVC" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.53 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-mvc.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.56003f67.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Spring Boot：（二）MVC" />
+<meta property="og:description" content="Spring Boot 入门之 Spring MVC" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-mvc.html" /><meta property="article:published_time" content="2019-01-30T22:00:00&#43;08:00"/>
+<meta property="article:modified_time" content="2019-01-30T22:00:00&#43;08:00"/>
+
+<meta itemprop="name" content="Spring Boot：（二）MVC">
+<meta itemprop="description" content="Spring Boot 入门之 Spring MVC">
+
+
+<meta itemprop="datePublished" content="2019-01-30T22:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-01-30T22:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="4605">
+
+
+
+<meta itemprop="keywords" content="Spring Boot,JavaWeb,Spring MVC," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Spring Boot：（二）MVC"/>
+<meta name="twitter:description" content="Spring Boot 入门之 Spring MVC"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Creaink</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/links.html">
+        <li class="mobile-menu-item">Links</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Creaink</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/links.html">Links</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Spring Boot：（二）MVC</h1>
+
+      <div class="post-meta">
+        <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-01-30 </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 4605 words </span>
+          <span class="more-meta"> <i class="iconfont icon-clock"></i> 10 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#spring-boot-mvc">Spring Boot MVC</a>
+<ul>
+<li><a href="#配置文件">配置文件</a></li>
+<li><a href="#handler-methods">Handler Methods</a>
+<ul>
+<li><a href="#request-mapping-handler-methods">Request Mapping Handler Methods</a></li>
+<li><a href="#获取-request-中的数据">获取 Request 中的数据</a>
+<ul>
+<li><a href="#uri-path-中的数据">URI Path 中的数据</a></li>
+<li><a href="#键值数据">键值数据</a></li>
+<li><a href="#请求头信息">请求头信息</a></li>
+<li><a href="#包装数据">包装数据</a></li>
+</ul></li>
+<li><a href="#获取-request-body-中的数据">获取 Request Body 中的数据</a>
+<ul>
+<li><a href="#获取文件">获取文件</a></li>
+</ul></li>
+<li><a href="#获取其他数据">获取其他数据</a></li>
+<li><a href="#数据转换和验证">数据转换和验证</a>
+<ul>
+<li><a href="#formatters">Formatters</a></li>
+<li><a href="#webdatabinder">WebDataBinder?</a></li>
+<li><a href="#数据验证">数据验证</a></li>
+</ul></li>
+<li><a href="#控制-response-body">控制 Response Body</a>
+<ul>
+<li><a href="#json-序列化">JSON 序列化</a></li>
+<li><a href="#thymeleaf">Thymeleaf</a></li>
+</ul></li>
+<li><a href="#控制-response-header">控制 Response Header</a></li>
+<li><a href="#控制其他">控制其他</a></li>
+</ul></li>
+<li><a href="#静态资源">静态资源</a></li>
+<li><a href="#参考">参考</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="spring-boot-mvc">Spring Boot MVC</h1>
+
+<h2 id="配置文件">配置文件</h2>
+
+<p>Spring 的 <code>@Value</code> 值注入方式不再赘述，参考<a href="/Backend/JavaWeb/Spring/Spring-framework-di.md###环境抽象">Spring 环境抽象</a> 。这里注重介绍的是 Spring boot 的多环境配置。</p>
+
+<p>都知道通过 Spring 的 <code>@Profile(&quot;development/production&quot;)</code> 可以选择根据 <code>spring.profiles.active/default</code> 配置来是否决定加载该 bean而在 Spring boot 中可以通过这个配置来加载差异化的后补配置，后补配置文件名格式 <code>application-{profile}.properties</code> 其中 <code>{profile}</code> 对应着配置项的名称，常用的如：</p>
+
+<ul>
+<li><code>application-dev.properties</code>：开发环境</li>
+<li><code>application-test.properties</code>：测试环境</li>
+<li><code>application-prod.properties</code>：生产环境</li>
+</ul>
+
+<p>例如需要启用 <code>application-dev.properties</code> 里的配置，在 <code>appliction.properties</code> 文件里可以这样设置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-properties" data-lang="properties"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-properties" data-lang="properties">spring.profiles.active=dev</code></pre></td></tr></table>
+</div>
+</div>
+<p>注意的是附加的配置项如有和 <code>appliction.properties</code> 里的冲突，会覆盖。</p>
+
+<h2 id="handler-methods">Handler Methods</h2>
+
+<p>Spring boot 的 Web 这一部分可以使用 Spring MVC 或者 WebFlux，以下着重讲解 Spring MVC 在 Spring 下的使用。</p>
+
+<p>首先构建一个 POJO model User 用于后续的使用。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">id</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">address</span><span class="o">;</span>
+    <span class="c1">// 省略 setter/getter
+</span><span class="c1"></span><span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="request-mapping-handler-methods">Request Mapping Handler Methods</h3>
+
+<p>通过 <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#mvc-ann-requestmapping" target="_blank">Spring MVC Request Mapping</a> 的方式可以将请求的 URL 和处理该请求的 handler 进行匹配，通常会通过注解的方式来实现。</p>
+
+<p><code>@RequestMapping</code> 用于创建 URL 和 handler 的映射，可以同时用于 class 和 method 上，这时候实际的 method handler 的 URL 就需要加上 class 上的 RequestMapping value 作为 <strong>前缀</strong>。</p>
+
+<p><code>@RequestMapping</code> 的默认 value 为 URL 可以，处理固定的字符串还可以使用占位符；method 值为 HTTP 方法，如实现 user 的 RESTful 接口：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&#34;/users&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyRestController</span> <span class="o">{</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&#34;/{user}&#34;</span><span class="o">,</span> <span class="n">method</span><span class="o">=</span><span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">User</span> <span class="nf">getUser</span><span class="o">(</span><span class="nd">@PathVariable</span> <span class="n">Long</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span>    <span class="o">}</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&#34;/{user}/customers&#34;</span><span class="o">,</span> <span class="n">method</span><span class="o">=</span><span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span> <span class="nf">getUserCustomers</span><span class="o">(</span><span class="nd">@PathVariable</span> <span class="n">Long</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span>    <span class="o">}</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&#34;/{user}&#34;</span><span class="o">,</span> <span class="n">method</span><span class="o">=</span><span class="n">RequestMethod</span><span class="o">.</span><span class="na">DELETE</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">User</span> <span class="nf">deleteUser</span><span class="o">(</span><span class="nd">@PathVariable</span> <span class="n">Long</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span>    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li><p>RequestMapping 的 value 默认为 <code>/</code> method 默认所有方法，支持 <code>**</code> 多级、<code>*</code> 单级、及 <code>?</code> 单字符的 Ant 风格通配符。</p></li>
+
+<li><p>除了 RequestMapping method 指定方法，还可以使用 <code>@GetMapping</code> <code>@PostMapping</code> <code>@PutMapping</code> <code>@DeleteMapping</code> <code>@PatchMapping</code> 等快捷方式。</p></li>
+
+<li><p>除了 path 参数，还可以使用 <code>consumes</code> 指定请求中的 Media Types 来进一步的细分如 <code>@PostMapping(path = &quot;/pets&quot;, consumes = &quot;application/json&quot;)</code>，这里对应的是 HTTP 协议 request 中的 <code>Accept</code> 头。</p></li>
+
+<li><p>范围更广的，可以进一步使用 <code>headers</code> 进一步根据请求头来细分 Mapping，如 <code>GetMapping(path = &quot;/pets&quot;, headers = &quot;myHeader=myValue&quot;)</code>。</p></li>
+
+<li><p>RequestMapping 还可以通过 params 参数进行细分（其实 method 也是个细分的项）如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&#34;/login&#34;</span><span class="o">,</span> <span class="n">params</span><span class="o">=</span><span class="s">&#34;flag&#34;</span><span class="o">)</span>                  <span class="c1">// 请求中必须含有有名为 flag 的键
+</span><span class="c1"></span><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&#34;/login&#34;</span><span class="o">,</span> <span class="n">params</span><span class="o">=</span><span class="s">&#34;!flag&#34;</span><span class="o">)</span>                 <span class="c1">// 请求中不能含有要有名为 flag 的键
+</span><span class="c1"></span><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&#34;/login&#34;</span><span class="o">,</span> <span class="n">params</span><span class="o">=</span><span class="s">&#34;flag=hello&#34;</span><span class="o">)</span>            <span class="c1">// 请求中名为 flag 的键的值必须为 hello
+</span><span class="c1"></span><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&#34;/login&#34;</span><span class="o">,</span> <span class="n">params</span><span class="o">=</span><span class="s">&#34;flag!=hello&#34;</span><span class="o">)</span>           <span class="c1">// 请求中名为 flag 的键的值不能为 hello
+</span><span class="c1"></span><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&#34;/login&#34;</span><span class="o">,</span> <span class="n">params</span><span class="o">={</span><span class="s">&#34;flag1&#34;</span><span class="o">,</span><span class="s">&#34;flag2=hello&#34;</span><span class="o">})</span> <span class="o">//</span> <span class="n">请求中必须含有</span> <span class="n">flag1</span> <span class="n">的键</span><span class="err">，</span><span class="n">同时名为</span> <span class="n">flag2</span> <span class="n">键的值必须是</span> <span class="n">hello</span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+
+<p>可以对一个方法指定多个 url 匹配方式，这个情况下需要考虑值没有注入的的情况，如果需要考虑值的合法性需要：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="o">{</span><span class="s">&#34;/&#34;</span><span class="o">,</span> <span class="s">&#34;/{id}&#34;</span><span class="o">})</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">postUser</span><span class="o">(</span><span class="nd">@Nullable</span> <span class="nd">@PathVariable</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">&#34;SUCCESS&#34;</span><span class="o">;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上述的 <code>@Nullable</code> 也可以转换为 <code>@PathVariable(required = false)</code></p>
+
+<h3 id="获取-request-中的数据">获取 Request 中的数据</h3>
+
+<p>所有获取 request 中的数据方式大体可以参考 <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#mvc-ann-arguments" target="_blank">Method Arguments</a> 表格。</p>
+
+<h4 id="uri-path-中的数据">URI Path 中的数据</h4>
+
+<ul>
+<li><p>Mapping 值里可以使用路径占位符，使用 <code>@PathVariable</code> 会根据名字来着注入到方法的对应参数里，可以包含多个路径占位符，方法参数里也是可以获取到类注解里声明的路径占位符的。</p></li>
+
+<li><p>Mapping 里还可以使用 <code>${}</code> 的方式使用配置值</p></li>
+
+<li><p>Mapping 值里还可以使用下面的通配符，即 <strong>ANT</strong> 风格</p>
+
+<ul>
+<li><code>?</code> 一个字符</li>
+<li><code>*</code> 零个字符或者一段路径(指的是 / / 之间的)</li>
+<li><code>**</code> 零个字符或者多个路径段</li>
+</ul></li>
+
+<li><p>Mapping 还可以使用 <code>{varName:regx}</code> 的方式使用正则来匹配值</p></li>
+
+<li><p>PathVariable 可以加入 name(即 value) 参数这样方法参数名就不用和占位符一致</p></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Controller</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/owners/{ownerId}&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OwnerController</span> <span class="o">{</span>
+
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/pets/{petId}&#34;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">Pet</span> <span class="nf">findPet</span><span class="o">(</span><span class="nd">@PathVariable</span> <span class="n">Long</span> <span class="n">ownerId</span><span class="o">,</span> <span class="nd">@PathVariable</span> <span class="n">Long</span> <span class="n">petId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// ...
+</span><span class="c1"></span>    <span class="o">}</span>
+<span class="o">}</span>
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/owners/{ownerId}/pets/{petId}&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">Pet</span> <span class="nf">findPet</span><span class="o">(</span><span class="nd">@PathVariable</span> <span class="n">Long</span> <span class="n">ownerId</span><span class="o">,</span> <span class="nd">@PathVariable</span><span class="o">(</span><span class="s">&#34;petId&#34;</span><span class="o">)</span> <span class="n">Long</span> <span class="n">myPetId</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span><span class="o">}</span>
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/{name:[a-z-]+}-{version:\\d\\.\\d\\.\\d}{ext:\\.[a-z]+}&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="nd">@PathVariable</span> <span class="n">String</span> <span class="n">version</span><span class="o">,</span> <span class="nd">@PathVariable</span> <span class="n">String</span> <span class="n">ext</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span><span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="键值数据">键值数据</h4>
+
+<p><code>@RequestParam</code> 可以通过注解函数参数来获取 Get 方法的 <strong>QueryString</strong> 键值对，该注解也可解析 Request Body 中的 <strong>form-data</strong> 和 <strong>x-www-form-urlencoded</strong> 的 Content-type 键值数据，Http中数据键名默认是和注解的参数形成对应，也可以通过 <code>@RequestParam(&quot;paramName&quot;)</code> 指定名称。</p>
+
+<p><code>@RequestParam</code> 能转换的数据有限（一些简单的类型），复杂数据参见 <a href="#数据转换和验证">数据转换和验证章节</a>。另外值得注意的是有个特殊用法，如果注解的是 <code>Map&lt;String, String&gt;</code> 或者 <code>MultiValueMap&lt;String, String&gt;</code> 类型的参数，且不指定 name 参数的话，所有的键值参数将会被放入 Map，如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">test</span><span class="o">(</span><span class="nd">@RequestParam</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">m</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Iterator</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="na">entrySet</span><span class="o">().</span><span class="na">iterator</span><span class="o">();</span>
+    <span class="k">while</span> <span class="o">(</span><span class="n">iter</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+        <span class="n">Map</span><span class="o">.</span><span class="na">Entry</span> <span class="n">entry</span> <span class="o">=</span> <span class="o">(</span><span class="n">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">)</span> <span class="n">iter</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">entry</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="s">&#34;OK&#34;</span><span class="o">;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>特别的对应 <code>multipart/form-data</code> 形式的含有文件的请求可使用 MultipartFile 来处理：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@PostMapping</span><span class="o">(</span><span class="s">&#34;/form&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">handleFormUpload</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&#34;name&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span>
+        <span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&#34;file&#34;</span><span class="o">)</span> <span class="n">MultipartFile</span> <span class="n">file</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="n">file</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="na">getBytes</span><span class="o">();</span>
+        <span class="c1">// store the bytes somewhere
+</span><span class="c1"></span>    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>如果在请求中含有多个同名的键，可以使用 <code>(@RequestParam List&lt;String&gt; list)</code> 的形式来获取而不丢失。如果想将请求中的数据递解析为数组可以利用这种形式的，不过值之间需要使用 <code>,</code> 进行分割</p>
+
+<p><code>@RequestParam</code> 有默认参数值选项，如 <code>@RequestParam(name=&quot;name&quot;, required=false, defaultValue=&quot;World&quot;)</code>。</p>
+
+<h4 id="请求头信息">请求头信息</h4>
+
+<ul>
+<li><p><code>@RequestHeader</code>, 通过这个注解可以获取到 request 里的请求头的键值对数据，其 value 指定请求头名。和 RequestParam 类似，可以 Map 形式获取所以信息。</p></li>
+
+<li><p><code>@CookieValue</code>, 特别的，这个注解可以获取请求头中的 cookie 值中的键值对，默认参数类型只能是 String。</p></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/demo&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span>
+        <span class="nd">@RequestHeader</span><span class="o">(</span><span class="s">&#34;Accept-Encoding&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">encoding</span><span class="o">,</span>
+        <span class="nd">@RequestHeader</span><span class="o">(</span><span class="s">&#34;Keep-Alive&#34;</span><span class="o">)</span> <span class="kt">long</span> <span class="n">keepAlive</span><span class="o">,</span>
+        <span class="nd">@CookieValue</span><span class="o">(</span><span class="s">&#34;JSESSIONID&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">cookie</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//...
+</span><span class="c1"></span><span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="包装数据">包装数据</h4>
+
+<p>有时会为了方便处理表单，或者传输的键值过多，需要使用值对象来装载，这时候就可以用 <code>@ModelAttribute</code> 来实现。</p>
+
+<p>可以从，URL、QueryString、Request Body 中方便的获取每一部分的键值，最后组装在一起，如下的代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/user/{id}&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">test</span><span class="o">(</span><span class="nd">@ModelAttribute</span> <span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span><span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>对应 curl 命令可以有如下的请求示例</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ curl -X POST <span class="se">\
+</span><span class="se"></span>  <span class="s1">&#39;http://localhost:8080/user/1/?address=Beijing&#39;</span> <span class="se">\
+</span><span class="se"></span>  -H <span class="s1">&#39;Content-Type: application/x-www-form-urlencoded&#39;</span> <span class="se">\
+</span><span class="se"></span>  -d <span class="s1">&#39;name=Tom&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>对应没有获取到的值，会使用其类型的空值，其值的获取范围：</p>
+
+<ul>
+<li><code>@SessionAttributes</code>。</li>
+<li>同一个控制器中的 <code>@ModelAttribute</code> 方法。</li>
+<li>URI 模板变量和类型转换器中获取的。</li>
+<li>使用默认构造器初始化的。</li>
+</ul>
+
+<p><code>@ModelAttribute</code> 除了修饰参数外，可以直接注解处理方法，用于包装数据，。</p>
+
+<ul class="task-list">
+<li><label><input type="checkbox" disabled class="task-list-item"> <code>@SessionAttribute</code>/<code>@SessionAttributes</code> 注解(request 与 session 域，模型渲染)。</label></li>
+</ul>
+
+<h3 id="获取-request-body-中的数据">获取 Request Body 中的数据</h3>
+
+<p>获取 Request Body 中的数据的一大需求就是获取其中的 json 数据。使用 <code>@RequestBody</code> 注解方法参数可以直接完成反序列化：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/json&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">User</span> <span class="nf">jsonTest</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">&#34;Hello&#34;</span> <span class="o">+</span> <span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>可以使用下面的命令测试</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ curl -X POST <span class="se">\
+</span><span class="se"></span>  <span class="s1">&#39;http://localhost:8080/json/&#39;</span> <span class="se">\
+</span><span class="se"></span>  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\
+</span><span class="se"></span>  -d <span class="s1">&#39;{
+</span><span class="s1">    &#34;name&#34;: &#34;Tom&#34;,
+</span><span class="s1">    &#34;id&#34;: 1,
+</span><span class="s1">    &#34;address&#34;: &#34;Beijing&#34;
+</span><span class="s1">  }&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>body 中的 json 数据允许与 VO 中的不对应，该注解不能解析 <code>application/x-www-form-urlencoded</code> 类型的 body，这一点没有 django rest framework 里统一解析方便。</p>
+
+<h4 id="获取文件">获取文件</h4>
+
+<p>对于 body 中的文件可以通过注入的 ServletRequest 然后进行比较存储，也可以使用 Multipartfile 或者 Part 类型的参数，通过 Spring 注入进来（适用于 form-data）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">javax.servlet.http.Part</span><span class="o">;</span>
+<span class="c1">// ...
+</span><span class="c1"></span><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/upload&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">uploadTest</span><span class="o">(</span><span class="n">Part</span> <span class="n">file</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">fileName</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="na">getSubmittedFileName</span><span class="o">();</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">fileName</span><span class="o">);</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">file</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="s">&#34;/your/path/to/file&#34;</span> <span class="o">+</span> <span class="n">fileName</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="s">&#34;SUCCESS&#34;</span><span class="o">;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="获取其他数据">获取其他数据</h3>
+
+<p>如果想要在处理方法里使用到进一步的数据，如获取请求方法、获取原生 ServletRequest、HttpSession 等可以很方便的根据类型来注入，所以可以注入到方法的参数可以参考文档 <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#mvc-ann-arguments" target="_blank">Method Arguments</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="sc">&#39;/&#39;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">User</span> <span class="nf">getUser</span><span class="o">(</span><span class="n">HttpMethod</span> <span class="n">method</span><span class="o">))</span> <span class="o">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span><span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>其实 <code>@RequestParam</code> <strong>对参数不用注解也是可以同名请求参数注入到方法的参数里的，而且是默认运行为空的</strong>。</p>
+
+<p><code>@SessionAttribute</code> 注解控制器的参数的话，可用获取到预先存在于 HttpSession 中被 setAttribute 的属性。</p>
+
+<p><code>@RequestAttribute</code> 注解控制器的参数的话，可以被用于访问由过滤器或拦截器创建的、预先存在的请求属性，如在自定义的 filter 里面使用 <code>request.setAttribute</code> 设置的属性。</p>
+
+<h3 id="数据转换和验证">数据转换和验证</h3>
+
+<p><code>@RequestParam</code>, <code>@RequestHeader</code>, <code>@PathVariable</code>, <code>@MatrixVariable</code>, <code>@CookieValue</code> 等注解都是基于 http 协议的 string 进行类型转换到注入类型的，像 int, long, Date 目标参数类型是可以简单的直接转换的，如果需要稍复杂的数据就需要 WebDataBinder 或者注册 Formatters 来完成了</p>
+
+<h4 id="formatters">Formatters</h4>
+
+<p>日期和数值注解可以方便的使用 <code>@DateTimeFormat</code> <code>@NumberFormat</code> 注解来解析，如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/format&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">formatTest</span><span class="o">(</span><span class="nd">@DateTimeFormat</span><span class="o">(</span><span class="n">iso</span> <span class="o">=</span> <span class="n">DateTimeFormat</span><span class="o">.</span><span class="na">ISO</span><span class="o">.</span><span class="na">DATE</span><span class="o">)</span> <span class="n">Date</span> <span class="n">date</span><span class="o">,</span>
+                         <span class="nd">@NumberFormat</span><span class="o">(</span><span class="n">pattern</span> <span class="o">=</span> <span class="s">&#34;#,###.##&#34;</span><span class="o">)</span> <span class="n">Double</span> <span class="n">num</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span><span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上面的日期也可以使用 <code>@DateTimeFormat(pattern = &quot;yyyy-MM-dd&quot;)</code> 形式，注意是上面的没有使用 <code>@RequestParam</code> 也是可以非显示的注入的。</p>
+
+<ul class="task-list">
+<li><label><input type="checkbox" disabled class="task-list-item"> 自定义 Formatters</label></li>
+</ul>
+
+<h4 id="webdatabinder">WebDataBinder?</h4>
+
+<ul class="task-list">
+<li><label><input type="checkbox" disabled class="task-list-item"> HttpMessageConverter -&gt; WebDataBinder</label></li>
+</ul>
+
+<p>与 Formatters 转换简单值不同，使用 WebDataBinder 可以进行复杂的复合数据的转换：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">org.springframework.core.convert.converter.Converter</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">StringToUserConverter</span> <span class="kd">implements</span> <span class="n">Converter</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">User</span><span class="o">&gt;{</span>
+    <span class="nd">@Nullable</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">User</span> <span class="nf">convert</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="k">new</span> <span class="n">User</span><span class="o">();</span>
+        <span class="n">String</span> <span class="o">[]</span><span class="n">strArr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&#34;-&#34;</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">strArr</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="n">3</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="n">user</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="n">Integer</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">strArr</span><span class="o">[</span><span class="n">0</span><span class="o">]));</span>
+        <span class="n">user</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="n">strArr</span><span class="o">[</span><span class="n">1</span><span class="o">]);</span>
+        <span class="n">user</span><span class="o">.</span><span class="na">setAddress</span><span class="o">(</span><span class="n">strArr</span><span class="o">[</span><span class="n">2</span><span class="o">]);</span>
+        <span class="k">return</span> <span class="n">user</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>对应的处理方法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/converter&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">converterTest</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+    <span class="k">return</span> <span class="s">&#34;SUCCESS&#34;</span><span class="o">;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>相应 <code>id-name-address</code> 的格式可以使用 <code>http://localhost:8080/json/?user=1-Tom-Beijing</code> 访问测试，这里的能够实现的转换的条件是：</p>
+
+<ol>
+<li>实现 <code>Converter&lt;String, User&gt;</code> 接口，前者是源参数类型，后面是目标参数类型。</li>
+<li>将自定义的 Converter 使用 <code>@Component</code> 加入到 spring 上下文中。</li>
+<li>在 handler 里存在一个参数类型是 User，参数名为 user，同样的在请求中存在键为 user 的 String 值，于是就使用了 StringToUserConverter 进行了转换。</li>
+</ol>
+
+<p>数组形式的参数，也是可以直接调用自定义的 Converter 来完成的（这里的 <code>@RequestParam</code> 好像是必要的），使用 <code>http://localhost:8080/json/?user=1-Tom-Beijing,2-Jack-Wuhan</code> 访问下面的 handler</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/converter&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">converterTest</span><span class="o">(</span><span class="nd">@RequestParam</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span> <span class="n">iterator</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+  <span class="k">while</span> <span class="o">(</span><span class="n">iterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">iterator</span><span class="o">.</span><span class="na">next</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+  <span class="o">}</span>
+  <span class="k">return</span> <span class="s">&#34;SUCCESS&#34;</span><span class="o">;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="数据验证">数据验证</h4>
+
+<p>在 VO 或者 POJO 上的属性上加上 JSR-303 注解可以实现字段的验证信息的标注，再在处理方法的注入参数上加上 <code>@Valid</code> 即可实现参数检查，加上参数类型为 Errors 之后，spring 会将错误信息注入。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="nd">@Min</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="n">0</span><span class="o">,</span> <span class="n">message</span> <span class="o">=</span> <span class="s">&#34;must be positive&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">id</span><span class="o">;</span>
+    <span class="c1">// ...
+</span><span class="c1"></span><span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/valid&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">validTest</span><span class="o">(</span><span class="nd">@Valid</span> <span class="nd">@ModelAttribute</span> <span class="n">User</span> <span class="n">user</span><span class="o">,</span> <span class="n">Errors</span> <span class="n">errors</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">errors</span><span class="o">);</span>
+  <span class="k">return</span> <span class="s">&#34;SUCCESS&#34;</span><span class="o">;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>处理 <code>@Min</code> 注解外，还可参考 <a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/package-frame.html" target="_blank">javax.validation.constraints</a> 下的注解，还可以使用如 Hibernate 提供的 Range 注解。Errors 也可为 BindingResult，下列示例返回了错误信息，最好处理数据验证错误的方式是在切面里进行统一的处理，参见 <a href="https://www.baeldung.com/global-error-handler-in-a-spring-rest-api" target="_blank">Custom Error Message Handling for REST API</a>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/valid&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">validTest</span><span class="o">(</span><span class="nd">@Valid</span> <span class="nd">@ModelAttribute</span> <span class="n">User</span> <span class="n">user</span><span class="o">,</span> <span class="n">BindingResult</span> <span class="n">bindingResult</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="n">bindingResult</span><span class="o">.</span><span class="na">getAllErrors</span><span class="o">().</span><span class="na">stream</span><span class="o">()</span>
+          <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">ObjectError:</span><span class="o">:</span><span class="n">getDefaultMessage</span><span class="o">)</span>
+          <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>也可以自己实现 Validator 接口之后在控制类里使用 <code>@InitBinder</code> 注解一个用于绑定验证器的方法</p>
+
+<h3 id="控制-response-body">控制 Response Body</h3>
+
+<h4 id="json-序列化">JSON 序列化</h4>
+
+<p>通过前面的例子可以知道，在 ResponseBody 或者 RestContoller 注解下的 handler 直接返回 POJO 之后，Jackson JSON 可直接帮你序列化返回（根据 get 方法来获取），如果有不同模式下序列化不同 POJO 字段的需求可以使用 <code>@JsonView</code> 和在 POJO 内定义的 interface 来实现，如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserController</span> <span class="o">{</span>
+
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/user&#34;</span><span class="o">)</span>
+    <span class="nd">@JsonView</span><span class="o">(</span><span class="n">User</span><span class="o">.</span><span class="na">WithoutPasswordView</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">User</span> <span class="nf">getUser</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">User</span><span class="o">(</span><span class="s">&#34;eric&#34;</span><span class="o">,</span> <span class="s">&#34;7!jd#h23&#34;</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">WithoutPasswordView</span> <span class="o">{};</span>
+    <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">WithPasswordView</span> <span class="kd">extends</span> <span class="n">WithoutPasswordView</span> <span class="o">{};</span>
+
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">password</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">User</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">,</span> <span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">username</span> <span class="o">=</span> <span class="n">username</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">password</span> <span class="o">=</span> <span class="n">password</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@JsonView</span><span class="o">(</span><span class="n">WithoutPasswordView</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUsername</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">username</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@JsonView</span><span class="o">(</span><span class="n">WithPasswordView</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getPassword</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">password</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上面的视图方法里指定 <code>@JsonView(User.WithoutPasswordView.class)</code> 注解，那么返回的只会解析有 <code>WithoutPasswordView.class</code> 的 getter，不包括没有使用 <code>@JsonView</code> 的。除了直接修饰 handler 也可以下面的方式动态添加到视图 Model 里：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/user&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">getUser</span><span class="o">(</span><span class="n">Model</span> <span class="n">model</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">&#34;user&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">User</span><span class="o">(</span><span class="s">&#34;eric&#34;</span><span class="o">,</span> <span class="s">&#34;7!jd#h23&#34;</span><span class="o">));</span>
+    <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="n">JsonView</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">User</span><span class="o">.</span><span class="na">WithoutPasswordView</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="k">return</span> <span class="s">&#34;userView&#34;</span><span class="o">;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><code>@JsonView</code> 也是支持数组参数的，所以可以 <code>@JsonView({WithoutPasswordView.class, WithPasswordView.class})</code> 还有更多的注解用于指定序列化时候的细节控制：</p>
+
+<ul>
+<li><code>@JsonAnyGetter</code> 用于注解 Map 类型的 getter。</li>
+<li><code>@JsonGetter</code> 注解 getter 方法指定字段名，而不是根据 getter 名。</li>
+<li><code>@JsonProperty</code> 注解属性，显式指定序列化的多种属性，参数如 name，index，access等。</li>
+<li><code>@JsonPropertyOrder</code> 注解 POJO 类指定顺序。</li>
+<li><code>@JsonRawValue</code> 用于 String 类型 Json 字符串的嵌套序列化。</li>
+<li><code>@JsonRootName</code> 外层包裹的对象。</li>
+<li><code>@JsonIgnoreProperties</code> <code>@JsonIgnoreType</code> 注解 POJO 类，忽略某些属性和类型。</li>
+<li><code>@JsonIgnore</code> 注解需要忽略的属性。</li>
+</ul>
+
+<p>如对密码的序列化的处理，不允许反序列化即对 json 来说只允许写：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@JsonProperty</span><span class="o">(</span><span class="n">access</span> <span class="o">=</span> <span class="n">Access</span><span class="o">.</span><span class="na">WRITE_ONLY</span><span class="o">)</span>
+<span class="kd">private</span> <span class="n">String</span> <span class="n">password</span><span class="o">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>详细用法和其他注解参考<a href="https://www.baeldung.com/jackson-annotations" target="_blank">更多</a>。</p>
+
+<h4 id="thymeleaf">Thymeleaf</h4>
+
+<p>除了返回 JSON 之外，还可返回视图模板的路径，这里以 Thymeleaf 前端模板语言为例。首先添加其依赖：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-thymeleaf<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>编写控制器</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Controller</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/account&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AccountController</span> <span class="o">{</span>
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/&#34;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">thymeleafTest</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#34;name&#34;</span><span class="o">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">false</span><span class="o">,</span> <span class="n">defaultValue</span><span class="o">=</span><span class="s">&#34;World&#34;</span><span class="o">)</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">Model</span> <span class="n">model</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">&#34;name&#34;</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
+        <span class="k">return</span> <span class="s">&#34;index&#34;</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这里的控制器就不能使用 RestContoller 或者 ResponseBody ，返回值为字符串就是目标文件的路径，该路径一般为 <code>classpath:/resources/templates/</code> 下，可以通过配置 <code>spring.thymeleaf.prefix</code> 来指定自定义的路径。model 参数为渲染视图时候的上下文对象，将需要在视图中用到的数据使用 addAttribute 添加，即可在模板里使用。</p>
+
+<p>编写目标文件 <code>resources/templates/index.html</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-html" data-lang="html"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span> <span class="na">xmlns:th</span><span class="o">=</span><span class="s">&#34;http://www.w3.org/1999/xhtml&#34;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Title<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&#34;${name}&#34;</span><span class="p">&gt;</span>Hello World<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这里的 <code>th:</code> 并不是 HTML 里的表格头标签，而是命名域 thymeleaf 的缩写，该命名域由 <code>&lt;html&gt;</code> 标签里的 <code>xmlns:th=&quot;http://www.w3.org/1999/xhtml&quot;</code> 指定。<code>th:text=&quot;${name}&quot;</code> 就将传递过来的上下文中名为 name 的数据渲染到该标签的 text 中，其他 thymeleaf 使用方法参见 <a href="https://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html" target="_blank">thymeleaf</a>。</p>
+
+<p>除此之外还支持 JSP, JSTL, Thymeleaf, FreeMarker, Velocity, Groovy, Mustache，<a href="https://en.wikipedia.org/wiki/Comparison_of_web_template_engines" target="_blank">模板语言对比</a>。</p>
+
+<h3 id="控制-response-header">控制 Response Header</h3>
+
+<ul>
+<li>Mapping 中的 <code>consumes</code> 可以精细化 Media Type，相应的可以使用 <code>produces</code> 指定返回的 Media type ，如 <code>@GetMapping(path = &quot;/pets/{petId}&quot;</code>, <code>produces = &quot;application/json;charset=UTF-8&quot;)</code>，即可指定 Response HTTP 协议中的 <code>Content-Type</code> 头。</li>
+</ul>
+
+<p>更好的方式是在 controller 里返回一个 ResponseEntity 类型</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/entity&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">entityTest</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">ResponseEntity</span><span class="o">.</span><span class="na">ok</span><span class="o">().</span><span class="na">header</span><span class="o">(</span><span class="s">&#34;echo&#34;</span><span class="o">,</span> <span class="s">&#34;hi&#34;</span><span class="o">).</span><span class="na">body</span><span class="o">(</span><span class="s">&#34;hi&#34;</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/entity/json&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">ResponseEntity</span><span class="o">&lt;?&gt;</span> <span class="n">entityJsonTest</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">HttpHeaders</span> <span class="n">headers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpHeaders</span><span class="o">();</span>
+    <span class="n">headers</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;echo&#34;</span><span class="o">,</span> <span class="s">&#34;hi&#34;</span><span class="o">);</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;(</span><span class="k">new</span> <span class="n">User</span><span class="o">(),</span> <span class="n">headers</span><span class="o">,</span> <span class="n">HttpStatus</span><span class="o">.</span><span class="na">UNAUTHORIZED</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这里示范了两种方式，一个是链式调用，一个是自己构造。上面的 <code>ResponseEntity&lt;?&gt;</code> 返回值也可以改为固定的类型。</p>
+
+<p>通常来说，返回的状态码一般分为成功和失败两种，成功相对失败更加的唯一，所以有时候可以使用 <code>@ResponseStatus</code> 来简化 handler 的响应：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@PostMapping</span>
+<span class="nd">@ResponseStatus</span><span class="o">(</span><span class="n">HttpStatus</span><span class="o">.</span><span class="na">CREATED</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span><span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>默认的 handler 成功之后是返回 SUCCESS 的，上面的代码修改了其默认返回状态码，而错误时候的返回码可以通过抛出异常来统一的处理。</p>
+
+<h3 id="控制其他">控制其他</h3>
+
+<p>页面跳转</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="k">return</span> <span class="s">&#34;redirect:files/{path}&#34;</span><span class="o">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="静态资源">静态资源</h2>
+
+<p>Spring Boot 默认提供静态资源目录位置需置于 classpath 下，目录名需符合如下规则：</p>
+
+<ul>
+<li>/static</li>
+<li>/public</li>
+<li>/resources</li>
+<li>/META-INF/resources</li>
+</ul>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html" target="_blank">spring-framework-reference web</a></li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-01-30</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div><footer class="post-footer">
+      <div class="post-tags">
+        <div style="margin-bottom:5px">
+          <i class="iconfont icon-folder-open"></i>
+            <a href="/categories/Spring/">Spring</a>
+            </div>
+        <div>
+          <i class="iconfont icon-label"></i>
+            <a href="/tags/Spring-Boot/">Spring Boot</a>
+            <a href="/tags/JavaWeb/">JavaWeb</a>
+            <a href="/tags/Spring-MVC/">Spring MVC</a>
+            </div>
+      </div>
+
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/Backend/SpringBoot/Spring-boot-intro.html">
+            <span class="next-text nav-default">Spring Boot：（一）工程搭建</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="lv-container" data-id="city" data-uid="MTAyMC80MjAzOS8xODU4Ng">
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+
+        if (typeof LivereTower === 'function') { return; }
+
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+    <noscript>Please enable JavaScript to view the comments powered by <a href="https://livere.com/">LiveRe.</a></noscript>
+    </div>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:gcreaink@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/creaink" class="iconfont icon-github" title="github"></a>
+  <a href="https://creaink.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-131846852-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

@@ -71,4 +71,5 @@
     "todo-tree.flat": false,
     "todo-tree.expanded": true,
 
+    "workbench.settings.editor": "json",
 }

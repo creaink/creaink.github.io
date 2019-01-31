@@ -6,10 +6,19 @@
     <description>Recent content in Spring Boot on Creaink - Build something for life</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 28 Jan 2019 10:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 30 Jan 2019 22:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://creaink.github.io/tags/Spring-Boot/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Spring Boot：（二）MVC</title>
+      <link>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-mvc.html</link>
+      <pubDate>Wed, 30 Jan 2019 22:00:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-mvc.html</guid>
+      <description>Spring Boot MVC 配置文件 Spring 的 @Value 值注入方式不再赘述，参考Spring 环境抽象 。这里注重介绍的是 Spring boot 的多环境配置。 都知道通过 Spring 的 @Profile(&amp;quot;development/production&amp;quot;) 可以选择根据 spring.profiles.active/default 配置来是否</description>
+    </item>
     
     <item>
       <title>Spring Boot：（一）工程搭建</title>

@@ -12,8 +12,12 @@
     unhide = update-index --no-assume-unchanged
 
 [core]
-#	windows crlf auto covert to lf
+#	windows CRLF auto covert to LF
 	autocrlf = true
+
+[core]
+# ignore diff between CRLF and LF
+	whitespace = cr-at-eol
 
 # [https]
 # 	proxy = 'socks5://127.0.0.1:1080'
