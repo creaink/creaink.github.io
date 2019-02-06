@@ -3,6 +3,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-db.html</loc>
+    <lastmod>2019-02-06T14:10:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-mvc.html</loc>
     <lastmod>2019-01-30T22:00:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -80,7 +87,7 @@
   
   <url>
     <loc>https://creaink.github.io/</loc>
-    <lastmod>2019-01-30T22:00:00+08:00</lastmod>
+    <lastmod>2019-02-06T14:10:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
@@ -100,13 +107,6 @@
   </url>
   
   <url>
-    <loc>https://creaink.github.io/tags/Hugo.html</loc>
-    <lastmod>2019-01-08T19:27:12+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://creaink.github.io/categories/Hugo.html</loc>
     <lastmod>2019-01-08T19:27:12+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -114,21 +114,35 @@
   </url>
   
   <url>
-    <loc>https://creaink.github.io/tags/JavaWeb.html</loc>
-    <lastmod>2019-01-30T22:00:00+08:00</lastmod>
+    <loc>https://creaink.github.io/tags/Hugo.html</loc>
+    <lastmod>2019-01-08T19:27:12+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://creaink.github.io/tags/Linux.html</loc>
-    <lastmod>2019-01-08T20:49:33+08:00</lastmod>
+    <loc>https://creaink.github.io/tags/JPA.html</loc>
+    <lastmod>2019-02-06T14:10:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://creaink.github.io/tags/JavaWeb.html</loc>
+    <lastmod>2019-02-06T14:10:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://creaink.github.io/categories/Linux.html</loc>
+    <lastmod>2019-01-08T20:49:33+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://creaink.github.io/tags/Linux.html</loc>
     <lastmod>2019-01-08T20:49:33+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
@@ -149,6 +163,13 @@
   </url>
   
   <url>
+    <loc>https://creaink.github.io/tags/Mybatis.html</loc>
+    <lastmod>2019-02-06T14:10:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://creaink.github.io/tags/Namespace.html</loc>
     <lastmod>2019-01-08T20:49:33+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -156,8 +177,15 @@
   </url>
   
   <url>
+    <loc>https://creaink.github.io/tags/ORM.html</loc>
+    <lastmod>2019-02-06T14:10:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://creaink.github.io/post.html</loc>
-    <lastmod>2019-01-30T22:00:00+08:00</lastmod>
+    <lastmod>2019-02-06T14:10:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
@@ -170,6 +198,13 @@
   </url>
   
   <url>
+    <loc>https://creaink.github.io/categories/Spring.html</loc>
+    <lastmod>2019-02-06T14:10:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://creaink.github.io/tags/Spring.html</loc>
     <lastmod>2019-01-23T14:05:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -177,15 +212,8 @@
   </url>
   
   <url>
-    <loc>https://creaink.github.io/categories/Spring.html</loc>
-    <lastmod>2019-01-30T22:00:00+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://creaink.github.io/tags/Spring-Boot.html</loc>
-    <lastmod>2019-01-30T22:00:00+08:00</lastmod>
+    <lastmod>2019-02-06T14:10:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>

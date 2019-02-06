@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mybatis on Creaink - Build something for life</title>
+    <link>https://creaink.github.io/tags/Mybatis.html</link>
+    <description>Recent content in Mybatis on Creaink - Build something for life</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 06 Feb 2019 14:10:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://creaink.github.io/tags/Mybatis/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Spring Boot：（三）ORM</title>
+      <link>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-db.html</link>
+      <pubDate>Wed, 06 Feb 2019 14:10:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-db.html</guid>
+      <description>准备 先解决 Jackson 和 数据库的时区问题，在配置文件当中加入： 1 2 spring.jackson.time-zone=GMT+8 spring.datasource.url=jdbc:mysql://localhost:3306/dbname?serverTimezone=GMT%2B8 datasource DataSource 是 Spring 简化数据库配置的方式，首先加入数据库的依赖 1 2 3 4 5 6 7 8 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;spring-boot-starter-jdbc&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;mysql&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;mysql-connector-java&amp;lt;/artifactId&amp;gt;</description>
+    </item>
+    
+  </channel>
+</rss>

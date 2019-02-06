@@ -48,9 +48,18 @@
     </item>
     
     <item>
+      <title>JPA</title>
+      <link>https://creaink.github.io/tags/JPA.html</link>
+      <pubDate>Wed, 06 Feb 2019 14:10:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/tags/JPA.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>JavaWeb</title>
       <link>https://creaink.github.io/tags/JavaWeb.html</link>
-      <pubDate>Wed, 30 Jan 2019 22:00:00 +0800</pubDate>
+      <pubDate>Wed, 06 Feb 2019 14:10:00 +0800</pubDate>
       
       <guid>https://creaink.github.io/tags/JavaWeb.html</guid>
       <description></description>
@@ -84,11 +93,29 @@
     </item>
     
     <item>
+      <title>Mybatis</title>
+      <link>https://creaink.github.io/tags/Mybatis.html</link>
+      <pubDate>Wed, 06 Feb 2019 14:10:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/tags/Mybatis.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Namespace</title>
       <link>https://creaink.github.io/tags/Namespace.html</link>
       <pubDate>Tue, 08 Jan 2019 20:49:33 +0800</pubDate>
       
       <guid>https://creaink.github.io/tags/Namespace.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ORM</title>
+      <link>https://creaink.github.io/tags/ORM.html</link>
+      <pubDate>Wed, 06 Feb 2019 14:10:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/tags/ORM.html</guid>
       <description></description>
     </item>
     
@@ -113,7 +140,7 @@
     <item>
       <title>Spring Boot</title>
       <link>https://creaink.github.io/tags/Spring-Boot.html</link>
-      <pubDate>Wed, 30 Jan 2019 22:00:00 +0800</pubDate>
+      <pubDate>Wed, 06 Feb 2019 14:10:00 +0800</pubDate>
       
       <guid>https://creaink.github.io/tags/Spring-Boot.html</guid>
       <description></description>
