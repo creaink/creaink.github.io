@@ -6,10 +6,19 @@
     <description>Recent content on Creaink - Build something for life</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 06 Feb 2019 14:10:00 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 11 Feb 2019 10:10:00 +0800</lastBuildDate>
     
 	<atom:link href="https://creaink.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Spring Boot：（三）Cache</title>
+      <link>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-cache.html</link>
+      <pubDate>Mon, 11 Feb 2019 10:10:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-cache.html</guid>
+      <description>Redis 和 DataTemplate 一样对数据库打开关闭操作的简化，对于 Redis 的打开关闭，有着 RedisTemplate 类，结合 RedisConnectionFactory（实现用 JedisConn</description>
+    </item>
     
     <item>
       <title>Spring Boot：（三）ORM</title>

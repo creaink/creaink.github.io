@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Redis on Creaink - Build something for life</title>
+    <link>https://creaink.github.io/tags/Redis.html</link>
+    <description>Recent content in Redis on Creaink - Build something for life</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 11 Feb 2019 10:10:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://creaink.github.io/tags/Redis/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Spring Boot：（三）Cache</title>
+      <link>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-cache.html</link>
+      <pubDate>Mon, 11 Feb 2019 10:10:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-cache.html</guid>
+      <description>Redis 和 DataTemplate 一样对数据库打开关闭操作的简化，对于 Redis 的打开关闭，有着 RedisTemplate 类，结合 RedisConnectionFactory（实现用 JedisConn</description>
+    </item>
+    
+  </channel>
+</rss>

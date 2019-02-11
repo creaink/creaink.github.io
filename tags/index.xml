@@ -59,7 +59,7 @@
     <item>
       <title>JavaWeb</title>
       <link>https://creaink.github.io/tags/JavaWeb.html</link>
-      <pubDate>Wed, 06 Feb 2019 14:10:00 +0800</pubDate>
+      <pubDate>Mon, 11 Feb 2019 10:10:00 +0800</pubDate>
       
       <guid>https://creaink.github.io/tags/JavaWeb.html</guid>
       <description></description>
@@ -120,6 +120,15 @@
     </item>
     
     <item>
+      <title>Redis</title>
+      <link>https://creaink.github.io/tags/Redis.html</link>
+      <pubDate>Mon, 11 Feb 2019 10:10:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/tags/Redis.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Shell</title>
       <link>https://creaink.github.io/tags/Shell.html</link>
       <pubDate>Sat, 12 Jan 2019 16:42:33 +0800</pubDate>
@@ -140,7 +149,7 @@
     <item>
       <title>Spring Boot</title>
       <link>https://creaink.github.io/tags/Spring-Boot.html</link>
-      <pubDate>Wed, 06 Feb 2019 14:10:00 +0800</pubDate>
+      <pubDate>Mon, 11 Feb 2019 10:10:00 +0800</pubDate>
       
       <guid>https://creaink.github.io/tags/Spring-Boot.html</guid>
       <description></description>
