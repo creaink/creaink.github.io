@@ -12,12 +12,12 @@
     
     
     <item>
-      <title>Spring Boot：（三）Cache</title>
+      <title>Spring Boot：（四）Cache</title>
       <link>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-cache.html</link>
       <pubDate>Mon, 11 Feb 2019 10:10:00 +0800</pubDate>
       
       <guid>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-cache.html</guid>
-      <description>Redis 和 DataTemplate 一样对数据库打开关闭操作的简化，对于 Redis 的打开关闭，有着 RedisTemplate 类，结合 RedisConnectionFactory（实现用 JedisConn</description>
+      <description>&lt;p&gt;当请求的数量达到一定的规模，这时候频繁的数据库请求就算使用数据库集群也很难承受的了，这时候可以将一些信息存于缓存当中，避免请求直接大量的&lt;strong&gt;怼&lt;/strong&gt;到数据库上。而如何实现缓存的策略是使用&lt;strong&gt;数据库 + 缓存&lt;/strong&gt;当中的至关重要的一步，Spring Boot 对缓存的支持也是很方便的。&lt;/p&gt;</description>
     </item>
     
   </channel>

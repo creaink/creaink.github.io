@@ -6,18 +6,27 @@
     <description>Recent content in Spring Boot on Creaink - Build something for life</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 11 Feb 2019 10:10:00 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 18 Feb 2019 09:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://creaink.github.io/tags/Spring-Boot/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Spring Boot：（三）Cache</title>
+      <title>Spring Boot：（五）Middware</title>
+      <link>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-middware.html</link>
+      <pubDate>Mon, 18 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-middware.html</guid>
+      <description>拦截器 &amp;amp; 过滤器 先来说说者的区别： filter 属于 servlet 的概念需要在 web.xml 里定义，不可以使用 Spring 上下文里的资源。 interceptor 属于 Spring 的概念，可以使用 Spring 上下文里的资源。 总的来说</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot：（四）Cache</title>
       <link>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-cache.html</link>
       <pubDate>Mon, 11 Feb 2019 10:10:00 +0800</pubDate>
       
       <guid>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-cache.html</guid>
-      <description>Redis 和 DataTemplate 一样对数据库打开关闭操作的简化，对于 Redis 的打开关闭，有着 RedisTemplate 类，结合 RedisConnectionFactory（实现用 JedisConn</description>
+      <description>&lt;p&gt;当请求的数量达到一定的规模，这时候频繁的数据库请求就算使用数据库集群也很难承受的了，这时候可以将一些信息存于缓存当中，避免请求直接大量的&lt;strong&gt;怼&lt;/strong&gt;到数据库上。而如何实现缓存的策略是使用&lt;strong&gt;数据库 + 缓存&lt;/strong&gt;当中的至关重要的一步，Spring Boot 对缓存的支持也是很方便的。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -26,7 +35,7 @@
       <pubDate>Wed, 06 Feb 2019 14:10:00 +0800</pubDate>
       
       <guid>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-db.html</guid>
-      <description>准备 先解决 Jackson 和 数据库的时区问题，在配置文件当中加入： 1 2 spring.jackson.time-zone=GMT+8 spring.datasource.url=jdbc:mysql://localhost:3306/dbname?serverTimezone=GMT%2B8 datasource DataSource 是 Spring 简化数据库配置的方式，首先加入数据库的依赖 1 2 3 4 5 6 7 8 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;spring-boot-starter-jdbc&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;mysql&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;mysql-connector-java&amp;lt;/artifactId&amp;gt;</description>
+      <description>Spring Boot 结合 ORM 可以非常方便快捷地进行数据库的配置、链接、查询等操作。 准备 先解决 Jackson 和 数据库的时区问题，在配置文件当中加入： 1 2 spring.jackson.time-zone=GMT+8 spring.datasource.url=jdbc:mysql://localhost:3306/dbname?serverTimezone=GMT%2B8 datasource DataSource 是 Spring 简化数据</description>
     </item>
     
     <item>
@@ -35,7 +44,7 @@
       <pubDate>Wed, 30 Jan 2019 22:00:00 +0800</pubDate>
       
       <guid>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-mvc.html</guid>
-      <description>Spring Boot MVC 配置文件 Spring 的 @Value 值注入方式不再赘述，参考Spring 环境抽象 。这里注重介绍的是 Spring boot 的多环境配置。 都知道通过 Spring 的 @Profile(&amp;quot;development/production&amp;quot;) 可以选择根据 spring.profiles.active/default 配置来是否</description>
+      <description>Spring Boot 可以使用 Spring MVC 处理 HTTP 请求。 配置文件 Spring 的 @Value 值注入方式不再赘述，参考Spring 环境抽象 。这里注重介绍的是 Spring boot 的多环境配置。 都知道通过 Spring 的 @Profile(&amp;quot;development/production&amp;quot;) 可</description>
     </item>
     
     <item>

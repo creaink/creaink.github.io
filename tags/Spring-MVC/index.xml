@@ -6,10 +6,19 @@
     <description>Recent content in Spring MVC on Creaink - Build something for life</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 30 Jan 2019 22:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 18 Feb 2019 09:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://creaink.github.io/tags/Spring-MVC/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Spring Boot：（五）Middware</title>
+      <link>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-middware.html</link>
+      <pubDate>Mon, 18 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-middware.html</guid>
+      <description>拦截器 &amp;amp; 过滤器 先来说说者的区别： filter 属于 servlet 的概念需要在 web.xml 里定义，不可以使用 Spring 上下文里的资源。 interceptor 属于 Spring 的概念，可以使用 Spring 上下文里的资源。 总的来说</description>
+    </item>
     
     <item>
       <title>Spring Boot：（二）MVC</title>
@@ -17,7 +26,7 @@
       <pubDate>Wed, 30 Jan 2019 22:00:00 +0800</pubDate>
       
       <guid>https://creaink.github.io/post/Backend/SpringBoot/Spring-boot-mvc.html</guid>
-      <description>Spring Boot MVC 配置文件 Spring 的 @Value 值注入方式不再赘述，参考Spring 环境抽象 。这里注重介绍的是 Spring boot 的多环境配置。 都知道通过 Spring 的 @Profile(&amp;quot;development/production&amp;quot;) 可以选择根据 spring.profiles.active/default 配置来是否</description>
+      <description>Spring Boot 可以使用 Spring MVC 处理 HTTP 请求。 配置文件 Spring 的 @Value 值注入方式不再赘述，参考Spring 环境抽象 。这里注重介绍的是 Spring boot 的多环境配置。 都知道通过 Spring 的 @Profile(&amp;quot;development/production&amp;quot;) 可</description>
     </item>
     
   </channel>
