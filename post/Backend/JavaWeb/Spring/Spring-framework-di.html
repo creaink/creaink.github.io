@@ -50,7 +50,7 @@
 
 <meta itemprop="datePublished" content="2019-01-18T20:49:33&#43;08:00" />
 <meta itemprop="dateModified" content="2019-01-18T20:49:33&#43;08:00" />
-<meta itemprop="wordCount" content="5536">
+<meta itemprop="wordCount" content="5696">
 
 
 
@@ -132,7 +132,7 @@
 
       <div class="post-meta">
         <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-01-18 </span>
-          <span class="more-meta"> <i class="iconfont icon-book"></i> 5536 words </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 5696 words </span>
           <span class="more-meta"> <i class="iconfont icon-clock"></i> 12 mins read </span>
         
       </div>
@@ -190,83 +190,9 @@
 
 <p>为了阐述 Spring 的依赖注入，先规划下这样的场景，在 Service 里为了减小耦合，使用 Dao 的接口变量来操作数据库，这时候这个 Service 是 has Dao 的结构。</p>
 
-<p>新建一个工程名为 demo 的 maven 项目，部分示例代码如下：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// path: src/main/java/demo/service/UserService.java
-</span><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserService</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="n">UserDAO</span> <span class="n">userDAO</span><span class="o">;</span>
+<p>新建一个工程名为 demo 的 maven 空项目，以在 Web 开发中常用的 Dao-&gt;Service 的关系来做讲解，部分示例代码如下：</p>
 
-    <span class="kd">public</span> <span class="nf">UserService</span><span class="o">(</span><span class="n">UserDAO</span> <span class="n">userDAO</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kd">super</span><span class="o">();</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">userDAO</span> <span class="o">=</span> <span class="n">userDAO</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">userDAO</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">user</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="n">UserDAO</span> <span class="nf">getUserDAO</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">userDAO</span><span class="o">;</span>
-    <span class="o">}</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserDAO</span><span class="o">(</span><span class="n">UserDAO</span> <span class="n">userDAO</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">userDAO</span> <span class="o">=</span> <span class="n">userDAO</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></td></tr></table>
-</div>
-</div>
-<p>接口和接口的实现如下：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// path: src/main/java/demo/dao/UserDao.java
-</span><span class="c1"></span><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserDAO</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">save</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="c1">// path: src/main/java/demo/dao/impl/UserDAOImpl.java
-</span><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDAOImpl</span> <span class="kd">implements</span> <span class="n">UserDAO</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">save</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;user saved!&#34;</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></td></tr></table>
-</div>
-</div>
-<p>相应的实体类（POJO）：</p>
+<p>实体类（POJO）（getter/setter 最好使用 IDEA 自动生成）：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
@@ -303,6 +229,84 @@
     <span class="o">}</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPassword</span><span class="o">(</span><span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">password</span> <span class="o">=</span> <span class="n">password</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>接口和接口的实现如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// path: src/main/java/demo/dao/UserDao.java
+</span><span class="c1"></span><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserDao</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">save</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="c1">// path: src/main/java/demo/dao/impl/UserDaoImpl.java
+</span><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDaoImpl</span> <span class="kd">implements</span> <span class="n">UserDao</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">save</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;user saved!&#34;</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>数据库访问层：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// path: src/main/java/demo/service/UserService.java
+</span><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserService</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">UserDao</span> <span class="n">userDao</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">UserService</span><span class="o">(</span><span class="n">UserDao</span> <span class="n">userDao</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">userDao</span> <span class="o">=</span> <span class="n">userDao</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="nf">UserService</span><span class="o">()</span> <span class="o">{}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">userDao</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">user</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">UserDao</span> <span class="nf">getUserDao</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">userDao</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserDao</span><span class="o">(</span><span class="n">UserDao</span> <span class="n">userDao</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">userDao</span> <span class="o">=</span> <span class="n">userDao</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></td></tr></table>
 </div>
@@ -344,7 +348,7 @@
 
 <h2 id="配置方式">配置方式</h2>
 
-<p>创建 <code>src/main/resources/bean.xml</code> 文件，内容如下：</p>
+<p>创建 <code>src/main/resources/beans.xml</code> 文件，内容如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
@@ -369,17 +373,17 @@
 </span><span class="s">        http://www.springframework.org/schema/beans
 </span><span class="s">        http://www.springframework.org/schema/beans/spring-beans.xsd&#34;</span><span class="nt">&gt;</span>
 
-    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;u&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.dao.impl.UserDAOImpl&#34;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;u&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.dao.impl.UserDaoImpl&#34;</span> <span class="nt">/&gt;</span>
 
     <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;userService&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.service.UserService&#34;</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&#34;userDAO&#34;</span> <span class="na">ref=</span><span class="s">&#34;u&#34;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&#34;userDao&#34;</span> <span class="na">ref=</span><span class="s">&#34;u&#34;</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;/bean&gt;</span>
 <span class="nt">&lt;/beans&gt;</span></code></pre></td></tr></table>
 </div>
 </div>
-<p><code>bean</code> 的可以理解为最终会由 spring 根据指定的 class 参数 new 出来的对象，而子节点 <code>property</code> 对应着该对象中由 name 指定名称的某个属性，ref 参数指定了其依赖（即 UserDAOImpl）。</p>
+<p><code>bean</code> 的可以理解为最终会由 spring 根据指定的 class 参数 new 出来的对象，而子节点 <code>property</code> 对应着该对象中由 name 指定名称的某个属性，ref 参数指定了其依赖（即 UserDaoImpl）。</p>
 
-<p>spring 会在创建 userService 这个 bean 时候将根据反射调用 userDAO 属性的 set 方法（<strong>需要注入的属性 get/set 方法</strong>），将提前创建完成的 UserDAOImpl 的 bean 赋值给其属性。这了就实现了 bean 的装配、依赖注入。</p>
+<p>spring 会在创建 userService 这个 bean 时候将根据反射调用 userDao 属性的 set 方法（<strong>需要注入的属性 get/set 方法</strong>），将提前创建完成的 UserDaoImpl 的 bean 赋值给其属性。这了就实现了 bean 的装配、依赖注入。</p>
 
 <p>最后在测试代码里可以编写下面的测试用例用于后续的测试。</p>
 <div class="highlight"><div class="chroma">
@@ -424,12 +428,14 @@
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
+</span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>org.junit.jupiter<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>junit-jupiter-api<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>RELEASE<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>junit<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>junit<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>4.12<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span></code></pre></td></tr></table>
 </div>
 </div>
@@ -456,7 +462,7 @@
     <span class="c">&lt;!-- 参考已经初始化的 bean --&gt;</span>
     <span class="nt">&lt;ref</span> <span class="na">bean=</span><span class="s">&#34;u&#34;</span><span class="nt">/&gt;</span>
     <span class="c">&lt;!-- 重新初始化一个 bean --&gt;</span>
-    <span class="c">&lt;!-- &lt;bean class=&#34;demo.dao.impl.UserDAOImpl&#34; /&gt; --&gt;</span>
+    <span class="c">&lt;!-- &lt;bean class=&#34;demo.dao.impl.UserDaoImpl&#34; /&gt; --&gt;</span>
 <span class="nt">&lt;/constructor-arg&gt;</span>
 <span class="nt">&lt;/bean&gt;</span></code></pre></td></tr></table>
 </div>
@@ -468,8 +474,8 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">&#34;0&#34;</span> <span class="na">value=</span><span class="s">&#34;12&#34;</span><span class="nt">&gt;</span>
-<span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">&#34;1&#34;</span> <span class="na">value=</span><span class="s">&#34;34&#34;</span><span class="nt">&gt;</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">&#34;0&#34;</span> <span class="na">value=</span><span class="s">&#34;12&#34;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">&#34;1&#34;</span> <span class="na">value=</span><span class="s">&#34;34&#34;</span> <span class="nt">/&gt;</span></code></pre></td></tr></table>
 </div>
 </div>
 <p>spring 3.0 之后可以使用命名空间 c 的方式将构造参数简化，但是这种方式不支持集合。</p>
@@ -501,7 +507,7 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;u&#34;</span> <span class="na">c:ver=</span><span class="s">&#34;123&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.dao.impl.UserDaoImpl&#34;</span> <span class="nt">&gt;</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>同样的可以使用命名空间 p 来替代简单的 property 标签，语法和 s 命名空间类似。</p></li>
+<p>同样的可以使用命名空间 p 来替代简单的 property 标签，语法和 c 命名空间类似。</p></li>
 
 <li><p><strong>接口注入</strong>，这个使用不多，就不再浪费篇幅。</p></li>
 </ol>
@@ -564,7 +570,7 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 <li>prototype，原型，每次有 ref 时候会创建一个 bean。</li>
 </ul>
 
-<p>在配置里可以使用 scope 属性来指定，如 <code>&lt;bean id=&quot;u&quot; class=&quot;demo.dao.impl.UserDAOImpl&quot; scope=&quot;prototype&quot; /&gt;</code>。</p>
+<p>在配置里可以使用 scope 属性来指定，如 <code>&lt;bean id=&quot;u&quot; class=&quot;demo.dao.impl.UserDaoImpl&quot; scope=&quot;prototype&quot; /&gt;</code>。</p>
 
 <p>spring 默认情况下 bean 会全部初始化生成，可以在 bean 标签上加上 <code>lazy-init=&quot;true&quot;</code> 来实现依赖时候的懒加载。</p>
 
@@ -581,14 +587,16 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 
 <h3 id="autowire-自动装配">autowire 自动装配</h3>
 
-<p>userService 的 bean 需要注入的 bean 除了通过 property 子标签显式指定，还可以通过 autowire 属性进行自动装配，自动装配方式如下几种</p>
+<p>userService 的 bean 需要注入的 bean 除了通过 property 子标签显式指定，还可以通过 autowire 属性如 <code>&lt;bean id=&quot;userService&quot; class=&quot;demo.service.UserService&quot; autowire=&quot;byType&quot;/&gt;</code> 进行自动装配，自动装配方式如下几种常用的:</p>
 
 <ul>
-<li>no, 默认模式</li>
-<li>byName, 根据名称，通过 bean 的 name 值来匹配需要装配 bean 下同名的属性名的值</li>
-<li>byType, 根据类型，根据 bean 的类型匹配需要装配 bean 下同名同类型的属性，在有多个该类型的 bean 时候，会冲突</li>
-<li>constructor, 构造函数</li>
+<li>no: 不匹配，但是 bean 必须定义ref元素</li>
+<li>byName: 根据名称，通过 bean 的 name 值来匹配需要装配 bean 下同名的属性名的值</li>
+<li>byType: 根据类型，根据 bean 的类型匹配需要装配 bean 下同名同类型的属性，在有多个该类型的 bean 时候，会冲突</li>
+<li>constructor: 构造函数</li>
 </ul>
+
+<p>也可以写在 beans 里如 <code>&lt;beans autowire=&quot;byName&quot;&gt;</code></p>
 
 <h2 id="注解方式">注解方式</h2>
 
@@ -624,7 +632,7 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 </span><span class="s">        http://www.springframework.org/schema/context/spring-context.xsd&#34;</span><span class="nt">&gt;</span>
 
     <span class="nt">&lt;context:annotation-config</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;u&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.dao.impl.UserDAOImpl&#34;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;u&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.dao.impl.UserDaoImpl&#34;</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;bean</span> <span class="na">name=</span><span class="s">&#34;userService&#34;</span> <span class="na">class=</span><span class="s">&#34;demo.service.UserService&#34;</span><span class="nt">/&gt;</span>
 <span class="nt">&lt;/beans&gt;</span></code></pre></td></tr></table>
 </div>
@@ -647,7 +655,7 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 </span><span class="c1"></span><span class="nd">@Autowired</span>
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserDao</span><span class="o">(</span><span class="n">UserDao</span> <span class="n">userDao</span><span class="o">)</span>
 
-<span class="c1">// 或者在属性上使用注解
+<span class="c1">// 或者另外一种方式在属性上使用注解
 </span><span class="c1"></span><span class="nd">@Autowired</span>
 <span class="kd">private</span> <span class="n">UserDao</span> <span class="n">userDao</span><span class="o">;</span></code></pre></td></tr></table>
 </div>
@@ -724,7 +732,7 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 <span class="nt">&lt;context:component-scan</span> <span class="na">base-package=</span><span class="s">&#34;demo&#34;</span><span class="nt">/&gt;</span>
 
 <span class="c">&lt;!-- bean 声明也不需要了 --&gt;</span>
-<span class="c">&lt;!-- &lt;bean id=&#34;u&#34; class=&#34;demo.dao.impl.UserDAOImpl&#34; /&gt;
+<span class="c">&lt;!-- &lt;bean id=&#34;u&#34; class=&#34;demo.dao.impl.UserDaoImpl&#34; /&gt;
 </span><span class="c">&lt;bean name=&#34;userService&#34; class=&#34;demo.service.UserService&#34;/&gt; --&gt;</span></code></pre></td></tr></table>
 </div>
 </div>
@@ -755,7 +763,7 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDaoImpl</span> <span class="kd">implements</span> <span class="n">UserDao</span> <span class="o">{}</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>除了 <code>@Component</code> 实际上还可以使用 ，<code>@Repository</code> <code>@Service</code> <code>@Controller</code> 来注解，3 个注释分别和持久层（DAO）、业务层和控制层（Web 层）相对应，实质上是没有区别的只是语义显得明确些，这一点这会在 Spring MVC 里体现的淋漓尽致。</p>
+<p>除了 <code>@Component</code> 实际上还可以使用 ，<code>@Repository</code> <code>@Service</code> <code>@Controller</code> 来注解，3 个注释分别和持久层（Dao）、业务层和控制层（Web 层）相对应，实质上是没有区别的只是语义显得明确些（唯一的区别是这三个的 scope 默认 singleton），这一点这会在 Spring MVC 里体现的淋漓尽致。</p>
 
 <h3 id="注解细则">注解细则</h3>
 
@@ -792,7 +800,7 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// demo.dao.impl.UserDaoConfig
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// demo.dao.config.UserDaoConfig
 </span><span class="c1"></span><span class="nd">@Configuration</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDaoConfig</span> <span class="o">{</span>
 
@@ -804,7 +812,7 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 <span class="o">}</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>之后去掉 UserDaoImpl 的 Component 的注解，在测试用例中发现也是能够完成装配的。</p>
+<p>之后去掉 UserDaoImpl 的 @Component 的注解，在测试用例中发现也是能够完成装配的。</p>
 
 <h3 id="配置类的测试">配置类的测试</h3>
 
@@ -854,7 +862,7 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 <span class="n">ctx</span><span class="o">.</span><span class="na">refresh</span><span class="o">();</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>在配置类里指定需要扫描的包完成 Spring context 的构建，之后只需要指定配置类 <code>AnnotationConfigApplicationContext(UserDaoConfig.class)</code> 即可，不需要书写多个 bean 的类。</p>
+<p>进一步的，在配置类里使用 @ComponentScan 注解指定需要扫描的包完成 Spring context 的构建，之后只需要指定配置类 <code>AnnotationConfigApplicationContext(UserDaoConfig.class)</code> 即可，不需要书写多个 bean 的类。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
@@ -912,7 +920,7 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 <span class="o">}</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>之后就只需要 <code>AnnotationConfigApplicationContext(ConfigB.class)</code> 即可，该注解可以以 list 的方式导入多个配置类。</p>
+<p>之后就只需要 <code>AnnotationConfigApplicationContext(ConfigB.class)</code> 即可，该注解可以以 list 的方式导入多个配置类：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
@@ -921,7 +929,7 @@ xmlns:c=&#34;http://www.springframework.org/schema/c&#34;
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Import</span><span class="o">({</span><span class="n">ServiceConfig</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">RepositoryConfig</span><span class="o">.</span><span class="na">class</span><span class="o">})</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>使用 <code>@ImportResource</code> 注解可以将配置类需要的 xml 方式什么的上下文导入，如</p>
+<p>类似前面 XML 为主混入注解方式，这里也可以对偶的注解为主混入 XML，即使用 <code>@ImportResource</code> 注解可以将配置类需要的 xml 方式什么的上下文导入，如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1

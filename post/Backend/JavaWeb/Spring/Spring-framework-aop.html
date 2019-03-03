@@ -50,7 +50,7 @@
 
 <meta itemprop="datePublished" content="2019-01-23T14:05:00&#43;08:00" />
 <meta itemprop="dateModified" content="2019-01-23T14:05:00&#43;08:00" />
-<meta itemprop="wordCount" content="2199">
+<meta itemprop="wordCount" content="2198">
 
 
 
@@ -132,7 +132,7 @@
 
       <div class="post-meta">
         <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-01-23 </span>
-          <span class="more-meta"> <i class="iconfont icon-book"></i> 2199 words </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 2198 words </span>
           <span class="more-meta"> <i class="iconfont icon-clock"></i> 5 mins read </span>
         
       </div>
@@ -179,7 +179,7 @@
 <li>Around</li>
 </ul></li>
 
-<li><p>pointcut, 切入点，匹配模式？</p></li>
+<li><p>pointcut, 切入点，匹配模式</p></li>
 
 <li><p>joinpoint, 连接点</p></li>
 
@@ -241,12 +241,10 @@
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span><span class="lnt">6
-</span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
 <span class="nd">@ComponentScan</span><span class="o">(</span><span class="n">basePackages</span> <span class="o">=</span> <span class="s">&#34;demo&#34;</span><span class="o">)</span>
-<span class="nd">@PropertySource</span><span class="o">(</span><span class="s">&#34;classpath:application.properties&#34;</span><span class="o">)</span>
 <span class="nd">@EnableAspectJAutoProxy</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDaoConfig</span> <span class="o">{</span>
     <span class="c1">//...
@@ -385,7 +383,7 @@
 
 <h3 id="declareparents">DeclareParents</h3>
 
-<p>我们知道切面接口是由动态代理实现，即动态扫描被代理类的接口，然后动态构建一段代码，该段代码具有所以接口，在接口实现上添加上自己的业务逻辑，并使用反射包裹调用了原有的接口，然后动态编译，装载编译后 class 到内存中。既然动态包裹修改实现了一个类的接口，那么也是可以直接在该动态生成的代理类上直接 <strong>添加</strong> 接口的。</p>
+<p>我们知道切面接口是由动态代理实现，即动态扫描被代理类的接口，然后动态构建一段代码，该段代码具有其所有的接口，在接口实现上添加上自己的业务逻辑，并使用反射包裹调用了原有的接口，然后动态编译，装载编译后 class 到内存中。既然动态包裹修改实现了一个类的接口，那么也是可以直接在该动态生成的代理类上直接 <strong>添加</strong> 接口的。</p>
 
 <p>如想对一不可更改的类上面，添加一个自己的接口，就可以在这个代理类上实现。利用 AspectJ 的 <code>@DeclareParents</code> 就可以轻松实现：</p>
 <div class="highlight"><div class="chroma">
