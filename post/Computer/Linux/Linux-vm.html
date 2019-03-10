@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>为什么会出现 segmentation fault 之与虚拟内存 - Creaink - Build something for life</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Creaink" /><meta name="description" content="为什么会出现 segmentation fault 之与虚拟内存 " /><meta name="keywords" content="Linux, Virtual Memory, OS" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.53 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://creaink.github.io/post/Computer/Linux/Linux-vm.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.56003f67.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="为什么会出现 segmentation fault 之与虚拟内存" />
+<meta property="og:description" content="为什么会出现 segmentation fault 之与虚拟内存 " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://creaink.github.io/post/Computer/Linux/Linux-vm.html" /><meta property="article:published_time" content="2019-03-10T10:16:00&#43;08:00"/>
+<meta property="article:modified_time" content="2019-03-10T10:16:00&#43;08:00"/>
+
+<meta itemprop="name" content="为什么会出现 segmentation fault 之与虚拟内存">
+<meta itemprop="description" content="为什么会出现 segmentation fault 之与虚拟内存 ">
+
+
+<meta itemprop="datePublished" content="2019-03-10T10:16:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-03-10T10:16:00&#43;08:00" />
+<meta itemprop="wordCount" content="4678">
+
+
+
+<meta itemprop="keywords" content="Linux,Virtual Memory," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="为什么会出现 segmentation fault 之与虚拟内存"/>
+<meta name="twitter:description" content="为什么会出现 segmentation fault 之与虚拟内存 "/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Creaink</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/links.html">
+        <li class="mobile-menu-item">Links</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Creaink</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/links.html">Links</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">为什么会出现 segmentation fault 之与虚拟内存</h1>
+
+      <div class="post-meta">
+        <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-03-10 </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 4678 words </span>
+          <span class="more-meta"> <i class="iconfont icon-clock"></i> 10 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#虚拟映射">虚拟映射</a>
+<ul>
+<li><a href="#虚拟映射的好处">虚拟映射的好处</a></li>
+<li><a href="#内核态和用户态">内核态和用户态</a></li>
+<li><a href="#换页机制">换页机制</a></li>
+</ul></li>
+<li><a href="#检验一下">检验一下</a></li>
+<li><a href="#多线程">多线程</a></li>
+<li><a href="#参考">参考</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>在最初的开始学编程并接触 C 的时候，相信大家或多或少的遇到过“<strong>锟斤拷</strong>”和“<strong>烫烫烫</strong>”的错误，严重时还会出现段错误(segmentation fault)导致程序崩溃，那么为什么会段错误？或者说我访问越界了程序/操作系统怎么知道？要想弄明白这一点就需要学习下虚拟内存映射是怎么回事。</p>
+
+<h2 id="虚拟映射">虚拟映射</h2>
+
+<p>虚拟内存就是一层内存的隔离，单个进程接触到的内存地址范围都是一样的，但实际访问的时候会被 MMU 翻译成物理地址，这样方便程序在连接的时候地址就是唯一的，同时隔离的实际的内存的大小，即不管是 2GB 还是 3GB 的物理内存，最后对于程序来说都是 4G 的虚拟内存空间（对于 32 位系统来说），这样可以在内存将满的时候可以通过虚拟内存将部分内存映射到硬盘之上，实现一个很大的程序在有限的物理内存空间运行。</p>
+
+<p>以一个 32 位机器进程的视角来说，它看到的内存都是下面是映射：</p>
+
+<table>
+<thead>
+<tr>
+<th align="right">地址</th>
+<th>作用</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="right">&gt;=0x0000 0000</td>
+<td>内核虚拟存储</td>
+<td>内核 1G，用户 3G</td>
+</tr>
+
+<tr>
+<td align="right">&lt; 0xC000 0000</td>
+<td>Stack（用户栈）</td>
+<td>%esp 指向栈顶</td>
+</tr>
+
+<tr>
+<td align="right"></td>
+<td>↓<br>↑</td>
+<td>空闲内存</td>
+</tr>
+
+<tr>
+<td align="right">&gt;=0x4000 0000</td>
+<td>文件映射区域、共享库</td>
+<td>mmap 系统调用将文件映射到内存</td>
+</tr>
+
+<tr>
+<td align="right"></td>
+<td>↑</td>
+<td>空闲内存</td>
+</tr>
+
+<tr>
+<td align="right"></td>
+<td>Heap（运行时堆）</td>
+<td>通过 brk/sbrk 系统调用扩大堆，向上增长</td>
+</tr>
+
+<tr>
+<td align="right"></td>
+<td>.bss（未初始化的数据）</td>
+<td>从可执行文件中加载</td>
+</tr>
+
+<tr>
+<td align="right"></td>
+<td>.data（已初始化的数据）</td>
+<td>从可执行文件中加载</td>
+</tr>
+
+<tr>
+<td align="right">&gt;=0x0804 8000</td>
+<td>.init、.text.、rodata（只读段）</td>
+<td>从可执行文件中加载</td>
+</tr>
+
+<tr>
+<td align="right">&lt; 0x0804 8000</td>
+<td>保留区域</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<p>对于上表中的各项的解释：</p>
+
+<ul>
+<li><p><strong>内核空间</strong> 还可以进一步细分，从高地址到低地址：</p>
+
+<ul>
+<li>进程数据结构（每个进程不一样，如 page table, task and mm structs, kernel stack）</li>
+<li>物理内存（每个进程一样）</li>
+<li>内核代码和数据（每个进程一样）</li>
+</ul></li>
+
+<li><p><strong>用户栈</strong></p>
+
+<ul>
+<li>在用户栈底（不同于 main 栈底）还有一段存储着<strong>程序名称、环境变量指针和命令行参数指针</strong>的栈区域，参考 <a href="http://asm.sourceforge.net/articles/startup.html" target="_blank">ELF auxiliary vector</a></li>
+<li>既然环境变量在堆栈部分，那么在 shell 执行 export 的时候是怎么成功的加入新的环境变量并可以传播给子进程的？在 <code>unistd.h</code> 里有着 <code>extern char **environ;</code> 声明，该字符串数组指针（以 NULL 分隔）指向堆区域（实际的环境变量存储区域），增删环境变量会改变该指针和更新移动到新的堆上。既然 exec 时候会清掉堆，那么在执行 <code>execve(2)</code> 系统调用将维护的环境变量更新，即将 <code>**environ</code> 传递给其 envp 参数，然后由系统来复制该堆数据，参考 setenv 源码；相对的 set 命令设置 shell 的属性（shell 变量），并不会传递给子进程。</li>
+<li>APCS, ARM 过程调用标准 (ARM Procedure Call Standard)，不一定适合 X86 但是可以借鉴函数调用时候的压栈规则</li>
+</ul></li>
+
+<li><p><strong>文件映射区域</strong></p>
+
+<ul>
+<li>可以通过 mmap 系统调用将试图访问的文件映射到该区域</li>
+<li>一些共享连接库也会被映射到该部分</li>
+</ul></li>
+
+<li><p><strong>运行时堆</strong></p>
+
+<ul>
+<li>通过 brk/sbrk 系统调用可以控制堆的增长</li>
+</ul></li>
+
+<li><p><strong>可执行文件段</strong></p>
+
+<ul>
+<li>.bss 段为无初始化数据的全局或静态变量</li>
+<li>.data 段为有初始化数据的全局或静态变量</li>
+<li>.init 用于初始化的段，可以 <a href="http://www.ituring.com.cn/article/194733" target="_blank">手动修改</a></li>
+<li>.text 程序段，通常为 main 开始的代码</li>
+<li>.rodata 常量段</li>
+</ul></li>
+</ul>
+
+<p>相比之下单片机的内存的映射就很直接，如 32 位的 ARM Cortex-M3 的单片机的内存直接映射如下：</p>
+
+<p><img src="imgs/2019-03-07-15-10-06.png" alt="" /></p>
+
+<p>ARM 的 A、R、M 系列其中 A 系列（手机CPU）之所以能够跑得起 Linux（Android）内核，其中一个原因就是其具有 MMU 模块，而 M 系列也就只能跑跑 uCosII、FreeRTOS 实时操作系统了，只有任务而没有进程、线程的概念了。</p>
+
+<h3 id="虚拟映射的好处">虚拟映射的好处</h3>
+
+<ul>
+<li>直接把文件数据映射到加载到内存中</li>
+<li>每个进程虚拟的内存地址，避免其他进程的错误读写</li>
+<li>共享对象可以被映射到多个进程的共享虚拟内存段中，实现动态链接</li>
+<li>私有对象，一开始也是被多映射到多进程的虚拟内存当中的，当一个进程发生私有写操作，会触发保护故障，之后会复制将要被写页的拷贝和然后重新映射、恢复。这就是<strong>写时拷贝 (copy on write)</strong>，对于 fork/exec* 系统调用来说，由于有写时拷贝技术，进程的创建也是也是非常快的。</li>
+</ul>
+
+<p>CPU 访问的虚拟地址需要通过 MMU 硬件转换为物理地址，而内存中一般是以页为单位的（局部性原理），如 32 位系统取高 20 位为页地址，这样 MMU 只需要实现一个 <code>2^20*4Bytes = 4MB</code> 大小的查找表即可，这样来一页的大小为 <code>2^12=4KB</code></p>
+
+<p>现在的页表通常是多级的，一般是 4 级，不同级别的 PTE(Page table entry) 其 4Byte 结构如图如下：</p>
+
+<p><img src="imgs/2019-03-06-22-14-20.png" alt="" /></p>
+
+<p><img src="imgs/2019-03-06-22-11-32.png" alt="" /></p>
+
+<p>虚拟地址分成两级，指令中的那个值被称为“逻辑地址”，送给MMU中的“分段单元”，转换成线性地址，线性地址再通过“分页单元”，转换成物理地址。</p>
+
+<p>因为页的存在， malloc(1) 可能会直接分配一页大小，那么有可能其指针可能越界了很长的偏移量才产生 segmentation fault。</p>
+
+<p>如果频繁的 CPU 寻址，PTE 会缓存在 CPU 的 L1 缓存中，以提升查表速度，或者缓存到 translation lookaside buffer (TLB) 中。</p>
+
+<p>那么这些页表是如何存储管理到一个具体的进程的呢？</p>
+
+<h3 id="内核态和用户态">内核态和用户态</h3>
+
+<p>首先对于上面虚拟内存映射当中的内核空间的进一步的解释：</p>
+
+<ul>
+<li><p>当一个任务（进程）执行系统调用而陷入内核代码中执行时，我们就称进程处于内核运行态（或简称为内核态），此时处理器处于特权级最高的（0 级）内核代码中执行。当进程处于内核态时，执行的内核代码会使当前进程的内核栈。每个进程都有自己的内核栈。</p></li>
+
+<li><p>进程在执行用户自己的代码时，则称其处于用户运行态（用户态）。即此时处理器在特权级最低的（3 级）用户代码中运行。</p></li>
+
+<li><p>当正在执行用户程序而突然被中断程序中断时，此时用户程序也可以象征性地称为处于进程的内核态。因为中断处理程序将使用当前进程的内核栈。这与处于内核态的进程的状态有些类似。</p></li>
+</ul>
+
+<p>内核空间中存放的是内核代码和数据，而进程的用户空间中存放的是用户程序的代码和数据。不管是内核空间还是用户空间。在 linux 操作系统中，每个进程都通过一个 task_struct 的结构体描叙，每个进程的地址空间都通过一个 mm_struct 描述如下。</p>
+
+<!-- CSAPP 2th -->
+
+<p><img src="imgs/2019-03-06-20-37-05.png" alt="" /></p>
+
+<p>整体的来看，一个进程在虚拟映射的内核空间的进程数据结构部分存储着它自己的一份 task_struct，其中 mm_struct 的 mmap 部分，指向了 vm_area_struct ，该部分存储着连续的 PTE（后称页），然后页里面存储着物理内存的具体地址即一帧。</p>
+
+<p><img src="imgs/heapMapped.png" alt="" /></p>
+
+<p>对于 Windows 来说其 <a href="http://www.nirsoft.net/kernel_struct/vista/EPROCESS.html" target="_blank">EPROCESS</a> 存储了类似 Linux 里的 task_struct 和 mm_struct 的混合体，使用的 AVL 树存储不同于 Linux 的红黑树。</p>
+
+<p>那么内存访问的具体过程是怎么样的？</p>
+
+<h3 id="换页机制">换页机制</h3>
+
+<p>当 CPU 试图访问虚拟地址的一个页时候（简化为单级页表），发生以下操作：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-txt" data-lang="txt"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-txt" data-lang="txt">// 如果页面命中其过程都是由硬件完成的
+func 一次虚拟地址访问 () {
+    处理器传给 MMU 一个虚拟地址
+    MMU 生成 PTE 地址，并从 cache 或内存中请求得到它
+    cache 或内存返回 PTE
+    MMU 尝试进行访问，返回该页面是否命中
+}
+
+if（一次虚拟地址访问 () == 页面命中） // MMU 翻译 PTE 有效（P 位为 1），数据在内存中
+{
+    虚拟地址转换成物理地址
+    读数据
+}
+else // MMU 触发缺页异常，DRAM 缓存不命中为缺页
+{
+    // 运行系统内核中的缺页异常处理程序
+    if（在有效的 vm_start 到 vm_end 之间）
+    {
+        if （页面访问不合法） { // R/W 和 U/S 位，即是否有读写权限，是否只允许内核访问
+            触发保护异常，结束
+        }
+
+        if（物理内存还有空闲） {
+            把数据从磁盘中读到物理内存
+            虚拟地址转换成物理地址
+            读数据
+        } else {
+            根据 LRU 从物理内存中选取的牺牲页的数据存入磁盘
+            把要读的数据从磁盘读到该页的物理内存中
+            虚拟地址转换成物理地址
+            读数据
+        }
+    } else {
+        段错误，访问一个不存在的页，结束
+    }
+}</code></pre></td></tr></table>
+</div>
+</div>
+<p>上述是简化过程，对是否 dirty, copy on write 等等问题暂时没有提及。</p>
+
+<p>看到这里就知道为什么当访问一个非法的地址时候，会被操作系统拦住然后给当头一棒：*segmentation fault*。</p>
+
+<h2 id="检验一下">检验一下</h2>
+
+<p>Linux 上可以通过 <code>cat /proc/pid_of_process/maps</code> 查看进程的虚拟内存映射映射的情况，如可以参考到该进程依赖于哪些动态链接库，或者使用 <code>pmap pid_of_process</code> 命令，如下在一个 X64 机器上：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ cat /proc/self/maps
+<span class="m">00400000</span>-0040c000 r-xp <span class="m">00000000</span> <span class="m">08</span>:01 <span class="m">50855960</span>                           /bin/cat
+0060b000-0060c000 r--p 0000b000 <span class="m">08</span>:01 <span class="m">50855960</span>                           /bin/cat
+0060c000-0060d000 rw-p 0000c000 <span class="m">08</span>:01 <span class="m">50855960</span>                           /bin/cat
+023f1000-02412000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>                                  <span class="o">[</span>heap<span class="o">]</span>
+7fd1f1d94000-7fd1f2753000 r--p <span class="m">00000000</span> <span class="m">08</span>:01 <span class="m">79960847</span>                   /usr/lib/locale/locale-archive
+7fd1f2753000-7fd1f2913000 r-xp <span class="m">00000000</span> <span class="m">08</span>:01 <span class="m">116134447</span>                  /lib/x86_64-linux-gnu/libc-2.23.so
+7fd1f2913000-7fd1f2b13000 ---p 001c0000 <span class="m">08</span>:01 <span class="m">116134447</span>                  /lib/x86_64-linux-gnu/libc-2.23.so
+7fd1f2b13000-7fd1f2b17000 r--p 001c0000 <span class="m">08</span>:01 <span class="m">116134447</span>                  /lib/x86_64-linux-gnu/libc-2.23.so
+7fd1f2b17000-7fd1f2b19000 rw-p 001c4000 <span class="m">08</span>:01 <span class="m">116134447</span>                  /lib/x86_64-linux-gnu/libc-2.23.so
+7fd1f2b19000-7fd1f2b1d000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>
+7fd1f2b1d000-7fd1f2b43000 r-xp <span class="m">00000000</span> <span class="m">08</span>:01 <span class="m">116134419</span>                  /lib/x86_64-linux-gnu/ld-2.23.so
+7fd1f2d07000-7fd1f2d2c000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>
+7fd1f2d42000-7fd1f2d43000 r--p <span class="m">00025000</span> <span class="m">08</span>:01 <span class="m">116134419</span>                  /lib/x86_64-linux-gnu/ld-2.23.so
+7fd1f2d43000-7fd1f2d44000 rw-p <span class="m">00026000</span> <span class="m">08</span>:01 <span class="m">116134419</span>                  /lib/x86_64-linux-gnu/ld-2.23.so
+7fd1f2d44000-7fd1f2d45000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>
+7ffe2b891000-7ffe2b8b2000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>                          <span class="o">[</span>stack<span class="o">]</span>
+7ffe2b943000-7ffe2b946000 r--p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>                          <span class="o">[</span>vvar<span class="o">]</span>
+7ffe2b946000-7ffe2b948000 r-xp <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>                          <span class="o">[</span>vdso<span class="o">]</span>
+ffffffffff600000-ffffffffff601000 r-xp <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>                  <span class="o">[</span>vsyscall<span class="o">]</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上面的输出是从地址由低到高排序的，以第二行的数据介绍，<code>00400000-0040c000</code> 为该段的虚拟地址的范围，都以 000 结尾是因为 4k 对齐;第二段 <code>rwxp</code> 为模式，及是否可以写、读、执行、s:共享/p:私有、R:交换，可以根据这个判断出三个 /bin/cat 从上到下为 .text(r-xp) .data(r&ndash;p) .bss(rw-p)；之后的 <code>00000000 08:01 50855960</code> 分别对应 offset、Device(minor:major)、Inode，之后 <code>/bin/cat</code> 就是具体的 mapping。对于 pmap 命令可以加上 -x 参数看到释义，<a href="https://www.software-architect.net/fileadmin/user_upload/blog/pmap.png" target="_blank">更多参考pmap</a>。</p>
+
+<p>前面的关于 <code>/bin/cat</code> 的三行就是 .text .data .bss 段了；之后为 heap 段。然后就是 Memory Mapping Segment，一些文件或者动态链接库在内存中的映射，如这里的ld-2.23.so 和 libc-2.23.so；之后就是 stack 了，栈的最大范围可以使用 <code>prlimit</code> 命令查看，<strong>默认栈大小是 8MB</strong>；</p>
+
+<p>最后的 vvar，vdso 和 vsyscall：</p>
+
+<ul>
+<li>vsyscall，内核将一些本身应该是系统调用（如读取时间 gettimeofday）的直接映射到用户空间，这样对于一些使用比较频繁的系统调用，可以直接在用户空间调用以节省开销。但是vsyscall区域太小了，而且映射区域固定，有安全问题。</li>
+<li>后来又造出了 vdso，之所以保留是为了兼容用户空间程序。vdso相当于加载一个linux-vd.so库文件一样（名字也由此而来），也就是把一些函数实现映射到这个区域。</li>
+<li>vvar也就是存放数据的地方了，那么用户可以通过调用vdso里的函数，使用vvar里的数据，来获得自己想要的信息。而且地址是随机的，更安全。</li>
+</ul>
+
+<p>对于 64 位系统来说，虚拟地址只使用了48位，因此打印的16进制的地址都是只有12位。在 x86_64 Linux下有效的地址区间是从 <code>0x00000000 00000000 ~ 0x00007FFF FFFFFFFF</code> 的用户空间和 <code>0xFFFF8000 00000000 ~ 0xFFFFFFFF FFFFFFFF</code> 系统空间两个地址区间。而每个地址区间都有128TB的地址空间可以使用，所以总共是256TB的可用空间。同时 amd64 的页除了 4k 之外还可以指定为2M或者1G。</p>
+
+<p>虽然内核空间占据了每个虚拟空间中的最高1GB字节，但映射到物理内存却总是从最低地址开始。内核的代码和数据就叫内核映像（kernel image，可以通过 <code>ls /boot/</code> 看到）。当系统启动时，Linux内核映像被加载到物理地址0x00100000开始的地方，即1MB开始的区间。然而，整个内核映像在虚拟内核空间的映射只需要简单地在地址上加一个偏移量 PAGE_OFFSET(0xC0000000)，这样，内核映像在内核空间的起始地址就为0xC0100000。</p>
+
+<p>为什么要内核从物理地址 0x00100000 开始映射？这是因为最初的 IBM-PC 的物理地址 0x00000~0xA0000一起640K的大小提供给程序使用，然后其他的不到 0x00100000 的地址提供如BIOS、图形卡，<a href="https://blog.csdn.net/huangzhipeng/article/details/6159169" target="_blank">参考</a></p>
+
+<p>可以使用 <code>cat /proc/iomem</code> 命令探究一波上面的说法，看看物理地址上都有些啥</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ sudo cat /proc/iomem
+<span class="m">00000000</span>-00000fff : reserved
+<span class="m">00001000</span>-0009e7ff : System RAM
+0009e800-0009ffff : reserved
+000a0000-000bffff : PCI Bus <span class="m">0000</span>:00
+000c0000-000c7fff : Video ROM
+000ca000-000cafff : Adapter ROM
+000cb000-000ccfff : Adapter ROM
+000d0000-000d3fff : PCI Bus <span class="m">0000</span>:00
+000d4000-000d7fff : PCI Bus <span class="m">0000</span>:00
+000d8000-000dbfff : PCI Bus <span class="m">0000</span>:00
+000dc000-000fffff : reserved
+  000f0000-000fffff : System ROM
+<span class="c1"># 扩展内存，注意下面的 Kernel code data bss</span>
+<span class="m">00100000</span>-7fedffff : System RAM
+  <span class="m">01000000</span>-01858e20 : Kernel code
+  01858e21-01f4877f : Kernel data
+  020ce000-02216fff : Kernel bss
+  7fee0000-7fefefff : ACPI Tables
+7feff000-7fefffff : ACPI Non-volatile Storage
+7ff00000-7fffffff : System RAM
+c0000000-febfffff : PCI Bus <span class="m">0000</span>:00
+  c0000000-c0007fff : <span class="m">0000</span>:00:0f.0
+  c0008000-c000bfff : <span class="m">0000</span>:00:10.0
+  e5b00000-e5bfffff : PCI Bus <span class="m">0000</span>:22
+  ...
+fec00000-fec0ffff : reserved
+  fec00000-fec003ff : IOAPIC <span class="m">0</span>
+fed00000-fed003ff : HPET <span class="m">0</span>
+  fed00000-fed003ff : pnp <span class="m">00</span>:04
+fee00000-fee00fff : Local APIC
+  fee00000-fee00fff : reserved
+fffe0000-ffffffff : reserved</code></pre></td></tr></table>
+</div>
+</div>
+<p>除了内存有映射，I/O 也是映射的可以通过 <code>sudo cat /proc/</code> 看到。和RAM物理地址空间相比，I/O地址空间通常都比较小，如x86 CPU的I/O空间就只有64KB（0－0xffff），ioport和iomem地址空间分别编制，均是从地址0开始，如果硬件支持MMIO（PCI规范的一部分），port地址也可以映射到memory空间去，这里就不深究了。</p>
+
+<p>关于 Linux 如何加载启动的坑就以后再说吧。</p>
+
+<h2 id="多线程">多线程</h2>
+
+<p>一个进程空间里同时运行多个线程的程序。每个线程有自己的线程上下文，其中包括</p>
+
+<ul>
+<li>唯一的线程 ID, TID</li>
+<li>栈</li>
+<li>栈指针</li>
+<li>程序计数器</li>
+<li>通用目的寄存器</li>
+<li>条件码</li>
+</ul>
+
+<p>所有运行在一个进程内的线程共享该进程的整个虚拟地址空间，包括：</p>
+
+<ul>
+<li>代码</li>
+<li>数据</li>
+<li>堆</li>
+<li>共享库</li>
+<li>打开的文件</li>
+</ul>
+
+<p>那么一个含有多个线程的进程的在内存是什么样的呢？看看下图或许你就明白了：</p>
+
+<p><img src="imgs/linux-thread.jpg" alt="" /></p>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="https://github.com/Durant35/durant35.github.io/issues/24" target="_blank">程序内存地址</a></li>
+<li><a href="https://my.oschina.net/Bruce370/blog/887133" target="_blank">Linux Memory 理解内存模型</a></li>
+<li><a href="https://my.oschina.net/manmao/blog/867427" target="_blank">系统进程内存模型</a></li>
+<li><a href="https://manybutfinite.com/post/how-the-kernel-manages-your-memory/" target="_blank">How The Kernel Manages Your Memory</a></li>
+<li><a href="http://www.xumenger.com/01-windows-process-memory-20170101/" target="_blank">Windows下32位进程内存模型</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/linux/kernel/l-page/index.html" target="_blank">利用异常表处理 Linux 内核态缺页异常</a></li>
+<li><a href="https://techtalk.intersec.com/2013/07/memory-part-2-understanding-process-memory/" target="_blank">understanding-process-memory</a></li>
+<li><a href="https://www.software-architect.net/blog/article/date/2015/07/03/cheat-sheet-understanding-the-pmap1-output.html" target="_blank">Cheat sheet: understanding the pmap(1) output</a></li>
+</ul>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-03-10</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div><footer class="post-footer">
+      <div class="post-tags">
+        <div style="margin-bottom:5px">
+          <i class="iconfont icon-folder-open"></i>
+            <a href="/categories/Linux/">Linux</a>
+            </div>
+        <div>
+          <i class="iconfont icon-label"></i>
+            <a href="/tags/Linux/">Linux</a>
+            <a href="/tags/Virtual-Memory/">Virtual Memory</a>
+            </div>
+      </div>
+
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/Backend/Django/Django-logging.html">
+            <span class="next-text nav-default">Django logging</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="lv-container" data-id="city" data-uid="MTAyMC80MjAzOS8xODU4Ng">
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+
+        if (typeof LivereTower === 'function') { return; }
+
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+    <noscript>Please enable JavaScript to view the comments powered by <a href="https://livere.com/">LiveRe.</a></noscript>
+    </div>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:gcreaink@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/creaink" class="iconfont icon-github" title="github"></a>
+  <a href="https://creaink.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-131846852-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

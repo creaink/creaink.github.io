@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Virtual Memory on Creaink - Build something for life</title>
+    <link>https://creaink.github.io/tags/Virtual-Memory.html</link>
+    <description>Recent content in Virtual Memory on Creaink - Build something for life</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 10 Mar 2019 10:16:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://creaink.github.io/tags/Virtual-Memory/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>为什么会出现 segmentation fault 之与虚拟内存</title>
+      <link>https://creaink.github.io/post/Computer/Linux/Linux-vm.html</link>
+      <pubDate>Sun, 10 Mar 2019 10:16:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/post/Computer/Linux/Linux-vm.html</guid>
+      <description>&lt;p&gt;在最初的开始学编程并接触 C 的时候，相信大家或多或少的遇到过“&lt;strong&gt;锟斤拷&lt;/strong&gt;”和“&lt;strong&gt;烫烫烫&lt;/strong&gt;”的错误，严重时还会出现段错误(segmentation fault)导致程序崩溃，那么为什么会段错误？或者说我访问越界了程序/操作系统怎么知道？要想弄明白这一点就需要学习下虚拟内存映射是怎么回事。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
