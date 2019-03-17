@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>数据库事务 - Creaink - Build something for life</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Creaink" /><meta name="description" content="数据库事务" /><meta name="keywords" content="Database, MySQL, PostgreSQL, Lock, MVCC, OCC" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.53 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://creaink.github.io/post/Backend/Database/Transaction.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.56003f67.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="数据库事务" />
+<meta property="og:description" content="数据库事务" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://creaink.github.io/post/Backend/Database/Transaction.html" /><meta property="article:published_time" content="2019-03-16T10:16:00&#43;08:00"/>
+<meta property="article:modified_time" content="2019-03-16T10:16:00&#43;08:00"/>
+
+<meta itemprop="name" content="数据库事务">
+<meta itemprop="description" content="数据库事务">
+
+
+<meta itemprop="datePublished" content="2019-03-16T10:16:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-03-16T10:16:00&#43;08:00" />
+<meta itemprop="wordCount" content="7570">
+
+
+
+<meta itemprop="keywords" content="Database,MySQL,PostgreSQL," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="数据库事务"/>
+<meta name="twitter:description" content="数据库事务"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Creaink</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/links.html">
+        <li class="mobile-menu-item">Links</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Creaink</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/links.html">Links</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">数据库事务</h1>
+
+      <div class="post-meta">
+        <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-03-16 </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 7570 words </span>
+          <span class="more-meta"> <i class="iconfont icon-clock"></i> 16 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#事务的四大特性-acid">事务的四大特性 ACID</a></li>
+<li><a href="#并发事务中的问题">并发事务中的问题</a></li>
+<li><a href="#事务隔离级别">事务隔离级别</a>
+<ul>
+<li><a href="#事务隔离与事务问题的对应">事务隔离与事务问题的对应</a></li>
+</ul></li>
+<li><a href="#锁机制">锁机制</a>
+<ul>
+<li><a href="#锁的种类">锁的种类</a></li>
+<li><a href="#锁的粒度">锁的粒度</a></li>
+</ul></li>
+<li><a href="#mysql-的锁与事务实现">MySQL 的锁与事务实现</a>
+<ul>
+<li><a href="#2pl">2PL</a></li>
+<li><a href="#mysql-怎么加锁">MySQL 怎么加锁</a></li>
+<li><a href="#mysql-默认级别">MySQL 默认级别</a></li>
+<li><a href="#mysql-事务语句">MySQL 事务语句</a></li>
+</ul></li>
+<li><a href="#mysql-死锁">MySQL 死锁</a>
+<ul>
+<li><a href="#不同索引锁冲突">不同索引锁冲突</a></li>
+<li><a href="#gap-锁冲突">gap 锁冲突</a></li>
+</ul></li>
+<li><a href="#postgresql-的锁与事务实现">PostgreSQL 的锁与事务实现</a>
+<ul>
+<li><a href="#postgresql-与-mysql-的事务对比">PostgreSQL 与 MySQL 的事务对比</a></li>
+<li><a href="#postgresql-事务语句">PostgreSQL 事务语句</a></li>
+</ul></li>
+<li><a href="#事务与-django">事务与 Django</a></li>
+<li><a href="#其他">其他</a></li>
+<li><a href="#参考">参考</a></li>
+<li><a href="#todo">TODO</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>“那么古尔丹，代价呢？”</p>
+
+<p>看完下面的内容，或许会对不同事务级下解决并发问题所带来的代价有些许了解，或只是记住上面那句话🤣。</p>
+
+<h2 id="事务的四大特性-acid">事务的四大特性 ACID</h2>
+
+<ul>
+<li>原子性（Atomicity）：事务作为一个整体被执行，包含在其中的对数据库的操作要么全部被执行，要么都不执行。</li>
+<li>一致性（Consistency）：事务应确保数据库的状态从一个一致状态转变为另一个一致状态，一致状态的含义是数据库中的数据应满足完整性约束。</li>
+<li>隔离性（Isolation）：多个事务并发执行时，一个事务的执行不应影响其他事务的执行。</li>
+<li>持久性（Durability）：已被提交的事务对数据库的修改应该永久保存在数据库中。</li>
+</ul>
+
+<h2 id="并发事务中的问题">并发事务中的问题</h2>
+
+<ul>
+<li><code>脏读 - Dirty Read</code>：事务 A 修改了一个数据，但未提交，事务 B 期间读到了事务 A 未提交的更新结果，如果事务 A 提交失败，事务 B 读到的就是脏数据；即事务期间的数据的修改未隔离，直接持久化到数据库，导致其他事务能够读到事务期间的临时、中间数据，归结为事务期间的数据没有于持久化数据相隔离，能够读取到事务临时数据。</li>
+<li><code>不可重复读 - Non-repeatable Read</code>：在同一个事务中，对于同一份数据读取到的结果不一致。比如，事务 B 期间读到事务 A 提交前的结果，事务 A 提交了修改数据，事务 B 后再次读取该数据，读到的结果和之前不一致；即一个事务内能够读取到被其他事务不断提交更新修改（非增加）的数据，导致事务期间某一条数据是时变的，归结为被读取的行数据（及相应的相关行数据）没有被锁。</li>
+<li><code>幻读 - Phantom Read</code>：在同一个事务中，同一个查询多次返回的结果不一致。事务 A 新增了一条记录，事务 B 在事务 A 提交前后各执行了一次查询操作，发现后一次比前一次多了一条记录。即一个事务内能够读取到被其他事务新增的数据，归结为读取的数据的表没有被锁。</li>
+</ul>
+
+<p>需要注意的是：<strong>可重复读重点在于 update 和 delete，而幻读的重点在于 insert</strong>，<strong>幻读是针对于读操作 select 来说的，是否试用于 insert 有待考量</strong>。</p>
+
+<h2 id="事务隔离级别">事务隔离级别</h2>
+
+<p>针对上面的并发事务中的问题有如下的事务隔离级别：</p>
+
+<ul>
+<li><code>读未提交 - Read Uncommitted</code>：最低的隔离级别，什么都不需要做，一个事务可以读到另一个事务未提交的结果。所有的并发事务问题都会发生。</li>
+<li><code>读提交 - Read Committed</code>：只有在事务提交后，其更新结果才会被其他事务看见。即增加事务期间的数据隔离。可以解决脏读问题。</li>
+<li><code>可重复读 - Repeated Read</code>：在一个事务中，对于同一份数据的读取结果总是相同的，无论是否有其他事务对这份数据进行操作，以及这个事务是否提交。可以解决脏读、不可重复读。</li>
+<li><code>串行 - Serialization</code>：事务串行化执行，隔离级别最高，牺牲了系统的并发性，可以解决并发事务的所有问题。</li>
+</ul>
+
+<h3 id="事务隔离与事务问题的对应">事务隔离与事务问题的对应</h3>
+
+<p>每一个事务隔离解决的事务问题的一个通用的标准的定义(ANSI SQL)如下，但事实上各个数据实现的数据隔离不一定四种状态都有，如 PostgreSQL 就只没有 Read Uncommitted 级别，同时每个数据库对每个级别的解决的事务问题也和标准的实现不一定一一对应。</p>
+
+<table>
+<thead>
+<tr>
+<th>Isolation Level</th>
+<th>Dirty Read</th>
+<th>NonRepeatable Read</th>
+<th>Phantom Read</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Read uncommitted</td>
+<td>Possible</td>
+<td>Possible</td>
+<td>Possible</td>
+</tr>
+
+<tr>
+<td>Read committed</td>
+<td>Not Possible</td>
+<td>Possible</td>
+<td>Possible</td>
+</tr>
+
+<tr>
+<td>Repeatable read</td>
+<td>Not Possible</td>
+<td>Not Possible</td>
+<td>Possible</td>
+</tr>
+
+<tr>
+<td>Serializable</td>
+<td>Not Possible</td>
+<td>Not Possible</td>
+<td>Not Possible</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="锁机制">锁机制</h2>
+
+<p>那么数据库如何实现事务的各种级别呢？答案就是锁的运用。</p>
+
+<p>通常来说，乐观并发控制（乐观锁）和悲观并发控制（悲观锁）是并发控制主要采用的技术手段。</p>
+
+<p>悲观并发控制（又名“悲观锁”，Pessimistic Concurrency Control，缩写“PCC”）。正如其名，悲观并发控制实际上是“先取锁再访问”的保守策略，为数据处理的安全提供了保证。但是在效率方面，处理加锁的机制会让数据库产生额外的开销，还有增加产生死锁的机会。</p>
+
+<p>乐观并发控制（又名“乐观锁”，Optimistic Concurrency Control，缩写“OCC”）。它假设多用户并发的事务在处理时不会彼此互相影响，各事务能够在不产生锁的情况下处理各自影响的那部分数据。在提交数据更新之前，每个事务会先检查在该事务读取数据后，有没有其他事务又修改了该数据。如果其他事务有更新的话，正在提交的事务会进行回滚。</p>
+
+<p>乐观并发控制不会使用锁机制，而其实现一般有 CAS、MVCC 等，由于 CAS 存在 ABA 问题，所以通常在数据库的实现中会使用 MVCC，即在提交数据时候通过版本标识是否变化来判断本次提交是否有效，而不是快照，版本标识的实现通常有：</p>
+
+<ul>
+<li>基于自定义的版本号字段，每次修改自增更新</li>
+<li>基于自更新的时间戳字段</li>
+</ul>
+
+<p>乐观并发控制相信事务之间的数据竞争 (data race) 的概率是比较小的，因此尽可能直接做下去，直到提交的时候才检查提交，所以不会产生任何锁和死锁。这样的话，有可能会遇到不可预期的结果，例如两个事务都读取了数据库的某一行（这时候一般会拍一个快照），经过修改以后写回数据库，晚结束的事务会发现当前的数据和快照的版本号不一致，这时候一般的策略可以尝试自旋一会儿，如果还是失败直接回滚抛出错误。</p>
+
+<p>当大量的并发时候会造成大量的事务失败性能反而不如悲观锁，所以，乐观并发控制多数用于数据争用不大、冲突较少的环境中，这种环境中，偶尔回滚事务的成本会低于读取数据时锁定数据的成本，因此可以获得比其他并发控制方法更高的吞吐量。</p>
+
+<p>版本号的乐观锁 SQL 模拟：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="cm">/* 查询出商品信息、需要带上版本 */</span>
+<span class="k">SELECT</span> <span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="k">version</span> <span class="k">AS</span> <span class="n">versionValue</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">t_goods</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=#</span><span class="err">{</span><span class="n">id</span><span class="err">}</span>
+<span class="cm">/* 根据商品信息生成订单、修改商品版本号 */</span>
+<span class="k">UPDATE</span> <span class="n">t_goods</span>
+<span class="k">SET</span> <span class="n">status</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="k">version</span><span class="o">=</span><span class="n">versionValue</span><span class="o">+</span><span class="mi">1</span>
+<span class="k">WHERE</span> <span class="n">id</span><span class="o">=#</span><span class="err">{</span><span class="n">id</span><span class="err">}</span> <span class="k">AND</span> <span class="k">version</span><span class="o">=</span><span class="n">versionValue</span><span class="p">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="锁的种类">锁的种类</h3>
+
+<p>这一部分谈一谈在数据库中锁的具体的实现的种类。</p>
+
+<p>共享锁和排它锁是可以解决<strong>读写者并发问题</strong>的两种锁：</p>
+
+<ul>
+<li><code>共享锁 (Share lock, S lock)</code>，共享锁不阻止其它 session 同时读资源，但阻止其它 session update。</li>
+<li><code>排它锁 (Exclusive lock, X lock)</code>，排他锁表示对数据进行写操作，如果一个事务对对象加了排他锁，其他事务就不能再给它加任何锁了。</li>
+</ul>
+
+<p>如果定位条件有索引（能给个较快找到相应的行数据）排它锁的存在时间会很短，如果定位条件没有索引（查找慢）这是时候会全表扫描、排它锁存在的时间会较长，这一点后面会有分析。</p>
+
+<p>上述的查找慢可能会导致<strong>死锁</strong>，即两个更新事务，需要先选取再更新，筛选时候两个事务的共享锁同时加上，两个事务都在等待其他事务释放共享锁以便自己升级为排他锁进行数据更新，解决方式可以直接在 select 的时候就加上排它锁即 <code>select ... for update</code>。</p>
+
+<p>对于两种基本的锁，通常会用一个矩阵来描述他们之间的冲突关系：</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>S</th>
+<th>X</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>S</td>
+<td>兼容</td>
+<td>不兼容</td>
+</tr>
+
+<tr>
+<td>X</td>
+<td>不兼容</td>
+<td>不兼容</td>
+</tr>
+</tbody>
+</table>
+
+<p>一般的还会有下面的几种类型的锁：</p>
+
+<p><code>更新锁 Update lock</code>，“我现在只想读，你们别人也可以读，但我将来可能会做更新操作，我已经获取了从共享锁（用来读）到排他锁（用来更新）的资格”。一个事物只能有一个更新锁获此资格。</p>
+
+<p><code>意向锁 Intent locks</code>，即该表中是否存在排它锁，当一个表中的某一行被加上排他锁后，该表就不能再被加表锁。数据库程序如何知道该表不能被加表锁？一种方式是逐条的判断该表的每一条记录是否已经有排他锁，另一种方式是直接在表这一层级检查表本身是否有意向锁，不需要逐条判断。</p>
+
+<p><code>计划锁 Schema locks</code>，用 jdbc 向数据库发送了一条新的 sql 语句，数据库要先对之进行编译，在编译期间，也会加锁。</p>
+
+<p><code>记录（行）锁 Record locks</code>，mysql 中用于锁定数据用于更新。</p>
+
+<blockquote>
+<p>A record lock is a lock on an index record. For example, SELECT c1 FROM t WHERE c1 = 10 FOR UPDATE; prevents any other transaction from inserting, updating, or deleting rows where the value of t.c1 is 10.</p>
+</blockquote>
+
+<p><code>间隙锁 Gap locks</code>，mysql 中范围选择更新时候会使用。</p>
+
+<blockquote>
+<p>A gap lock is a lock on a gap between index records, or a lock on the gap before the first or after the last index record. For example, SELECT c1 FROM t WHERE c1 BETWEEN 10 and 20 FOR UPDATE;</p>
+</blockquote>
+
+<p><code>Next-Key Locks</code>，记录锁和间隙锁的结合，用于非唯一索引，如有 <code>SELECT...UPDATE</code> 一个索引为 10 的记录的值，这个索引对应两个记录其 pk 分别为 5、10，那么就会锁住对应记录 5、10 的数据，同时会在 (5, 9)、(9, 正无穷）两个区间内加间隙锁。</p>
+
+<p><code>自增锁 AUTO-INC Locks</code>，主键如果是自增的，插入数据的时候为了正确自增会锁住整张表。</p>
+
+<h3 id="锁的粒度">锁的粒度</h3>
+
+<p>锁的粒度就是指锁的生效范围，范围有 <strong>行锁</strong>，<strong>页锁</strong>，<strong>整表锁</strong>. 锁的粒度同样既可以由数据库自动管理。</p>
+
+<p>对于 InnoDB，只有通过索引检索数据才会使用行锁，可以通过 <code>EXPLAIN SELECT * FROM test_table</code> 可以看到其操作的行数，对于 MyISAM 来说只有表锁这一个粒度。</p>
+
+<h2 id="mysql-的锁与事务实现">MySQL 的锁与事务实现</h2>
+
+<p>前面的 SQL 标准的 <a href="#事务隔离与事务问题的对应">事务隔离与事务问题的对应</a>提到过不同数据库的实现对应不一定符号标准。如 MySQL 下的 REPEATABLE READ 是可以利用解决 gap locks 和 next-key locks 解决更新时候的幻读，同时利用快照“解决” select 时候幻读，参考 <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html" target="_blank">官方文档</a>。</p>
+
+<p>InnoDB 存储引擎，为了提高并发，在 RR 和 RC 级别使用了 MVCC 机制，即在并发事务时，通过读取数据行的历史数据版本，通过不加锁来提高并发的一致性读 (Consistent Nonlocking Read)。MySQL 的 MVCC 的版本的实现具体是通过 DATA_TRX_ID（产生当前记录项的事务 ID) 和 DATA_ROLL_PTR（数据何时过期或者被删除）这两个隐藏列来实现的。</p>
+
+<p>如在 RR(REPEATABLE READ) 级别下其流程：</p>
+
+<ul>
+<li>SELECT 时，读取 创建版本号&lt;=当前事务版本号，删除版本号为空或&gt;当前事务版本号的记录</li>
+<li>INSERT 时，保存当前事务版本号为该行的创建版本号</li>
+<li>DELETE 时，保存当前事务版本号为该行的删除版本号</li>
+<li>UPDATE 时，插入一条新纪录，保存当前事务版本号为该行创建版本号，同时保存当前事务版本号到原来删除的行</li>
+</ul>
+
+<p>在 MVCC 并发控制中，读操作可以分成两类：<strong>快照读</strong> (snapshot read) 与<strong>当前读</strong> (current read)。</p>
+
+<ul>
+<li>快照读：简单的 select 操作属于快照读，不加锁。（也有例外：显式加锁读）。</li>
+<li>当前读：特殊的读操作（显式加锁），插入/更新/删除操作，属于当前读，需要加锁。</li>
+</ul>
+
+<h3 id="2pl">2PL</h3>
+
+<p>2PL （Two-Phase Locking，二阶段锁），说的是锁操作分为两个阶段：加锁阶段与解锁阶段，并且保证加锁阶段与解锁阶段不相交。</p>
+
+<h3 id="mysql-怎么加锁">MySQL 怎么加锁</h3>
+
+<p>对于 innodb 来说，不同事务隔离级别和索引类别最后会使用不同的加锁方式。如下面的两条 SQL:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-SQL" data-lang="SQL"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-SQL" data-lang="SQL"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t1</span> <span class="k">where</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="k">delete</span> <span class="k">from</span> <span class="n">t1</span> <span class="k">where</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在下面的几个前提下会有不同的加锁策略，参考<a href="http://hedengcheng.com/?p=771#_Toc374698322" target="_blank">MySQL 加锁处理分析</a>：</p>
+
+<ul>
+<li>前提一：id 列是不是主键？</li>
+<li>前提二：当前系统的隔离级别是什么？</li>
+<li>前提三：id 列如果不是主键，那么 id 列上有索引吗？</li>
+<li>前提四：id 列上如果有二级索引，那么这个索引是唯一索引吗？</li>
+<li>前提五：两个 SQL 的执行计划是什么？索引扫描？全表扫描？</li>
+</ul>
+
+<p>需要注意的是，在 RR 和 RC 的隔离情况下，select 操作均不加锁，采用的是快照读，所以下面的分析着重与 delete 语句。</p>
+
+<p><strong>id 主键+RC</strong> 情况</p>
+
+<p>对符合删除的条件的记录加 X 锁即可。注意的是这时候的脏读的避免是基于快照来实现的，即每个事务都在自己快照里进行修改。</p>
+
+<p><strong>id 唯一索引+RC</strong> 情况</p>
+
+<p>需要给唯一索引加 X 锁，同时由于要回表，也需要给对应的聚簇索引（主键索引）记录加 X 锁。</p>
+
+<p><strong>id 非唯一索引+RC</strong> 情况</p>
+
+<p>满足条件的 id 的二级索引(非唯一索引)加 X 锁，同时对回表的主键索引的记录加 X 锁。</p>
+
+<p><strong>id 无索引+RC</strong> 情况</p>
+
+<p>若 id 列上没有索引，会走聚簇索引的<strong>全扫描</strong>进行过滤，即每条记录，无论是否满足条件，都会被加上 X 锁。</p>
+
+<p>但是为了效率考量，MySQL 做了优化，对扫描到的记录加锁之后，会使用 unlock_row 方法，把不满足条件的记录放锁，不过这就违背了 2PL 的约束。</p>
+
+<p><strong>id 主键+RR</strong> 情况</p>
+
+<p>与 id 主键+RC 下的情况一样，对 delete 的记录加 X 锁即可。</p>
+
+<p><strong>id 唯一索引+RR</strong> 情况</p>
+
+<p>同 id 唯一索引+RC 情况，对满足条件的二级索引和主键索引记录加锁。</p>
+
+<p><strong>id 非唯一索引+RR</strong> 情况</p>
+
+<p>这里就需要注意了，由于非唯一索引，所以可能会有多条记录，为了避免幻读。考虑到 B+树索引的有序性，满足条件的项在二级索引上一定是连续存放的，除了对查询到记录加 X 锁，为了防止被插入新纪录，需要在这些记录的间隙加锁。这时候其他事务是无法在其区间内进行插入，会得到超时的错误。同时，如果以主键索引列为条件范围更新数据，也会存在间隙锁、下一键锁的。</p>
+
+<p>同时这时候你可能会注意到，RR 级别的 select 也可能选取到多个记录，怎么保证不发生幻读？答案就是前面提到的<strong>快照读</strong>。</p>
+
+<p>同时这又引入另外的一个问题，前面的 RC 级别也是快照读，那解决幻读了么？答案是：没有，因为同是快照读，会在不同级别下有些许区别，对于 RC 和 RR 的快照读：</p>
+
+<ul>
+<li>总的来说，事务总能够读取到，自己写入 (update /insert /delete) 的行记录</li>
+<li>RC 下，快照读总是能读到最新的行数据快照（已提交的），即事务在每次 Read 操作时，都会建立 Read View(快照)。</li>
+<li>RR 下，某个事务首次 read 记录的时间为 T，未来不会读取到 T 时间之后已提交事务写入的记录，以保证连续相同的 read 读到相同的结果集，即事务在第一个 Read 操作时，会建立 Read View。</li>
+</ul>
+
+<p>需要补充的一点是，<strong>RR 的幻读的解决并不完善，可以在事务期间可以通过显式加锁来读取其他事务里已提交的数据</strong>，如使用 <code>select * from test lock in share mode;</code>，<strong>这是因为加锁读的时候不是使用的快照读而是当前读了</strong>。</p>
+
+<p><strong>id 无索引+RR</strong> 情况</p>
+
+<p>此时删除操作，聚簇索引上的所有记录，都会被加上了 X 锁。其次，聚簇索引每条记录间的间隙 (GAP)，也同时被加上了 GAP 锁。相比 id 无索引+RC 值锁行可能会糟糕很多。</p>
+
+<p><strong>Serializable</strong> 情况</p>
+
+<p>在 RC，RR 隔离级别下，都是快照读，不加锁。但是在 Serializable 隔离级别，会加读锁 S，也就是说快照读不复存在，MVCC 并发控制降级为悲观锁控制。</p>
+
+<p>这时候可能会有另外的疑问了，串行和 RR 有什么区别？既然“都解决了幻读”，如果仔细看了 <a href="#id 非唯一索引+RR">id 非唯一索引+RR</a> 情形下的读取时候的分析，可以知道，其 RR 幻读在 select 时候是使用的快照实现的，可以通过显式加锁使用当前读产生幻读，也就是这时候的幻读是解决不完全的，官方文档摘抄：</p>
+
+<blockquote>
+<p>This level is like REPEATABLE READ, but InnoDB implicitly converts all plain SELECT statements to SELECT &hellip; FOR SHARE if autocommit is disabled. If autocommit is enabled, the SELECT is its own transaction.</p>
+
+<p>SELECT &hellip; FROM is a consistent read, reading a <strong>snapshot of the database</strong> and setting no locks unless the transaction isolation level is set to SERIALIZABLE.    For SERIALIZABLE level, the search sets shared next-key locks on the index records it encounters. However, only an index record lock is required for statements that lock rows using a unique index to search for a unique row.</p>
+</blockquote>
+
+<p>所以 Serializable 级别实现是强一致性的，即抛弃快照读，完全基于锁，即：读加共享锁，写加排他锁。</p>
+
+<h3 id="mysql-默认级别">MySQL 默认级别</h3>
+
+<p>MySQL 默认的隔离级别设为可重复读 (Repeatable Read)，前面提到 Serializable 是强一致性事务，性能不佳！互联网的分布式方案，多采用最终一致性的事务解决方案！</p>
+
+<p>RR 级别可以通过显式的加锁如 <code>select ... for update</code>, <code>select ... lock in share lock</code> 可以有与 Serializable 级别的查询一样的行为。这就是为什么默认是 RR 级别，因为更新操作已是避免幻读的，那么在某些重要的场合可以显式加锁自行实现 Serializable 级别的查询一样的行为来保证一致性。</p>
+
+<p>同时对比 RC 和 RR ，有一种说法是在互联网界一般采用 RC，<a href="https://www.cnblogs.com/rjzheng/p/10510174.html" target="_blank">互联网项目中 mysql 应该选什么事务隔离级别</a>，其论点上面的锁分析里也提到过：</p>
+
+<ol>
+<li>在 RR 隔离级别下，存在间隙锁，导致出现死锁的几率比 RC 大的多。</li>
+<li>在 RR 隔离级别下，条件更新语句列未命中索引会锁表！而在 RC 隔离级别下，只锁行。</li>
+<li>在 RC 隔离级别下，半一致性读 (semi-consistent) 特性增加了 update 操作的并发性！</li>
+</ol>
+
+<p>另外，行级锁都是基于索引的，如果一条 SQL 语句用不到索引是不会使用行级锁的，会使用表级锁把整张表锁住，这也是对上面的几个锁表的情况的解释。</p>
+
+<h3 id="mysql-事务语句">MySQL 事务语句</h3>
+
+<p>设置、查看当前事务的隔离级别</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="c1">-- 设置当前回话、全局的事务隔离级别
+</span><span class="c1"></span><span class="k">SET</span> <span class="p">[</span><span class="k">SESSION</span> <span class="o">|</span> <span class="k">GLOBAL</span><span class="p">]</span> <span class="n">TRANSACTION</span> <span class="k">ISOLATION</span> <span class="k">LEVEL</span> <span class="err">{</span><span class="k">READ</span> <span class="k">UNCOMMITTED</span> <span class="o">|</span> <span class="k">READ</span> <span class="k">COMMITTED</span> <span class="o">|</span> <span class="k">REPEATABLE</span> <span class="k">READ</span> <span class="o">|</span> <span class="k">SERIALIZABLE</span><span class="err">}</span>
+<span class="c1">-- MySQL&lt;5.7.20，查看全局、当前会话、当前的事务隔离级别
+</span><span class="c1"></span><span class="k">SELECT</span> <span class="o">@@</span><span class="k">global</span><span class="p">.</span><span class="n">tx_isolation</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">@@</span><span class="k">session</span><span class="p">.</span><span class="n">tx_isolation</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">@@</span><span class="n">tx_isolation</span><span class="p">;</span>
+<span class="c1">-- MySQL&gt;5.7.19
+</span><span class="c1"></span><span class="k">SELECT</span> <span class="o">@@</span><span class="k">global</span><span class="p">.</span><span class="n">transaction_isolation</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">@@</span><span class="k">session</span><span class="p">.</span><span class="n">transaction_isolation</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">@@</span><span class="n">transaction_isolation</span><span class="p">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>显式设置锁：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">test_table</span> <span class="k">lock</span> <span class="k">IN</span> <span class="k">share</span> <span class="k">mode</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">test_table</span> <span class="k">for</span> <span class="k">update</span><span class="p">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>开始事务：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">start</span> <span class="n">transaction</span><span class="p">;</span>
+<span class="p">...</span>
+<span class="k">rollback</span><span class="o">/</span><span class="k">commit</span><span class="p">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="mysql-死锁">MySQL 死锁</h2>
+
+<p>两个事务分别占有对方想要的记录的锁，RR 级别下的 gap 锁可能增加死锁的概率。</p>
+
+<ul class="task-list">
+<li><label><input type="checkbox" disabled class="task-list-item"> MySQL 死锁未完待续</label></li>
+</ul>
+
+<h3 id="不同索引锁冲突">不同索引锁冲突</h3>
+
+<h3 id="gap-锁冲突">gap 锁冲突</h3>
+
+<p>对于 MySQL <code>Show innodb status</code> 可以查看死锁情况。</p>
+
+<h2 id="postgresql-的锁与事务实现">PostgreSQL 的锁与事务实现</h2>
+
+<ul class="task-list">
+<li><label><input type="checkbox" disabled class="task-list-item"> PostgreSQL 的锁与事务实现这部分还待完善</label></li>
+</ul>
+
+<p>pg 事务隔离级别表格，低版本的 pg(8.0) 的事务支持可能只有两种事务级别 RC 和 Serializable，<code>现在通用的版本的提供了 RR 级别，PostgreSQL 默认的级别是 RC</code>。</p>
+
+<table>
+<thead>
+<tr>
+<th>Isolation Level</th>
+<th>Dirty Read</th>
+<th>Nonrepeatable Read</th>
+<th>Phantom Read</th>
+<th>Serialization Anomaly</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Read uncommitted</td>
+<td>Allowed, but not in PG</td>
+<td>Possible</td>
+<td>Possible</td>
+<td>Possible</td>
+</tr>
+
+<tr>
+<td>Read committed</td>
+<td>Not possible</td>
+<td>Possible</td>
+<td>Possible</td>
+<td>Possible</td>
+</tr>
+
+<tr>
+<td>Repeatable read</td>
+<td>Not possible</td>
+<td>Not possible</td>
+<td>Allowed, but not in PG</td>
+<td>Possible</td>
+</tr>
+
+<tr>
+<td>Serializable</td>
+<td>Not possible</td>
+<td>Not possible</td>
+<td>Not possible</td>
+<td>Not possible</td>
+</tr>
+</tbody>
+</table>
+
+<ul>
+<li>RU 级别，这个级别不允许脏读，实质上已经是 RC 级别</li>
+<li>RC 级别
+
+<ul>
+<li>SELECT 查询（注意 PG 没有 FOR UPDATE/SHARE 子句）只能看到查询开始之前已提交的数据而无法看到未提交的数据或者在查询执行期间其它事务已提交的数据 （仅读当时数据库快照）。<strong>不过，SELECT 看得见其自身所在事务中前面更新执行结果，即使它们尚未提交</strong>。</li>
+</ul></li>
+<li>RR 级别
+
+<ul>
+<li>RR 级别就已经使用快照避免了幻读</li>
+<li>重复读事务中的查询看到的只是事务开始时的快照， 而不是该事务内部当前查询开始时的快照</li>
+<li>需要手动处理：<code>串行化失败的时候重新启动事务</code></li>
+</ul></li>
+<li>Serializable 级别
+
+<ul>
+<li>也是基于快照读？一般情况下没有锁数据？</li>
+<li>需要手动处理：<code>串行化失败的时候重新启动事务</code></li>
+<li>不过，正如可重复读隔离级别一样， 使用这个级别的应用必须准备在串行化失败的时候重新启动事务。 事实上，该隔离级别和可重复读希望的完全一样，它只是监视这些条件，以所有事务的可能的序列不一致的（一次一个）的方式执行并行的可序列化事务执行的行为。 这种监测不引入任何阻止可重复读出现的行为，但有一些开销的监测，检测条件这可能会导致序列化异常 将触发序列化失败</li>
+</ul></li>
+<li><a href="https://www.postgresql.org/docs/current/static/transaction-iso.html" target="_blank">官方参考</a></li>
+<li><a href="https://my.oschina.net/liuyuanyuangogo/blog/497929" target="_blank">PostgreSQL 并发控制</a></li>
+</ul>
+
+<h3 id="postgresql-与-mysql-的事务对比">PostgreSQL 与 MySQL 的事务对比</h3>
+
+<ul>
+<li>pg 的关于幻读的理解好像是全局表的形式，但是实现的时候不锁现有的数据，也就是读都是快照，写的话谁先下手谁先锁（基于版本？)，谁除此之外的事务再写就报错（会终止事务）</li>
+<li>mysql 的对于幻读的理解是基于：一旦读，就在其数据范围里加 S 锁，读的时候是非快照数据（能读到其他事务提交的数据），自己的 S 锁自己能去掉升级为 X 去修改，但是别的 serializable 事务如果也读了（加 S 锁）数据就麻烦了，也就是数据被别的事务读过就不能修改，只能用于读，只能有第一次读的事务才能修改，一旦修改后，其他事务都不能读</li>
+<li>pg 是基于升级版本的 mvvc 的无锁实现，mysql 是基于锁和 mvcc 混合实现的，对于预先读取的数据有严格的数据锁定的话，需要在 pgsql 里显式的 select for update 来锁定</li>
+<li>当两个事务同时更新数据的时候，后一个事务里的更新在 pg 和 MySQL 里都会阻塞，但是如果前一个事务提交，MySQL 被阻塞的更新会马上执行（排他锁被释放），pg 的被阻塞的更新会提示 <strong>could not serialize access due to concurrent update</strong> 即抛出异常，这时候可能需要业务端自旋进行尝试。</li>
+</ul>
+
+<p><strong>嵌套事务</strong>方面的对比</p>
+
+<ul>
+<li>pg 不支持嵌套事务</li>
+<li>MySQL 的嵌套事务实际为独立的事务，当 sql 解释器遇到 start transaction 时候会触发 commit。</li>
+</ul>
+
+<h3 id="postgresql-事务语句">PostgreSQL 事务语句</h3>
+
+<p>开始事务时候指定级别</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">BEGIN</span> <span class="n">TRANSACTION</span> <span class="k">ISOLATION</span> <span class="k">LEVEL</span> <span class="k">REPEATABLE</span> <span class="k">READ</span><span class="p">;</span>
+<span class="p">...</span> <span class="p">...</span>
+<span class="k">END</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>显示事务的级别 <code>show transaction_isolation;</code></p>
+
+<p>设置事务等级，下面的设置只有在事务内才会有效，除了<code>SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL SERIALIZABLE;</code></p>
+
+<h2 id="事务与-django">事务与 Django</h2>
+
+<p><a href="https://medium.com/@hakibenita/how-to-manage-concurrency-in-django-models-b240fed4ee2" target="_blank">参考文档</a></p>
+
+<p>可以使用 <code>select_for_update</code> 锁行直到事务结束，默认是让其他的事务等待，可以使用 select_for_update(nowait=True) 抛出 DatabaseError 错误。</p>
+
+<p>锁行需要事务，所以使用 transaction.atomic 确定事务范围。</p>
+
+<p>使用静态方法时候，保证不能使用 self，从而保证 orm 映射的 Python 对象数据不能使用，规避了 orm 化的 Python 数据被外部更改的风险。</p>
+
+<blockquote>
+<p>We use a classmethod instead of an instance method — to acquire the lock we need to tell the database to lock it. To achieve that we need to be the ones fetching the object from the database. When operating on self the object is already fetched and we don’t have any guaranty that it was locked</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Account</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">AutoField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">,)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,)</span>
+    <span class="n">balance</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">deposit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
+                <span class="n">account</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+                <span class="n">account</span><span class="o">.</span><span class="n">balance</span> <span class="o">+=</span> <span class="n">amount</span>
+                <span class="n">account</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">account</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">withdraw</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
+            <span class="n">account</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">balance</span> <span class="o">&lt;</span> <span class="n">amount</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">errors</span><span class="o">.</span><span class="n">InsufficentFunds</span><span class="p">()</span>
+            <span class="n">account</span><span class="o">.</span><span class="n">balance</span> <span class="o">-=</span> <span class="n">amount</span>
+            <span class="n">account</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">account</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="其他">其他</h2>
+
+<ul>
+<li>可重复读和提交读在一定程度上是矛盾的。在同一个事务里，如果保证了可重复读，就会看不到其他事务的提交，违背了提交读；如果保证了提交读，就会导致前后两次读到的结果不一致，违背了可重复读。但是上述也可以说是没矛盾，即幻读是保证未 select 的数据也不会变化，还是只保证 select 过后的数据（范围）不会变化，MySQL 的解决更趋向于后者。</li>
+</ul>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="https://blog.csdn.net/samjustin1/article/details/52210125" target="_blank">数据库锁机制</a></li>
+<li><a href="http://www.hollischuang.com/archives/934" target="_blank">乐观锁悲观锁</a></li>
+<li><a href="https://blog.csdn.net/Marvel__Dead/article/details/70209641" target="_blank">MySQL 的 InnoDB 默认隔离级别的幻读问题</a></li>
+<li><a href="https://tech.meituan.com/innodb-lock.html" target="_blank">Innodb 中的事务隔离级别和锁的关系</a></li>
+<li><a href="https://medium.com/@hakibenita/how-to-manage-concurrency-in-django-models-b240fed4ee2" target="_blank">Django model 的并发管理</a></li>
+<li><a href="https://my.oschina.net/liuyuanyuangogo/blog/497929" target="_blank">PostgreSQL 事务级别</a></li>
+<li><a href="https://my.oschina.net/liuyuanyuangogo/blog/499460" target="_blank">PostgreSQL 并发控制（显式锁定）</a></li>
+<li><a href="http://hedengcheng.com/?p=771#_Toc374698322" target="_blank">MySQL 加锁处理分析</a></li>
+<li><a href="https://www.itcodemonkey.com/article/8719.html" target="_blank">InnoDB，快照读，在 RR 和 RC 下有何差异？</a></li>
+</ul>
+
+<h2 id="todo">TODO</h2>
+
+<p><a href="https://www.cnblogs.com/LBSer/p/5183300.html" target="_blank">https://www.cnblogs.com/LBSer/p/5183300.html</a></p>
+
+<p><a href="https://catkang.github.io/2018/08/31/isolation-level.html" target="_blank">https://catkang.github.io/2018/08/31/isolation-level.html</a></p>
+
+<p><a href="https://catkang.github.io/2018/09/19/concurrency-control.html" target="_blank">https://catkang.github.io/2018/09/19/concurrency-control.html</a></p>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-03-16</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div><footer class="post-footer">
+      <div class="post-tags">
+        <div style="margin-bottom:5px">
+          <i class="iconfont icon-folder-open"></i>
+            <a href="/categories/Database/">Database</a>
+            </div>
+        <div>
+          <i class="iconfont icon-label"></i>
+            <a href="/tags/Database/">Database</a>
+            <a href="/tags/MySQL/">MySQL</a>
+            <a href="/tags/PostgreSQL/">PostgreSQL</a>
+            </div>
+      </div>
+
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/Computer/Linux/Linux-vm.html">
+            <span class="next-text nav-default">为什么会出现 segmentation fault 之与虚拟内存</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="lv-container" data-id="city" data-uid="MTAyMC80MjAzOS8xODU4Ng">
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+
+        if (typeof LivereTower === 'function') { return; }
+
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+    <noscript>Please enable JavaScript to view the comments powered by <a href="https://livere.com/">LiveRe.</a></noscript>
+    </div>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:gcreaink@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/creaink" class="iconfont icon-github" title="github"></a>
+  <a href="https://creaink.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-131846852-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

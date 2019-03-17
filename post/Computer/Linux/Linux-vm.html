@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="Creaink" /><meta name="description" content="为什么会出现 segmentation fault 之与虚拟内存 " /><meta name="keywords" content="Linux, Virtual Memory, OS" />
+<meta name="author" content="Creaink" /><meta name="description" content="为什么会出现 segmentation fault 之与虚拟内存" /><meta name="keywords" content="Linux, Virtual Memory, OS" />
 
 
 
@@ -39,25 +39,25 @@
 
 
 <meta property="og:title" content="为什么会出现 segmentation fault 之与虚拟内存" />
-<meta property="og:description" content="为什么会出现 segmentation fault 之与虚拟内存 " />
+<meta property="og:description" content="为什么会出现 segmentation fault 之与虚拟内存" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://creaink.github.io/post/Computer/Linux/Linux-vm.html" /><meta property="article:published_time" content="2019-03-10T10:16:00&#43;08:00"/>
 <meta property="article:modified_time" content="2019-03-10T10:16:00&#43;08:00"/>
 
 <meta itemprop="name" content="为什么会出现 segmentation fault 之与虚拟内存">
-<meta itemprop="description" content="为什么会出现 segmentation fault 之与虚拟内存 ">
+<meta itemprop="description" content="为什么会出现 segmentation fault 之与虚拟内存">
 
 
 <meta itemprop="datePublished" content="2019-03-10T10:16:00&#43;08:00" />
 <meta itemprop="dateModified" content="2019-03-10T10:16:00&#43;08:00" />
-<meta itemprop="wordCount" content="4678">
+<meta itemprop="wordCount" content="4825">
 
 
 
 <meta itemprop="keywords" content="Linux,Virtual Memory," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="为什么会出现 segmentation fault 之与虚拟内存"/>
-<meta name="twitter:description" content="为什么会出现 segmentation fault 之与虚拟内存 "/>
+<meta name="twitter:description" content="为什么会出现 segmentation fault 之与虚拟内存"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -132,7 +132,7 @@
 
       <div class="post-meta">
         <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-03-10 </span>
-          <span class="more-meta"> <i class="iconfont icon-book"></i> 4678 words </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 4825 words </span>
           <span class="more-meta"> <i class="iconfont icon-clock"></i> 10 mins read </span>
         
       </div>
@@ -246,9 +246,15 @@
 <li><p><strong>内核空间</strong> 还可以进一步细分，从高地址到低地址：</p>
 
 <ul>
+<li>ZONE_DMA, 内存开始的16MB</li>
+<li>ZONE_NORMAL, 16MB ~ 896MB</li>
+<li>ZONE_HIGHMEM, 896MB ~ 结束（1G）</li>
+<li>如果安装功能分：
+
+<ul>
 <li>进程数据结构（每个进程不一样，如 page table, task and mm structs, kernel stack）</li>
-<li>物理内存（每个进程一样）</li>
 <li>内核代码和数据（每个进程一样）</li>
+</ul></li>
 </ul></li>
 
 <li><p><strong>用户栈</strong></p>
@@ -308,7 +314,7 @@
 
 <p>虚拟地址分成两级，指令中的那个值被称为“逻辑地址”，送给MMU中的“分段单元”，转换成线性地址，线性地址再通过“分页单元”，转换成物理地址。</p>
 
-<p>因为页的存在， malloc(1) 可能会直接分配一页大小，那么有可能其指针可能越界了很长的偏移量才产生 segmentation fault。</p>
+<p>因为页的存在， malloc(1) 可能会直接分配一页大小，那么有可能其指针越界了很长的偏移量（便宜出该页）才产生 segmentation fault。</p>
 
 <p>如果频繁的 CPU 寻址，PTE 会缓存在 CPU 的 L1 缓存中，以提升查表速度，或者缓存到 translation lookaside buffer (TLB) 中。</p>
 
@@ -421,7 +427,7 @@ else // MMU 触发缺页异常，DRAM 缓存不命中为缺页
 }</code></pre></td></tr></table>
 </div>
 </div>
-<p>上述是简化过程，对是否 dirty, copy on write 等等问题暂时没有提及。</p>
+<p>上述是简化过程，对是否 dirty, copy on write 等等问题暂时没有提及。还有一点就是如果访问的虚拟地址是在栈的话，如果越界的话是会尝试下扩栈的，具体参考 《Understanding Linux Kernel》 的 7.4 Page Fault Exception Handler 章节。</p>
 
 <p>看到这里就知道为什么当访问一个非法的地址时候，会被操作系统拦住然后给当头一棒：*segmentation fault*。</p>
 
@@ -596,9 +602,12 @@ fffe0000-ffffffff : reserved</code></pre></td></tr></table>
 
 <p><img src="imgs/linux-thread.jpg" alt="" /></p>
 
+<p>另外的使用 <code>ps -t &lt;pid&gt;</code> 可打印某进程的所有线程。</p>
+
 <h2 id="参考">参考</h2>
 
 <ul>
+<li>《深入理解计算机系统》</li>
 <li><a href="https://github.com/Durant35/durant35.github.io/issues/24" target="_blank">程序内存地址</a></li>
 <li><a href="https://my.oschina.net/Bruce370/blog/887133" target="_blank">Linux Memory 理解内存模型</a></li>
 <li><a href="https://my.oschina.net/manmao/blog/867427" target="_blank">系统进程内存模型</a></li>
@@ -607,6 +616,10 @@ fffe0000-ffffffff : reserved</code></pre></td></tr></table>
 <li><a href="https://www.ibm.com/developerworks/cn/linux/kernel/l-page/index.html" target="_blank">利用异常表处理 Linux 内核态缺页异常</a></li>
 <li><a href="https://techtalk.intersec.com/2013/07/memory-part-2-understanding-process-memory/" target="_blank">understanding-process-memory</a></li>
 <li><a href="https://www.software-architect.net/blog/article/date/2015/07/03/cheat-sheet-understanding-the-pmap1-output.html" target="_blank">Cheat sheet: understanding the pmap(1) output</a></li>
+
+<li><p><a href="https://www.kernel.org/doc/Documentation/x86/x86_64/mm.txt" target="_blank">Memory mapping — The Linux Kernel documentation</a></p></li>
+
+<li><p>[ ] TODO <a href="https://static.lwn.net/images/pdf/LDD3/ch15.pdf" target="_blank">https://static.lwn.net/images/pdf/LDD3/ch15.pdf</a> 内核空间的进一步探究</p></li>
 </ul>
     </div>
 
@@ -639,7 +652,11 @@ fffe0000-ffffffff : reserved</code></pre></td></tr></table>
 
       
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/Backend/Database/Transaction.html">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">数据库事务</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
         <a class="next" href="/post/Backend/Django/Django-logging.html">
             <span class="next-text nav-default">Django logging</span>
             <span class="next-text nav-mobile">Next</span>
