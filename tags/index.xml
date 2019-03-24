@@ -6,10 +6,19 @@
     <description>Recent content in Tags on Creaink - Build something for life</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 08 Jan 2019 20:49:33 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 24 Mar 2019 10:22:33 +0800</lastBuildDate>
     
 	<atom:link href="https://creaink.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Cheat Sheet</title>
+      <link>https://creaink.github.io/tags/Cheat-Sheet.html</link>
+      <pubDate>Sun, 24 Mar 2019 10:22:33 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/tags/Cheat-Sheet.html</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Container</title>
@@ -167,7 +176,7 @@
     <item>
       <title>Shell</title>
       <link>https://creaink.github.io/tags/Shell.html</link>
-      <pubDate>Sat, 12 Jan 2019 16:42:33 +0800</pubDate>
+      <pubDate>Sun, 24 Mar 2019 10:22:33 +0800</pubDate>
       
       <guid>https://creaink.github.io/tags/Shell.html</guid>
       <description></description>
@@ -197,6 +206,15 @@
       <pubDate>Wed, 30 Jan 2019 22:00:00 +0800</pubDate>
       
       <guid>https://creaink.github.io/tags/Spring-MVC.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Terminal</title>
+      <link>https://creaink.github.io/tags/Terminal.html</link>
+      <pubDate>Sun, 24 Mar 2019 10:22:33 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/tags/Terminal.html</guid>
       <description></description>
     </item>
     

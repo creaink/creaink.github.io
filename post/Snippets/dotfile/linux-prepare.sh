@@ -156,6 +156,24 @@ cat > /etc/docker/daemon.json << EOF
 index-url = https://pypi.tuna.tsinghua.edu.cn/simple
 EOF
 
+# golang
+# https://golang.org/doc/install
+wget https://dl.google.com/go/go1.12.1.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.12.1.linux-amd64.tar.gz
+## add to /etc/zsh/zshenv
+export PATH=$PATH:/usr/local/go/bin
+
+# JDK
+## https://java.com/en/download/help/linux_x64_install.xml
+## sudo mkdir /usr/local/java
+## sudo tar xzf ....
+## add to /etc/zsh/zshenv
+JAVA_HOME=/usr/local/java/jdkXXXXXX
+CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib
+PATH=$PATH:$JAVA_HOME/bin
+export JAVA_HOME CLASSPATH
+
+
 # samba
 sudo apt install samba
 sudo smbpasswd -a "$USER"

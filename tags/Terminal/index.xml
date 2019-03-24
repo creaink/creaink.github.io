@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Shell on Creaink - Build something for life</title>
-    <link>https://creaink.github.io/tags/Shell.html</link>
-    <description>Recent content in Shell on Creaink - Build something for life</description>
+    <title>Terminal on Creaink - Build something for life</title>
+    <link>https://creaink.github.io/tags/Terminal.html</link>
+    <description>Recent content in Terminal on Creaink - Build something for life</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sun, 24 Mar 2019 10:22:33 +0800</lastBuildDate>
     
-	<atom:link href="https://creaink.github.io/tags/Shell/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://creaink.github.io/tags/Terminal/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>

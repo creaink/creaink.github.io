@@ -22,7 +22,9 @@
     "workbench.colorCustomizations": {
         "editorCursor.foreground": "#FFF"
     },
+
     "workbench.settings.editor": "json",
+    "workbench.settings.useSplitJSON": true,
     "window.titleBarStyle": "custom",
 
 

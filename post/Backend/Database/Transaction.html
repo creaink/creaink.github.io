@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>数据库事务 - Creaink - Build something for life</title>
+  <title>数据库事务浅析 - Creaink - Build something for life</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="Creaink" /><meta name="description" content="数据库事务" /><meta name="keywords" content="Database, MySQL, PostgreSQL, Lock, MVCC, OCC" />
+<meta name="author" content="Creaink" /><meta name="description" content="数据库事务浅析" /><meta name="keywords" content="Database, MySQL, PostgreSQL, Lock, MVCC, OCC" />
 
 
 
@@ -38,26 +38,26 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="数据库事务" />
-<meta property="og:description" content="数据库事务" />
+<meta property="og:title" content="数据库事务浅析" />
+<meta property="og:description" content="数据库事务浅析" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://creaink.github.io/post/Backend/Database/Transaction.html" /><meta property="article:published_time" content="2019-03-16T10:16:00&#43;08:00"/>
 <meta property="article:modified_time" content="2019-03-16T10:16:00&#43;08:00"/>
 
-<meta itemprop="name" content="数据库事务">
-<meta itemprop="description" content="数据库事务">
+<meta itemprop="name" content="数据库事务浅析">
+<meta itemprop="description" content="数据库事务浅析">
 
 
 <meta itemprop="datePublished" content="2019-03-16T10:16:00&#43;08:00" />
 <meta itemprop="dateModified" content="2019-03-16T10:16:00&#43;08:00" />
-<meta itemprop="wordCount" content="7570">
+<meta itemprop="wordCount" content="8973">
 
 
 
 <meta itemprop="keywords" content="Database,MySQL,PostgreSQL," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="数据库事务"/>
-<meta name="twitter:description" content="数据库事务"/>
+<meta name="twitter:title" content="数据库事务浅析"/>
+<meta name="twitter:description" content="数据库事务浅析"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -128,12 +128,12 @@
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">数据库事务</h1>
+      <h1 class="post-title">数据库事务浅析</h1>
 
       <div class="post-meta">
         <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-03-16 </span>
-          <span class="more-meta"> <i class="iconfont icon-book"></i> 7570 words </span>
-          <span class="more-meta"> <i class="iconfont icon-clock"></i> 16 mins read </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 8973 words </span>
+          <span class="more-meta"> <i class="iconfont icon-clock"></i> 18 mins read </span>
         
       </div>
     </header>
@@ -145,38 +145,29 @@
 <ul>
 <li>
 <ul>
+<li><a href="#事务基本概念">事务基本概念</a>
+<ul>
 <li><a href="#事务的四大特性-acid">事务的四大特性 ACID</a></li>
 <li><a href="#并发事务中的问题">并发事务中的问题</a></li>
-<li><a href="#事务隔离级别">事务隔离级别</a>
-<ul>
-<li><a href="#事务隔离与事务问题的对应">事务隔离与事务问题的对应</a></li>
+<li><a href="#事务隔离级别">事务隔离级别</a></li>
 </ul></li>
 <li><a href="#锁机制">锁机制</a>
 <ul>
 <li><a href="#锁的种类">锁的种类</a></li>
 <li><a href="#锁的粒度">锁的粒度</a></li>
 </ul></li>
-<li><a href="#mysql-的锁与事务实现">MySQL 的锁与事务实现</a>
-<ul>
-<li><a href="#2pl">2PL</a></li>
+<li><a href="#mysql-的事务实现">MySQL 的事务实现</a></li>
 <li><a href="#mysql-怎么加锁">MySQL 怎么加锁</a></li>
 <li><a href="#mysql-默认级别">MySQL 默认级别</a></li>
+<li><a href="#mysql-mvcc">MySQL MVCC</a></li>
 <li><a href="#mysql-事务语句">MySQL 事务语句</a></li>
-</ul></li>
 <li><a href="#mysql-死锁">MySQL 死锁</a>
 <ul>
-<li><a href="#不同索引锁冲突">不同索引锁冲突</a></li>
-<li><a href="#gap-锁冲突">gap 锁冲突</a></li>
-</ul></li>
-<li><a href="#postgresql-的锁与事务实现">PostgreSQL 的锁与事务实现</a>
-<ul>
-<li><a href="#postgresql-与-mysql-的事务对比">PostgreSQL 与 MySQL 的事务对比</a></li>
-<li><a href="#postgresql-事务语句">PostgreSQL 事务语句</a></li>
+<li><a href="#死锁的预防">死锁的预防</a></li>
 </ul></li>
 <li><a href="#事务与-django">事务与 Django</a></li>
-<li><a href="#其他">其他</a></li>
+<li><a href="#总结">总结</a></li>
 <li><a href="#参考">参考</a></li>
-<li><a href="#todo">TODO</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -187,7 +178,13 @@
 
 <p>看完下面的内容，或许会对不同事务级下解决并发问题所带来的代价有些许了解，或只是记住上面那句话🤣。</p>
 
-<h2 id="事务的四大特性-acid">事务的四大特性 ACID</h2>
+<p>关于事务的文章，本篇是主要介绍 MySQL，以后要是有机会的话再介绍介绍 PostgreSQL 的。</p>
+
+<h2 id="事务基本概念">事务基本概念</h2>
+
+<p>首先的需要了解下关于事务的基本概念。</p>
+
+<h3 id="事务的四大特性-acid">事务的四大特性 ACID</h3>
 
 <ul>
 <li>原子性（Atomicity）：事务作为一个整体被执行，包含在其中的对数据库的操作要么全部被执行，要么都不执行。</li>
@@ -196,7 +193,7 @@
 <li>持久性（Durability）：已被提交的事务对数据库的修改应该永久保存在数据库中。</li>
 </ul>
 
-<h2 id="并发事务中的问题">并发事务中的问题</h2>
+<h3 id="并发事务中的问题">并发事务中的问题</h3>
 
 <ul>
 <li><code>脏读 - Dirty Read</code>：事务 A 修改了一个数据，但未提交，事务 B 期间读到了事务 A 未提交的更新结果，如果事务 A 提交失败，事务 B 读到的就是脏数据；即事务期间的数据的修改未隔离，直接持久化到数据库，导致其他事务能够读到事务期间的临时、中间数据，归结为事务期间的数据没有于持久化数据相隔离，能够读取到事务临时数据。</li>
@@ -206,9 +203,9 @@
 
 <p>需要注意的是：<strong>可重复读重点在于 update 和 delete，而幻读的重点在于 insert</strong>，<strong>幻读是针对于读操作 select 来说的，是否试用于 insert 有待考量</strong>。</p>
 
-<h2 id="事务隔离级别">事务隔离级别</h2>
+<h3 id="事务隔离级别">事务隔离级别</h3>
 
-<p>针对上面的并发事务中的问题有如下的事务隔离级别：</p>
+<p>针对上面的并发事务中的问题，一般有如下的事务隔离级别：</p>
 
 <ul>
 <li><code>读未提交 - Read Uncommitted</code>：最低的隔离级别，什么都不需要做，一个事务可以读到另一个事务未提交的结果。所有的并发事务问题都会发生。</li>
@@ -217,9 +214,9 @@
 <li><code>串行 - Serialization</code>：事务串行化执行，隔离级别最高，牺牲了系统的并发性，可以解决并发事务的所有问题。</li>
 </ul>
 
-<h3 id="事务隔离与事务问题的对应">事务隔离与事务问题的对应</h3>
+<p>为了方便后面使用简称表明隔离级别，如 RR 就是 Repeated Read。</p>
 
-<p>每一个事务隔离解决的事务问题的一个通用的标准的定义(ANSI SQL)如下，但事实上各个数据实现的数据隔离不一定四种状态都有，如 PostgreSQL 就只没有 Read Uncommitted 级别，同时每个数据库对每个级别的解决的事务问题也和标准的实现不一定一一对应。</p>
+<p>每一个事务隔离解决的事务问题的一个通用的标准的定义 (ANSI SQL 1992) 如下：</p>
 
 <table>
 <thead>
@@ -262,6 +259,10 @@
 </tbody>
 </table>
 
+<p>其实关于数据库的隔离的标准其实是一直在发展的，参见 <a href="https://catkang.github.io/2018/08/31/isolation-level.html" target="_blank">数据库事务隔离发展历史</a>。但事实上各个数据实现的数据隔离不一定四种状态都有，如 PostgreSQL 就只没有 Read Uncommitted 级别，同时基于性能代价的考虑每个数据库对每个级别的解决的事务问题也和标准的实现不一定一一对应，这一点在后面的 MySQL RR 级别会有体现。</p>
+
+<p>不同的隔离级别分别在不同程度上解决的并发事务中存在的问题。隔离级别越高安全，但是一般的性能损失也会越大，这有可能就是开篇问的那句话的答案。所以针对不同的使用场景，使用恰当的隔离级别，如何选用合适的隔离级别，那么就得了解下 MySQL 的事务了。</p>
+
 <h2 id="锁机制">锁机制</h2>
 
 <p>那么数据库如何实现事务的各种级别呢？答案就是锁的运用。</p>
@@ -270,9 +271,11 @@
 
 <p>悲观并发控制（又名“悲观锁”，Pessimistic Concurrency Control，缩写“PCC”）。正如其名，悲观并发控制实际上是“先取锁再访问”的保守策略，为数据处理的安全提供了保证。但是在效率方面，处理加锁的机制会让数据库产生额外的开销，还有增加产生死锁的机会。</p>
 
-<p>乐观并发控制（又名“乐观锁”，Optimistic Concurrency Control，缩写“OCC”）。它假设多用户并发的事务在处理时不会彼此互相影响，各事务能够在不产生锁的情况下处理各自影响的那部分数据。在提交数据更新之前，每个事务会先检查在该事务读取数据后，有没有其他事务又修改了该数据。如果其他事务有更新的话，正在提交的事务会进行回滚。</p>
+<p>乐观并发控制（又名“乐观锁”，Optimistic Concurrency Control，缩写“OCC”）。它假设多用户并发的事务在处理时不会彼此互相影响，各事务能够在不产生锁的情况下处理各自影响的那部分数据。在提交数据更新之前，每个事务会先检查在该事务读取数据后，有没有其他事务又修改了该数据。如果其他事务有更新的话，正在提交的事务会进行回滚。<strong>乐观锁也是对于处理并发下的读写者问题区别于完全使用锁的另一种思路</strong>。</p>
 
-<p>乐观并发控制不会使用锁机制，而其实现一般有 CAS、MVCC 等，由于 CAS 存在 ABA 问题，所以通常在数据库的实现中会使用 MVCC，即在提交数据时候通过版本标识是否变化来判断本次提交是否有效，而不是快照，版本标识的实现通常有：</p>
+<p>乐观并发控制不会使用锁机制，针对不同的乐观程度又不同的实现，<strong>不同乐观程度的机制本质的区别在于，检查或预判冲突的时机</strong>。</p>
+
+<p>按照其思想一般有 CAS、MVCC 等，由于 CAS 存在 ABA 问题，所以通常在数据库的实现中会使用 MVCC，即在提交数据时候通过版本标识是否变化来判断本次提交是否有效，版本标识的实现通常有：</p>
 
 <ul>
 <li>基于自定义的版本号字段，每次修改自增更新</li>
@@ -295,16 +298,16 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-sql" data-lang="sql"><span class="cm">/* 查询出商品信息、需要带上版本 */</span>
-<span class="k">SELECT</span> <span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="k">version</span> <span class="k">AS</span> <span class="n">versionValue</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">t_goods</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=#</span><span class="err">{</span><span class="n">id</span><span class="err">}</span>
+<span class="k">SELECT</span> <span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="k">version</span> <span class="k">AS</span> <span class="n">versionValue</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">t_goods</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
 <span class="cm">/* 根据商品信息生成订单、修改商品版本号 */</span>
 <span class="k">UPDATE</span> <span class="n">t_goods</span>
-<span class="k">SET</span> <span class="n">status</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="k">version</span><span class="o">=</span><span class="n">versionValue</span><span class="o">+</span><span class="mi">1</span>
-<span class="k">WHERE</span> <span class="n">id</span><span class="o">=#</span><span class="err">{</span><span class="n">id</span><span class="err">}</span> <span class="k">AND</span> <span class="k">version</span><span class="o">=</span><span class="n">versionValue</span><span class="p">;</span></code></pre></td></tr></table>
+    <span class="k">SET</span> <span class="n">status</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="k">version</span><span class="o">=</span><span class="n">versionValue</span><span class="o">+</span><span class="mi">1</span>
+    <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">0</span> <span class="k">AND</span> <span class="k">version</span><span class="o">=</span><span class="n">versionValue</span><span class="p">;</span></code></pre></td></tr></table>
 </div>
 </div>
 <h3 id="锁的种类">锁的种类</h3>
 
-<p>这一部分谈一谈在数据库中锁的具体的实现的种类。</p>
+<p>这一部分谈一谈在数据库中锁的具体的实现的种类，为之后的叙述做准备。</p>
 
 <p>共享锁和排它锁是可以解决<strong>读写者并发问题</strong>的两种锁：</p>
 
@@ -373,9 +376,9 @@
 
 <p>对于 InnoDB，只有通过索引检索数据才会使用行锁，可以通过 <code>EXPLAIN SELECT * FROM test_table</code> 可以看到其操作的行数，对于 MyISAM 来说只有表锁这一个粒度。</p>
 
-<h2 id="mysql-的锁与事务实现">MySQL 的锁与事务实现</h2>
+<h2 id="mysql-的事务实现">MySQL 的事务实现</h2>
 
-<p>前面的 SQL 标准的 <a href="#事务隔离与事务问题的对应">事务隔离与事务问题的对应</a>提到过不同数据库的实现对应不一定符号标准。如 MySQL 下的 REPEATABLE READ 是可以利用解决 gap locks 和 next-key locks 解决更新时候的幻读，同时利用快照“解决” select 时候幻读，参考 <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html" target="_blank">官方文档</a>。</p>
+<p>前面的 SQL 标准的 [事务隔离与事务问题的对应](#事务隔离与事务问题的对应）提到过不同数据库的实现对应不一定符号标准。如 MySQL 下的 REPEATABLE READ 是可以利用解决 gap locks 和 next-key locks 解决更新时候的幻读，同时利用快照“解决” select 时候幻读，参考 <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html" target="_blank">官方文档</a>。</p>
 
 <p>InnoDB 存储引擎，为了提高并发，在 RR 和 RC 级别使用了 MVCC 机制，即在并发事务时，通过读取数据行的历史数据版本，通过不加锁来提高并发的一致性读 (Consistent Nonlocking Read)。MySQL 的 MVCC 的版本的实现具体是通过 DATA_TRX_ID（产生当前记录项的事务 ID) 和 DATA_ROLL_PTR（数据何时过期或者被删除）这两个隐藏列来实现的。</p>
 
@@ -388,19 +391,42 @@
 <li>UPDATE 时，插入一条新纪录，保存当前事务版本号为该行创建版本号，同时保存当前事务版本号到原来删除的行</li>
 </ul>
 
-<p>在 MVCC 并发控制中，读操作可以分成两类：<strong>快照读</strong> (snapshot read) 与<strong>当前读</strong> (current read)。</p>
+<p>同时在 MVCC 并发控制中，读操作可以分成两类：<strong>快照读</strong> (snapshot read) 与<strong>当前读</strong> (current read)。</p>
 
 <ul>
 <li>快照读：简单的 select 操作属于快照读，不加锁。（也有例外：显式加锁读）。</li>
 <li>当前读：特殊的读操作（显式加锁），插入/更新/删除操作，属于当前读，需要加锁。</li>
 </ul>
 
-<h3 id="2pl">2PL</h3>
+<p>在下面的具体部分探究之前，可以先简单的说下 innodb 的事务实现机制，RU 级别这里就忽略了；RC 级别读采用即时快照，更改会使用锁；RR 级别读采用快照，更改会使用锁；Serializable 读和更改都使用锁；而不同级别的锁的使用又各不相同，下面娓娓道来。</p>
 
-<p>2PL （Two-Phase Locking，二阶段锁），说的是锁操作分为两个阶段：加锁阶段与解锁阶段，并且保证加锁阶段与解锁阶段不相交。</p>
+<h2 id="mysql-怎么加锁">MySQL 怎么加锁</h2>
 
-<h3 id="mysql-怎么加锁">MySQL 怎么加锁</h3>
-
+<p>为了方便下面的叙述，新建一张表，结构如下，如不特殊注明，都是在 MySQL 5.7.20 版本下测试。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="o">`</span><span class="n">test</span><span class="o">`</span> <span class="p">(</span>
+    <span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">BIGINT</span> <span class="n">UNSIGNED</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="o">`</span><span class="n">name</span><span class="o">`</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="o">`</span><span class="n">tel</span><span class="o">`</span> <span class="nb">INT</span> <span class="n">UNSIGNED</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="o">`</span><span class="n">socre</span><span class="o">`</span> <span class="nb">INT</span> <span class="n">UNSIGNED</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">),</span>
+    <span class="k">UNIQUE</span> <span class="k">KEY</span> <span class="p">(</span><span class="o">`</span><span class="n">tel</span><span class="o">`</span><span class="p">),</span>
+    <span class="k">INDEX</span><span class="p">(</span><span class="o">`</span><span class="n">socre</span><span class="o">`</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span><span class="p">;</span></code></pre></td></tr></table>
+</div>
+</div>
 <p>对于 innodb 来说，不同事务隔离级别和索引类别最后会使用不同的加锁方式。如下面的两条 SQL:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -408,17 +434,17 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-SQL" data-lang="SQL"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t1</span> <span class="k">where</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
-<span class="k">delete</span> <span class="k">from</span> <span class="n">t1</span> <span class="k">where</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-SQL" data-lang="SQL"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test</span> <span class="k">where</span> <span class="n">col_name</span> <span class="o">=</span> <span class="n">xxx</span><span class="p">;</span>
+<span class="k">delete</span> <span class="k">from</span> <span class="n">test</span> <span class="k">where</span> <span class="n">col_name</span> <span class="o">=</span> <span class="n">xxx</span><span class="p">;</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>在下面的几个前提下会有不同的加锁策略，参考<a href="http://hedengcheng.com/?p=771#_Toc374698322" target="_blank">MySQL 加锁处理分析</a>：</p>
+<p>在下面的几个前提下会有不同的加锁策略，参考 <a href="http://hedengcheng.com/?p=771" target="_blank">MySQL 加锁处理分析</a>：</p>
 
 <ul>
-<li>前提一：id 列是不是主键？</li>
+<li>前提一：col_name 列是不是主键？</li>
 <li>前提二：当前系统的隔离级别是什么？</li>
-<li>前提三：id 列如果不是主键，那么 id 列上有索引吗？</li>
-<li>前提四：id 列上如果有二级索引，那么这个索引是唯一索引吗？</li>
+<li>前提三：col_name 列如果不是主键，那么 col_name 列上有索引吗？</li>
+<li>前提四：col_name 列上如果有二级索引，那么这个索引是唯一索引吗？</li>
 <li>前提五：两个 SQL 的执行计划是什么？索引扫描？全表扫描？</li>
 </ul>
 
@@ -434,13 +460,15 @@
 
 <p><strong>id 非唯一索引+RC</strong> 情况</p>
 
-<p>满足条件的 id 的二级索引(非唯一索引)加 X 锁，同时对回表的主键索引的记录加 X 锁。</p>
+<p>满足条件的 id 的二级索引（非唯一索引）加 X 锁，同时对回表的主键索引的记录加 X 锁。</p>
 
 <p><strong>id 无索引+RC</strong> 情况</p>
 
 <p>若 id 列上没有索引，会走聚簇索引的<strong>全扫描</strong>进行过滤，即每条记录，无论是否满足条件，都会被加上 X 锁。</p>
 
 <p>但是为了效率考量，MySQL 做了优化，对扫描到的记录加锁之后，会使用 unlock_row 方法，把不满足条件的记录放锁，不过这就违背了 2PL 的约束。</p>
+
+<p>2PL （Two-Phase Locking，二阶段锁），说的是锁操作分为两个阶段：加锁阶段与解锁阶段，并且保证加锁阶段与解锁阶段不相交。</p>
 
 <p><strong>id 主键+RR</strong> 情况</p>
 
@@ -452,19 +480,115 @@
 
 <p><strong>id 非唯一索引+RR</strong> 情况</p>
 
-<p>这里就需要注意了，由于非唯一索引，所以可能会有多条记录，为了避免幻读。考虑到 B+树索引的有序性，满足条件的项在二级索引上一定是连续存放的，除了对查询到记录加 X 锁，为了防止被插入新纪录，需要在这些记录的间隙加锁。这时候其他事务是无法在其区间内进行插入，会得到超时的错误。同时，如果以主键索引列为条件范围更新数据，也会存在间隙锁、下一键锁的。</p>
+<p>这里就需要注意了，由于非唯一索引，所以可能会有多条记录。考虑到 B+ 树索引的有序性，满足条件的项在二级索引上一定是连续存放的，除了对查询到记录加 X 锁，为了防止被插入新纪录，需要在这些记录的间隙加锁。这时候其他事务是无法在其区间内进行插入，会得到超时的错误。同时，如果以主键索引列为条件范围更新数据，也会存在间隙锁、下一键锁的。</p>
 
 <p>同时这时候你可能会注意到，RR 级别的 select 也可能选取到多个记录，怎么保证不发生幻读？答案就是前面提到的<strong>快照读</strong>。</p>
 
-<p>同时这又引入另外的一个问题，前面的 RC 级别也是快照读，那解决幻读了么？答案是：没有，因为同是快照读，会在不同级别下有些许区别，对于 RC 和 RR 的快照读：</p>
+<p>同时这又引入另外的一个问题，前面的 RC 级别也是快照读，那解决幻读了么？答案是：没有，因为虽然 MySQL 在 RR 和 RC 级别利用快照实现了一致性读 (consistent read)，准确的说应该是非阻塞的一致性读，但会在不同级别下有些许区别：</p>
 
 <ul>
-<li>总的来说，事务总能够读取到，自己写入 (update /insert /delete) 的行记录</li>
-<li>RC 下，快照读总是能读到最新的行数据快照（已提交的），即事务在每次 Read 操作时，都会建立 Read View(快照)。</li>
+<li>总的来说，事务总能够读取到，自己写入 (update /insert /delete) 的行记录。</li>
+<li>RC 下，快照读总是能读到最新的行数据快照（已提交的），即事务在每次 Read 操作时，都会建立 Read View（快照）。</li>
 <li>RR 下，某个事务首次 read 记录的时间为 T，未来不会读取到 T 时间之后已提交事务写入的记录，以保证连续相同的 read 读到相同的结果集，即事务在第一个 Read 操作时，会建立 Read View。</li>
 </ul>
 
-<p>需要补充的一点是，<strong>RR 的幻读的解决并不完善，可以在事务期间可以通过显式加锁来读取其他事务里已提交的数据</strong>，如使用 <code>select * from test lock in share mode;</code>，<strong>这是因为加锁读的时候不是使用的快照读而是当前读了</strong>。</p>
+<p>具体可以可以看官方文档 <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-consistent-read.html" target="_blank">Consistent Nonlocking Reads</a>，也可以根据下面的验证下 RC 级别下的每次读都会新建快照：</p>
+
+<table>
+<thead>
+<tr>
+<th>事务 A</th>
+<th>事务 B</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>set session transaction isolation level read committed;</td>
+<td>insert into test values(1,&lsquo;Tom&rsquo;,11,60);</td>
+</tr>
+
+<tr>
+<td>start transaction;</td>
+<td></td>
+</tr>
+
+<tr>
+<td>select name from test where id=1; // Tom</td>
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+<td>update test set name=&lsquo;Jack&rsquo; where id=1;</td>
+</tr>
+
+<tr>
+<td>select name from test where id=1; // Jack</td>
+<td></td>
+</tr>
+
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<p>需要补充的一点是，这里提到的幻读和一致性读可能不能完全 match，<strong>RR 级别在事务期间可以通过显式加锁来读取其他事务里已提交的数据</strong>，如使用 <code>select * from test lock in share mode;</code>，<strong>这是因为加锁读的时候不是使用的快照读而是当前读了</strong>，可以尝试如下。</p>
+
+<table>
+<thead>
+<tr>
+<th>事务 A</th>
+<th>事务 B</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>set session transaction isolation level repeatable read;</td>
+<td></td>
+</tr>
+
+<tr>
+<td>start transaction;</td>
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+<td>insert into test values(2,&lsquo;Jack&rsquo;,12,60);</td>
+</tr>
+
+<tr>
+<td>select name from test where id=2; // Jack</td>
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+<td>update test set name=&lsquo;Tony&rsquo; where id=2;</td>
+</tr>
+
+<tr>
+<td>select name from test where id=2; // Jack</td>
+<td></td>
+</tr>
+
+<tr>
+<td>select name from test where id=2 lock in share mode; // Tony</td>
+<td></td>
+</tr>
+
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<p>对于事务 A ，第一次 select 建立快照，所以是可以看到事务开始之后加入的内容的；第二次是虽然数据已更新，但是读的快照了；第三次显示加锁，就是直接当前读，可以读到更改后的数据。</p>
 
 <p><strong>id 无索引+RR</strong> 情况</p>
 
@@ -472,9 +596,9 @@
 
 <p><strong>Serializable</strong> 情况</p>
 
-<p>在 RC，RR 隔离级别下，都是快照读，不加锁。但是在 Serializable 隔离级别，会加读锁 S，也就是说快照读不复存在，MVCC 并发控制降级为悲观锁控制。</p>
+<p>在 RC，RR 隔离级别下，select 都是快照读，不加锁的。但是在 Serializable 隔离级别，读也会加读锁 S，也就是不再使用 MVCC 并发控制，读写都为悲观锁控制。</p>
 
-<p>这时候可能会有另外的疑问了，串行和 RR 有什么区别？既然“都解决了幻读”，如果仔细看了 <a href="#id 非唯一索引+RR">id 非唯一索引+RR</a> 情形下的读取时候的分析，可以知道，其 RR 幻读在 select 时候是使用的快照实现的，可以通过显式加锁使用当前读产生幻读，也就是这时候的幻读是解决不完全的，官方文档摘抄：</p>
+<p>这时候可能会有另外的疑问了，串行和 RR 有什么区别？既然“都解决了幻读”，如果仔细看了 id 非唯一索引+RR 情形下的读取时候的分析，可以知道，其 RR 幻读在 select 时候是使用的快照实现的，可以通过显式加锁使用当前读产生幻读，也就是这时候的幻读是解决不完全的，官方文档摘抄：</p>
 
 <blockquote>
 <p>This level is like REPEATABLE READ, but InnoDB implicitly converts all plain SELECT statements to SELECT &hellip; FOR SHARE if autocommit is disabled. If autocommit is enabled, the SELECT is its own transaction.</p>
@@ -484,13 +608,13 @@
 
 <p>所以 Serializable 级别实现是强一致性的，即抛弃快照读，完全基于锁，即：读加共享锁，写加排他锁。</p>
 
-<h3 id="mysql-默认级别">MySQL 默认级别</h3>
+<h2 id="mysql-默认级别">MySQL 默认级别</h2>
 
 <p>MySQL 默认的隔离级别设为可重复读 (Repeatable Read)，前面提到 Serializable 是强一致性事务，性能不佳！互联网的分布式方案，多采用最终一致性的事务解决方案！</p>
 
 <p>RR 级别可以通过显式的加锁如 <code>select ... for update</code>, <code>select ... lock in share lock</code> 可以有与 Serializable 级别的查询一样的行为。这就是为什么默认是 RR 级别，因为更新操作已是避免幻读的，那么在某些重要的场合可以显式加锁自行实现 Serializable 级别的查询一样的行为来保证一致性。</p>
 
-<p>同时对比 RC 和 RR ，有一种说法是在互联网界一般采用 RC，<a href="https://www.cnblogs.com/rjzheng/p/10510174.html" target="_blank">互联网项目中 mysql 应该选什么事务隔离级别</a>，其论点上面的锁分析里也提到过：</p>
+<p>同时对比 RC 和 RR ，有一种说法是在互联网界一般采用 RC 级别，<a href="https://www.cnblogs.com/rjzheng/p/10510174.html" target="_blank">互联网项目中 mysql 应该选什么事务隔离级别</a>，其论点上面的锁分析里也提到过：</p>
 
 <ol>
 <li>在 RR 隔离级别下，存在间隙锁，导致出现死锁的几率比 RC 大的多。</li>
@@ -500,7 +624,147 @@
 
 <p>另外，行级锁都是基于索引的，如果一条 SQL 语句用不到索引是不会使用行级锁的，会使用表级锁把整张表锁住，这也是对上面的几个锁表的情况的解释。</p>
 
-<h3 id="mysql-事务语句">MySQL 事务语句</h3>
+<h2 id="mysql-mvcc">MySQL MVCC</h2>
+
+<p>既然上面提到了 MVCC，那么这里在继续深化下。<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_consistent_read" target="_blank">consistent_read</a> 这里面提到：</p>
+
+<blockquote>
+<p>With REPEATABLE READ isolation level, the snapshot is based on the time when the first read operation is performed. With READ COMMITTED isolation level, the snapshot is reset to the time of each consistent read operation.</p>
+</blockquote>
+
+<p>上面的话在前面 id 非唯一索引+RR 的部分也分析过，也就是开始拍快照的时候是取决于事务里的第一条语句的。或者在启动事务时候加上参数 <code>WITH CONSISTENT SNAPSHOT</code> 这样就是 begin/start transaction 语句即事务一开始就拍下快照，注意的是这个参数不会改变隔离级别，所以说只适合拥有 consistent_read 的事务级别即 RR。</p>
+
+<table>
+<thead>
+<tr>
+<th>事务 A</th>
+<th>事务 B</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>set session transaction isolation level repeatable read;</td>
+<td></td>
+</tr>
+
+<tr>
+<td>start transaction with consistent snapshot;</td>
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+<td>insert into test values(3,&lsquo;Scott&rsquo;,13,60);</td>
+</tr>
+
+<tr>
+<td>select name from test where id=3; // Empty set</td>
+<td></td>
+</tr>
+
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<p>可以看到上面的使用了 <code>with consistent snapshot</code> 的事务 A 中在开始时候就拍下了快照，所以事务开始之后的其他修改内容对 A 不可见，不同于 <strong>id 非唯一索引+</strong> 时候的第一条读触发快照。</p>
+
+<p>那么其他的隔离级别在使用 <code>with consistent snapshot</code> 开始事务会发生什么呢？在 MySQL 5.7 下会出现 warning 提示该参数被忽略，也就是 <code>with consistent snapshot</code> 只会对 RR 有效。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">mysql&gt; <span class="nb">set</span> session transaction isolation level <span class="nb">read</span> committed<span class="p">;</span>
+Query OK, <span class="m">0</span> rows affected <span class="o">(</span><span class="m">0</span>.00 sec<span class="o">)</span>
+
+mysql&gt; start transaction with consistent snapshot<span class="p">;</span>
+Query OK, <span class="m">0</span> rows affected, <span class="m">1</span> warning <span class="o">(</span><span class="m">0</span>.00 sec<span class="o">)</span>
+
+mysql&gt; show warnings<span class="p">;</span>
++---------+------+-------------------------------------------------------------------------------------------------------------------------+
+<span class="p">|</span> Level   <span class="p">|</span> Code <span class="p">|</span> Message                                                                                                                 <span class="p">|</span>
++---------+------+-------------------------------------------------------------------------------------------------------------------------+
+<span class="p">|</span> Warning <span class="p">|</span>  <span class="m">138</span> <span class="p">|</span> InnoDB: WITH CONSISTENT SNAPSHOT was ignored because this phrase can only be used with REPEATABLE READ isolation level. <span class="p">|</span>
++---------+------+-------------------------------------------------------------------------------------------------------------------------+</code></pre></td></tr></table>
+</div>
+</div>
+<p>既然 RR 运用了快照读，那么可以设想下，如果 socre 是 60，两个事物都在自己的快照上将 socre + 1 更新，那么最后结果是 61 还是 62？</p>
+
+<table>
+<thead>
+<tr>
+<th>事务 A</th>
+<th>事务 B</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td></td>
+<td>insert into test values(4,&lsquo;Bob&rsquo;,14,60);</td>
+</tr>
+
+<tr>
+<td>start transaction with consistent snapshot;</td>
+<td>start transaction with consistent snapshot;</td>
+</tr>
+
+<tr>
+<td>update test set socre=socre+1 where id=4;</td>
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+<td>update test set socre=socre+1 where id=4; // 阻塞</td>
+</tr>
+
+<tr>
+<td></td>
+<td>// 如果上面阻塞时间过长会超时错误</td>
+</tr>
+
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+
+<tr>
+<td></td>
+<td>// 事务 A 提交后，B 的 update 才会执行</td>
+</tr>
+
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+</tbody>
+</table>
+
+<p>也就是最后会变为 62，原因很简单，该数据的行级 X 锁已经被事务 A 提前获取，提交之前都不会释放，事务 B 要想再加上 X 锁修改就必须等待，等到 A 提交、释放锁之后，B 却是在最新的 61 数据上进行更改而不是快照值 60 这是为什么？原因是之前提到的 RR 下显示加锁可以“击穿快照”直接当前读，那么这里的更新操作其实是 读+写 的操作，整个操作是一个锁，那么有锁的读就会使用当前读，即读到事务 A 提交之后的数据。</p>
+
+<p>同时这里会涉及到一个问题，就是读时或者事务开始是会生成快照，那么这个快照是如何保存的？答案是 undo log，具体可以参考 <a href="http://mysql.taobao.org/monthly/2015/04/01/" target="_blank">MySQL · 引擎特性 · InnoDB undo log 漫游</a> 这片文章，简要的说的话就是：</p>
+
+<blockquote>
+<p>An undo log is a collection of undo log records associated with a single read-write transaction. An undo log record contains information about how to undo the latest change by a transaction to a clustered index record. If another transaction needs to see the original data as part of a consistent read operation, the unmodified data is retrieved from undo log records.</p>
+</blockquote>
+
+<h2 id="mysql-事务语句">MySQL 事务语句</h2>
 
 <p>设置、查看当前事务的隔离级别</p>
 <div class="highlight"><div class="chroma">
@@ -520,9 +784,9 @@
 <pre class="chroma"><code class="language-sql" data-lang="sql"><span class="c1">-- 设置当前回话、全局的事务隔离级别
 </span><span class="c1"></span><span class="k">SET</span> <span class="p">[</span><span class="k">SESSION</span> <span class="o">|</span> <span class="k">GLOBAL</span><span class="p">]</span> <span class="n">TRANSACTION</span> <span class="k">ISOLATION</span> <span class="k">LEVEL</span> <span class="err">{</span><span class="k">READ</span> <span class="k">UNCOMMITTED</span> <span class="o">|</span> <span class="k">READ</span> <span class="k">COMMITTED</span> <span class="o">|</span> <span class="k">REPEATABLE</span> <span class="k">READ</span> <span class="o">|</span> <span class="k">SERIALIZABLE</span><span class="err">}</span>
 <span class="c1">-- MySQL&lt;5.7.20，查看全局、当前会话、当前的事务隔离级别
-</span><span class="c1"></span><span class="k">SELECT</span> <span class="o">@@</span><span class="k">global</span><span class="p">.</span><span class="n">tx_isolation</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="o">@@</span><span class="k">session</span><span class="p">.</span><span class="n">tx_isolation</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="o">@@</span><span class="n">tx_isolation</span><span class="p">;</span>
+</span><span class="c1"></span><span class="k">SELECT</span> <span class="o">@@</span><span class="k">global</span><span class="p">.</span><span class="n">t_isolation</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">@@</span><span class="k">session</span><span class="p">.</span><span class="n">t_isolation</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">@@</span><span class="n">t_isolation</span><span class="p">;</span>
 <span class="c1">-- MySQL&gt;5.7.19
 </span><span class="c1"></span><span class="k">SELECT</span> <span class="o">@@</span><span class="k">global</span><span class="p">.</span><span class="n">transaction_isolation</span><span class="p">;</span>
 <span class="k">SELECT</span> <span class="o">@@</span><span class="k">session</span><span class="p">.</span><span class="n">transaction_isolation</span><span class="p">;</span>
@@ -553,133 +817,81 @@
 <span class="k">rollback</span><span class="o">/</span><span class="k">commit</span><span class="p">;</span></code></pre></td></tr></table>
 </div>
 </div>
+<p>查看锁的各种状态，和当前连接的状态：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">show</span> <span class="n">status</span> <span class="k">like</span> <span class="s1">&#39;%lock%&#39;</span><span class="p">;</span>
+<span class="k">show</span> <span class="k">full</span> <span class="n">processlist</span><span class="p">;</span></code></pre></td></tr></table>
+</div>
+</div>
 <h2 id="mysql-死锁">MySQL 死锁</h2>
 
-<p>两个事务分别占有对方想要的记录的锁，RR 级别下的 gap 锁可能增加死锁的概率。</p>
-
-<ul class="task-list">
-<li><label><input type="checkbox" disabled class="task-list-item"> MySQL 死锁未完待续</label></li>
-</ul>
-
-<h3 id="不同索引锁冲突">不同索引锁冲突</h3>
-
-<h3 id="gap-锁冲突">gap 锁冲突</h3>
-
-<p>对于 MySQL <code>Show innodb status</code> 可以查看死锁情况。</p>
-
-<h2 id="postgresql-的锁与事务实现">PostgreSQL 的锁与事务实现</h2>
-
-<ul class="task-list">
-<li><label><input type="checkbox" disabled class="task-list-item"> PostgreSQL 的锁与事务实现这部分还待完善</label></li>
-</ul>
-
-<p>pg 事务隔离级别表格，低版本的 pg(8.0) 的事务支持可能只有两种事务级别 RC 和 Serializable，<code>现在通用的版本的提供了 RR 级别，PostgreSQL 默认的级别是 RC</code>。</p>
+<p>同并发编程下的多个线程争抢锁一样，当两个事务分别占有对方想要的记录的锁时，会造成死锁，如下：</p>
 
 <table>
 <thead>
 <tr>
-<th>Isolation Level</th>
-<th>Dirty Read</th>
-<th>Nonrepeatable Read</th>
-<th>Phantom Read</th>
-<th>Serialization Anomaly</th>
+<th>事务 A</th>
+<th>事务 B</th>
 </tr>
 </thead>
 
 <tbody>
 <tr>
-<td>Read uncommitted</td>
-<td>Allowed, but not in PG</td>
-<td>Possible</td>
-<td>Possible</td>
-<td>Possible</td>
+<td>insert into test values(5,&lsquo;Alice&rsquo;,15,60);</td>
+<td></td>
 </tr>
 
 <tr>
-<td>Read committed</td>
-<td>Not possible</td>
-<td>Possible</td>
-<td>Possible</td>
-<td>Possible</td>
+<td>set session transaction isolation level serializable;</td>
+<td>set session transaction isolation level serializable;</td>
 </tr>
 
 <tr>
-<td>Repeatable read</td>
-<td>Not possible</td>
-<td>Not possible</td>
-<td>Allowed, but not in PG</td>
-<td>Possible</td>
+<td>start transaction;</td>
+<td>start transaction;</td>
 </tr>
 
 <tr>
-<td>Serializable</td>
-<td>Not possible</td>
-<td>Not possible</td>
-<td>Not possible</td>
-<td>Not possible</td>
+<td>select name from test where id=5;</td>
+<td>select name from test where id=5;</td>
+</tr>
+
+<tr>
+<td>update test set socre=socre+1 where id=5; // 阻塞</td>
+<td></td>
+</tr>
+
+<tr>
+<td>// 更新成功</td>
+<td>update test set socre=scroe+1 where id=5; // 检测到死锁，退出事务</td>
+</tr>
+
+<tr>
+<td>commit;</td>
+<td></td>
 </tr>
 </tbody>
 </table>
 
-<ul>
-<li>RU 级别，这个级别不允许脏读，实质上已经是 RC 级别</li>
-<li>RC 级别
+<p>上面就是典型的死锁场景，事务 A 更新时候阻塞是对方也获取了 S 锁，如果事务 B 没有修改该数据然后结束事务（释放 S 锁）的话，那么阻塞在更新的事务 A 即可以完成更新操作然后提交。但是，事务 B 期间也要更新，那就会试图等待事务 A 释放 S 锁，这样一来就死锁了。对于上面的情况，MySQL 在发现死锁的时候，即事务 B 更新的时候，会输出 ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction，强制结束事务 B。</p>
+
+<p>还有比较容易出现死锁的场景是批量更新，两个事务以非唯一索引（有可能是两个不同的非唯一索引）进行数据的更新，最后 A  的对主键加锁顺序是 [1, 2, 3, 4] 而 B 可能是 [4, 5, 6, 1]。</p>
+
+<p>同时，RR 级别下的 gap 锁可能增加死锁的概率，而且通常不容易发现。</p>
+
+<h3 id="死锁的预防">死锁的预防</h3>
 
 <ul>
-<li>SELECT 查询（注意 PG 没有 FOR UPDATE/SHARE 子句）只能看到查询开始之前已提交的数据而无法看到未提交的数据或者在查询执行期间其它事务已提交的数据 （仅读当时数据库快照）。<strong>不过，SELECT 看得见其自身所在事务中前面更新执行结果，即使它们尚未提交</strong>。</li>
-</ul></li>
-<li>RR 级别
-
-<ul>
-<li>RR 级别就已经使用快照避免了幻读</li>
-<li>重复读事务中的查询看到的只是事务开始时的快照， 而不是该事务内部当前查询开始时的快照</li>
-<li>需要手动处理：<code>串行化失败的时候重新启动事务</code></li>
-</ul></li>
-<li>Serializable 级别
-
-<ul>
-<li>也是基于快照读？一般情况下没有锁数据？</li>
-<li>需要手动处理：<code>串行化失败的时候重新启动事务</code></li>
-<li>不过，正如可重复读隔离级别一样， 使用这个级别的应用必须准备在串行化失败的时候重新启动事务。 事实上，该隔离级别和可重复读希望的完全一样，它只是监视这些条件，以所有事务的可能的序列不一致的（一次一个）的方式执行并行的可序列化事务执行的行为。 这种监测不引入任何阻止可重复读出现的行为，但有一些开销的监测，检测条件这可能会导致序列化异常 将触发序列化失败</li>
-</ul></li>
-<li><a href="https://www.postgresql.org/docs/current/static/transaction-iso.html" target="_blank">官方参考</a></li>
-<li><a href="https://my.oschina.net/liuyuanyuangogo/blog/497929" target="_blank">PostgreSQL 并发控制</a></li>
+<li>增加索引，通过之前的 MySQL 怎么加锁，可以看到不管是 RR 还是 RC 在使用非索引的条件筛选数据更新时候都会遇到，锁表的这一个步骤，这回造成很多无辜的死锁。</li>
+<li>合理设置索引，设置索引后锁的粒度有所下降，不至于锁表，但是在 RR 级别下可以看到对于非唯一索引，由于 gap 锁的存在，也很容易产生死锁，所以尽可能的采用区分度高的列作为索引，合理使用 where。</li>
+<li>对于批量的数据更新，建议根据避免死锁的理论，对加锁/解锁顺序进行统一，比如可以统一按照主键排序。</li>
+<li>然后就是合理使用事务，尽可能的将大的事务拆分为小的事务。</li>
 </ul>
-
-<h3 id="postgresql-与-mysql-的事务对比">PostgreSQL 与 MySQL 的事务对比</h3>
-
-<ul>
-<li>pg 的关于幻读的理解好像是全局表的形式，但是实现的时候不锁现有的数据，也就是读都是快照，写的话谁先下手谁先锁（基于版本？)，谁除此之外的事务再写就报错（会终止事务）</li>
-<li>mysql 的对于幻读的理解是基于：一旦读，就在其数据范围里加 S 锁，读的时候是非快照数据（能读到其他事务提交的数据），自己的 S 锁自己能去掉升级为 X 去修改，但是别的 serializable 事务如果也读了（加 S 锁）数据就麻烦了，也就是数据被别的事务读过就不能修改，只能用于读，只能有第一次读的事务才能修改，一旦修改后，其他事务都不能读</li>
-<li>pg 是基于升级版本的 mvvc 的无锁实现，mysql 是基于锁和 mvcc 混合实现的，对于预先读取的数据有严格的数据锁定的话，需要在 pgsql 里显式的 select for update 来锁定</li>
-<li>当两个事务同时更新数据的时候，后一个事务里的更新在 pg 和 MySQL 里都会阻塞，但是如果前一个事务提交，MySQL 被阻塞的更新会马上执行（排他锁被释放），pg 的被阻塞的更新会提示 <strong>could not serialize access due to concurrent update</strong> 即抛出异常，这时候可能需要业务端自旋进行尝试。</li>
-</ul>
-
-<p><strong>嵌套事务</strong>方面的对比</p>
-
-<ul>
-<li>pg 不支持嵌套事务</li>
-<li>MySQL 的嵌套事务实际为独立的事务，当 sql 解释器遇到 start transaction 时候会触发 commit。</li>
-</ul>
-
-<h3 id="postgresql-事务语句">PostgreSQL 事务语句</h3>
-
-<p>开始事务时候指定级别</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">BEGIN</span> <span class="n">TRANSACTION</span> <span class="k">ISOLATION</span> <span class="k">LEVEL</span> <span class="k">REPEATABLE</span> <span class="k">READ</span><span class="p">;</span>
-<span class="p">...</span> <span class="p">...</span>
-<span class="k">END</span></code></pre></td></tr></table>
-</div>
-</div>
-<p>显示事务的级别 <code>show transaction_isolation;</code></p>
-
-<p>设置事务等级，下面的设置只有在事务内才会有效，除了<code>SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL SERIALIZABLE;</code></p>
 
 <h2 id="事务与-django">事务与 Django</h2>
 
@@ -742,33 +954,28 @@
         <span class="k">return</span> <span class="n">account</span></code></pre></td></tr></table>
 </div>
 </div>
-<h2 id="其他">其他</h2>
+<h2 id="总结">总结</h2>
 
-<ul>
-<li>可重复读和提交读在一定程度上是矛盾的。在同一个事务里，如果保证了可重复读，就会看不到其他事务的提交，违背了提交读；如果保证了提交读，就会导致前后两次读到的结果不一致，违背了可重复读。但是上述也可以说是没矛盾，即幻读是保证未 select 的数据也不会变化，还是只保证 select 过后的数据（范围）不会变化，MySQL 的解决更趋向于后者。</li>
-</ul>
+<p>数据库的事务问题，最终可以简要的概括为<strong>并发模型下的读写者的问题</strong>。</p>
+
+<p>而数据库会比简单的一个文件的读写者问题要更复杂，因为数据库有表、行等不同的粒度，若是不介意可以直接对所涉及到的整个表都用上简单的读写锁（就像直接锁文件一样），都不用各种事务级别 (MyISAM 就是表锁，没有事务，像极了文件的读写者的解决方法），结果就是绝对安全但是部分情况下性能极差。</p>
+
+<p>而事务问题和事务级别的出现是在探讨如何一步步的降级“安全的标准”到实际生成环境下可以接受的几种程度，即最后的事务级别，之后如何在不同的隔离级别上尽可能的提高系统吞吐就是数据库引擎的问题了，可以说隔离级别选择决定上限，而并发控制实现决定下限。</p>
+
+<p>实现方式总的思路就是悲观锁和乐观锁这两种，亦或是其不同程度的组合，正是这样混合的模式使得 MySQL 的事务的细节理解起来没那么容易，但这也正是我们需要下功夫的地方。</p>
 
 <h2 id="参考">参考</h2>
 
 <ul>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-transaction-isolation-levels.html" target="_blank">innodb-transaction-isolation-levels</a></li>
+<li><a href="https://catkang.github.io/2018/09/19/concurrency-control.html" target="_blank">浅析数据库并发控制机制</a></li>
 <li><a href="https://blog.csdn.net/samjustin1/article/details/52210125" target="_blank">数据库锁机制</a></li>
 <li><a href="http://www.hollischuang.com/archives/934" target="_blank">乐观锁悲观锁</a></li>
 <li><a href="https://blog.csdn.net/Marvel__Dead/article/details/70209641" target="_blank">MySQL 的 InnoDB 默认隔离级别的幻读问题</a></li>
-<li><a href="https://tech.meituan.com/innodb-lock.html" target="_blank">Innodb 中的事务隔离级别和锁的关系</a></li>
-<li><a href="https://medium.com/@hakibenita/how-to-manage-concurrency-in-django-models-b240fed4ee2" target="_blank">Django model 的并发管理</a></li>
-<li><a href="https://my.oschina.net/liuyuanyuangogo/blog/497929" target="_blank">PostgreSQL 事务级别</a></li>
-<li><a href="https://my.oschina.net/liuyuanyuangogo/blog/499460" target="_blank">PostgreSQL 并发控制（显式锁定）</a></li>
-<li><a href="http://hedengcheng.com/?p=771#_Toc374698322" target="_blank">MySQL 加锁处理分析</a></li>
+<li><a href="http://hedengcheng.com/?p=771" target="_blank">MySQL 加锁处理分析</a></li>
 <li><a href="https://www.itcodemonkey.com/article/8719.html" target="_blank">InnoDB，快照读，在 RR 和 RC 下有何差异？</a></li>
+<li><a href="https://medium.com/@hakibenita/how-to-manage-concurrency-in-django-models-b240fed4ee2" target="_blank">Django model 的并发管理</a></li>
 </ul>
-
-<h2 id="todo">TODO</h2>
-
-<p><a href="https://www.cnblogs.com/LBSer/p/5183300.html" target="_blank">https://www.cnblogs.com/LBSer/p/5183300.html</a></p>
-
-<p><a href="https://catkang.github.io/2018/08/31/isolation-level.html" target="_blank">https://catkang.github.io/2018/08/31/isolation-level.html</a></p>
-
-<p><a href="https://catkang.github.io/2018/09/19/concurrency-control.html" target="_blank">https://catkang.github.io/2018/09/19/concurrency-control.html</a></p>
     </div>
 
     <div class="post-copyright">
@@ -801,7 +1008,11 @@
 
       
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/Devtools/Tools/tmux.html">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">tmux 终端复用神器</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
         <a class="next" href="/post/Computer/Linux/Linux-vm.html">
             <span class="next-text nav-default">为什么会出现 segmentation fault 之与虚拟内存</span>
             <span class="next-text nav-mobile">Next</span>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>tmux 终端复用神器 - Creaink - Build something for life</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Creaink" /><meta name="description" content="tmux is a terminal multiplexer: it enables a number of terminals to be created, accessed, and controlled from a single screen. tmux may be detached from a screen and continue running in the background, then later reattached.
+" /><meta name="keywords" content="Shell, Terminal multiplexer, Windows, Linux, MSYS2, mintty" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.53 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://creaink.github.io/post/Devtools/Tools/tmux.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.56003f67.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="tmux 终端复用神器" />
+<meta property="og:description" content="tmux is a terminal multiplexer: it enables a number of terminals to be created, accessed, and controlled from a single screen. tmux may be detached from a screen and continue running in the background, then later reattached." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://creaink.github.io/post/Devtools/Tools/tmux.html" /><meta property="article:published_time" content="2019-03-24T10:22:33&#43;08:00"/>
+<meta property="article:modified_time" content="2019-03-24T10:22:33&#43;08:00"/>
+
+<meta itemprop="name" content="tmux 终端复用神器">
+<meta itemprop="description" content="tmux is a terminal multiplexer: it enables a number of terminals to be created, accessed, and controlled from a single screen. tmux may be detached from a screen and continue running in the background, then later reattached.">
+
+
+<meta itemprop="datePublished" content="2019-03-24T10:22:33&#43;08:00" />
+<meta itemprop="dateModified" content="2019-03-24T10:22:33&#43;08:00" />
+<meta itemprop="wordCount" content="1553">
+
+
+
+<meta itemprop="keywords" content="Terminal,Shell,Cheat Sheet," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="tmux 终端复用神器"/>
+<meta name="twitter:description" content="tmux is a terminal multiplexer: it enables a number of terminals to be created, accessed, and controlled from a single screen. tmux may be detached from a screen and continue running in the background, then later reattached."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Creaink</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/links.html">
+        <li class="mobile-menu-item">Links</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Creaink</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/links.html">Links</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">tmux 终端复用神器</h1>
+
+      <div class="post-meta">
+        <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-03-24 </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 1553 words </span>
+          <span class="more-meta"> <i class="iconfont icon-clock"></i> 4 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#基本概念">基本概念</a></li>
+<li><a href="#会话管理">会话管理</a></li>
+<li><a href="#基础命令">基础命令</a></li>
+<li><a href="#会话-session">会话 session</a></li>
+<li><a href="#窗口-window">窗口 window</a></li>
+<li><a href="#窗格-pane">窗格 pane</a></li>
+<li><a href="#状态栏">状态栏</a></li>
+<li><a href="#配置文件">配置文件</a></li>
+<li><a href="#参考">参考</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>tmux is a terminal multiplexer: it enables a number of terminals to be created, accessed, and controlled from a single screen. tmux may be detached from a screen and continue running in the background, then later reattached.</p>
+
+<h2 id="基本概念">基本概念</h2>
+
+<p><a href="https://github.com/tmux/tmux" target="_blank">tmux</a> 是一个终端管理，多终端分屏软件，将终端窗口组合视为工程（回话），同时还解决了 SSH 超时 broken pipe 的问题，配合 zsh、vim 就是神器，同一个会话可以被多人打开，实现教学同步演示的目的，tmux 主要包括以下几个概念：</p>
+
+<ul>
+<li>session 会话：一个服务器可以包含多个会话</li>
+<li>window 窗口：一个会话可以包含多个窗口</li>
+<li>pane 面板：一个窗口可以包含多个面板</li>
+</ul>
+
+<p>运用上面的会话、窗口、面板可以打造一个可以移动的“终端 IDE”，类似的终端复用工具还有如 screen。在 windows 上建议使用 mintty，mintty 和 tmux 的下载安装，具体参考之前的关于 MSYS2 的文章，对于 Linux 和 Mac 来说终端软件就随意了，安装的话使用该平台的包管理就可。</p>
+
+<h2 id="会话管理">会话管理</h2>
+
+<p>在终端里使用 tmux 命令可以新建或者进入会话。</p>
+
+<ul>
+<li><code>tmux</code> 开始一个新 tmux 会话</li>
+<li><code>tmux new -s myname</code> 开始一个名为 myname 的 tmux 会话，也可以新建然后从新命名</li>
+<li><code>tmux a -t myname</code> 打开 (attache) 名为 myname 的 tmux 会话</li>
+<li><code>tmux a #num</code>  打开 (attache) 编号为#的 tmux 会话</li>
+<li><code>tmux ls</code> 列出所有的 tmux 会话</li>
+<li><code>tmux kill-session -t myname</code> 清除名为 myname 的 tmux 的会话</li>
+<li><code>tmux kill-server</code> 删除所有的会话</li>
+</ul>
+
+<p>注意 tmux 的 detach 是后台运行，所以当关机后就会丢失，如果要持久化可以采用 <a href="https://github.com/tmux-plugins/tmux-resurrect" target="_blank">tmux-resurrect</a> 插件来完成。</p>
+
+<h2 id="基础命令">基础命令</h2>
+
+<p>在一个 tmux 会话里，唤醒 tmux 的命令是需要前缀命令的，tmux 的默认前缀命令是 <code>Ctrl+b</code>，下文所有命令的默认前缀命令 <code>Ctrl+b</code> 为了篇幅，都是已经忽略了的。</p>
+
+<ul>
+<li><code>?</code>   列出所有快捷键；按 q 返回</li>
+<li><code>d</code>   脱离当前会话，可暂时返回 Shell 界面，输入 tmux attach 能够重新进入之前会话</li>
+<li><code>s</code>   选择并切换会话；在同时开启了多个会话时使用</li>
+<li><code>D</code>   选择要脱离的会话；在同时开启了多个会话时使用</li>
+<li><code>:</code>   进入命令行模式；此时可输入支持的命令，例如 kill-server 所有 tmux 会话</li>
+<li><code>[</code>   复制模式，光标移动到复制内容位置，空格键开始，方向键选择复制，回车确认，q/Esc 退出，复制模式下即可以通过上下键来滚动屏幕</li>
+<li><code>]</code>   进入粘贴模式，粘贴之前复制的内容，按 q/Esc 退出</li>
+<li><code>~</code>   列出提示信息缓存；其中包含了之前 tmux 返回的各种提示信息</li>
+<li><code>t</code>   显示当前的时间</li>
+<li><code>r</code>   刷新 (reload)</li>
+<li><code>#</code>   显示 copy 的 buffer 历史</li>
+<li><code>=</code>   选择 copy 的 buffer</li>
+</ul>
+
+<h2 id="会话-session">会话 session</h2>
+
+<ul>
+<li><code>s</code>   查看/切换 session</li>
+<li><code>d</code>   离开 session (detach)</li>
+<li><code>$</code>   重命名会话</li>
+</ul>
+
+<h2 id="窗口-window">窗口 window</h2>
+
+<ul>
+<li><code>c</code>   创建新窗口 (create)</li>
+<li><code>&amp;</code>   关闭当前窗口</li>
+<li><code>,</code>   重命名窗口</li>
+<li><code>w</code>   查看所有 session 和下面的 window 及下属的 panel</li>
+<li><code>[num]</code> 使用窗口号切换</li>
+<li><code>.</code>   窗口编号</li>
+<li><code>f</code>   所有窗口中查找关键词</li>
+<li><code>p</code>   切换到先前的窗口</li>
+<li><code>n</code>   切换到下一个窗口</li>
+</ul>
+
+<h2 id="窗格-pane">窗格 pane</h2>
+
+<ul>
+<li><code>%</code>   左右平分出两个窗格</li>
+<li><code>&quot;</code>   上下平分出两个窗格</li>
+<li><code>z</code>   最大化当前窗格，再次执行可恢复原来大小，配合 vim 很爽</li>
+<li><code>x</code>   关闭当前窗格</li>
+<li><code>q</code>   显示所有窗格的序号，<strong>在序号出现期间按下对应的数字，即可跳转至对应的窗格</strong></li>
+<li><code>方向键</code>  根据方向键跳转一个窗格</li>
+<li><code>o</code>   循环切换 pane</li>
+<li><code>space</code>   切换窗格布局，tmux 内置了五种窗格布局</li>
+<li><code>;</code>   选择上次使用的窗格</li>
+</ul>
+
+<p><strong>pane 调整</strong>快捷键。</p>
+
+<ul>
+<li><code>{</code>   当前窗格位置前移</li>
+<li><code>}</code>   当前窗格位置后移</li>
+<li><code>!</code>   将当前窗格升级为窗口</li>
+<li><code>Ctrl + 方向键</code> 移动边缘以调整当前面板大小</li>
+<li><code>Alt + 方向键</code>  以 5 个单元格为单位移动边缘以调整当前面板大小</li>
+</ul>
+
+<h2 id="状态栏">状态栏</h2>
+
+<p>一般默认的格式和对应的配置名如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-txt" data-lang="txt"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-txt" data-lang="txt">[test] 0:font-window* 1:zsh-           &#34;MacBook-Pro-8.local&#34; 17:20 16- 7-18
+[sessionName] windowNum:windowName+status[*|-] windowNum:windowName+status[*|-]</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="配置文件">配置文件</h2>
+
+<p>一般 tmux 的配置会放在 <code>~/.tmux.conf</code> 下，配置完成后需要使用 <code>tmux source-file ~/.tmux.conf</code> 命令来完成刷新设置，总的来说我建议不要修改已有的快捷键，当机器多了之后会导致混淆，<a href="../../Snippets/dotfile/tmux.conf">参考配置</a>。</p>
+
+<p>@import &ldquo;/Snippets/dotfile/tmux.conf&rdquo;</p>
+
+<p>对上面的配置文件的一些解释：</p>
+
+<ul>
+<li><p>tmux 如果嵌套了，按几次 <code>ctrl+b</code> 就是进入嵌套层次的次数，如按两次 <code>ctrl+b</code>。最好的方式还是使用配置文件来解决，也就是给出的配置的注释 <code># nested</code> 的部分，配置之后按 F12 即切换外围 tmux 的 prefix 的传入，来源参考文末的连接。</p></li>
+
+<li><p>建议在本地的机器上用，全套的配置。远程的机器用 <code># my theme</code> 注释以上的简单配置，以加以区分。</p></li>
+
+<li><p>配置里面是能使了鼠标的，也就是可以使用鼠标切换 Pane 和 Windows，也能使用鼠标调整 pane 的大小，滚轮上下查看历史等功能，鼠标选择文本等功能。</p></li>
+
+<li><p>一般来说 tmux 的复制会比麻烦，折腾起来也麻烦，建议的是直接用终端软件的文本选择模式如 mintty 是按住 shift 键用鼠标选择，iterm2 是按住 option 键用鼠标选择。</p></li>
+</ul>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="http://cenalulu.github.io/linux/tmux/" target="_blank">Tmux - Linux 从业者必备利器</a></li>
+<li><a href="https://medium.freecodecamp.org/tmux-in-practice-local-and-nested-remote-tmux-sessions-4f7ba5db8795" target="_blank">嵌套 tmux 终极解决方法</a></li>
+<li><a href="https://github.com/gpakosz/.tmux" target="_blank">Oh My Tmux</a></li>
+</ul>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-03-24</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div><footer class="post-footer">
+      <div class="post-tags">
+        <div style="margin-bottom:5px">
+          <i class="iconfont icon-folder-open"></i>
+            <a href="/categories/Tools/">Tools</a>
+            </div>
+        <div>
+          <i class="iconfont icon-label"></i>
+            <a href="/tags/Terminal/">Terminal</a>
+            <a href="/tags/Shell/">Shell</a>
+            <a href="/tags/Cheat-Sheet/">Cheat Sheet</a>
+            </div>
+      </div>
+
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/Backend/Database/Transaction.html">
+            <span class="next-text nav-default">数据库事务浅析</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="lv-container" data-id="city" data-uid="MTAyMC80MjAzOS8xODU4Ng">
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+
+        if (typeof LivereTower === 'function') { return; }
+
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+    <noscript>Please enable JavaScript to view the comments powered by <a href="https://livere.com/">LiveRe.</a></noscript>
+    </div>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:gcreaink@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/creaink" class="iconfont icon-github" title="github"></a>
+  <a href="https://creaink.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-131846852-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>
