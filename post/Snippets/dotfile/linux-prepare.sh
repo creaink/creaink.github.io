@@ -1,3 +1,5 @@
+# https://www.v2ex.com/t/514417
+
 # prepare
 sudo apt-get update
 sudo apt-get install openssh-server
@@ -5,10 +7,10 @@ sshd
 
 
 # change apt source
-sudo cp /etc/apt/source.list /etc/apt/source.list.bak
-sudo touch /etc/apt/source.list
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
+sudo touch /etc/apt/sources.list
 
-cat > /etc/apt/source.list << EOF
+cat > /etc/apt/sources.list << EOF
 deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial main restricted universe multiverse
 deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse
 deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse
@@ -69,18 +71,24 @@ set hlsearch
 set smartcase
 set ignorecase
 
+set paste
 set autoindent
 set cindent
 set encoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 set mouse=c
+
+set cursorline
+set cursorcolumn
+highlight CursorLine   cterm=NONE ctermbg=black guibg=NONE guifg=NONE
+highlight CursorColumn cterm=NONE ctermbg=black guibg=NONE guifg=NONE
+
 set tabstop=4
 set shiftwidth=4
 set expandtab
 set smarttab
 set backspace=2
 set clipboard=unnamed
-set paste
 filetype plugin indent on
 syntax on
 
@@ -251,6 +259,11 @@ echo "Configure Services"
 sudo systemctl enable x11vnc.service
 sudo systemctl daemon-reload
 
+
+# clean
+
+sudo rm -rf /var/cache/apt/*
+sudo rm -rf /var/lib/apt/lists/*
 
 # TODO
 

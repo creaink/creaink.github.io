@@ -50,7 +50,7 @@
 
 <meta itemprop="datePublished" content="2019-03-16T10:16:00&#43;08:00" />
 <meta itemprop="dateModified" content="2019-03-16T10:16:00&#43;08:00" />
-<meta itemprop="wordCount" content="8973">
+<meta itemprop="wordCount" content="8958">
 
 
 
@@ -132,7 +132,7 @@
 
       <div class="post-meta">
         <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-03-16 </span>
-          <span class="more-meta"> <i class="iconfont icon-book"></i> 8973 words </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 8958 words </span>
           <span class="more-meta"> <i class="iconfont icon-clock"></i> 18 mins read </span>
         
       </div>
@@ -378,7 +378,7 @@
 
 <h2 id="mysql-的事务实现">MySQL 的事务实现</h2>
 
-<p>前面的 SQL 标准的 [事务隔离与事务问题的对应](#事务隔离与事务问题的对应）提到过不同数据库的实现对应不一定符号标准。如 MySQL 下的 REPEATABLE READ 是可以利用解决 gap locks 和 next-key locks 解决更新时候的幻读，同时利用快照“解决” select 时候幻读，参考 <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html" target="_blank">官方文档</a>。</p>
+<p>前面的 SQL 标准的 <a href="#事务隔离与事务问题的对应">事务隔离与事务问题的对应</a> 提到过不同数据库的实现对应不一定符号标准。如 MySQL 下的 REPEATABLE READ 是可以利用解决 gap locks 和 next-key locks 解决更新时候的幻读，同时利用快照“解决” select 时候幻读，参考 <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html" target="_blank">官方文档</a>。</p>
 
 <p>InnoDB 存储引擎，为了提高并发，在 RR 和 RC 级别使用了 MVCC 机制，即在并发事务时，通过读取数据行的历史数据版本，通过不加锁来提高并发的一致性读 (Consistent Nonlocking Read)。MySQL 的 MVCC 的版本的实现具体是通过 DATA_TRX_ID（产生当前记录项的事务 ID) 和 DATA_ROLL_PTR（数据何时过期或者被删除）这两个隐藏列来实现的。</p>
 
@@ -670,7 +670,7 @@
 </tbody>
 </table>
 
-<p>可以看到上面的使用了 <code>with consistent snapshot</code> 的事务 A 中在开始时候就拍下了快照，所以事务开始之后的其他修改内容对 A 不可见，不同于 <strong>id 非唯一索引+</strong> 时候的第一条读触发快照。</p>
+<p>可以看到上面的使用了 <code>with consistent snapshot</code> 的事务 A 中在开始时候就拍下了快照，所以事务开始之后的其他修改内容对 A 不可见，不同于 <strong>id 非唯一索引+RR</strong> 时候的第一条读触发快照。</p>
 
 <p>那么其他的隔离级别在使用 <code>with consistent snapshot</code> 开始事务会发生什么呢？在 MySQL 5.7 下会出现 warning 提示该参数被忽略，也就是 <code>with consistent snapshot</code> 只会对 RR 有效。</p>
 <div class="highlight"><div class="chroma">

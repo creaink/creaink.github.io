@@ -18,7 +18,7 @@ Plug 'kien/ctrlp.vim'
 "Plug 'vim-airline/vim-airline'
 "set t_Co=256
 "let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
+"let g:airline#extensions#tabline#enabled = 1
 
 "Plug 'airblade/vim-gitgutter'
 "set updatetime=300
@@ -53,9 +53,13 @@ set smartcase
 " 搜索时大小写不敏感
 set ignorecase
 
+" 粘贴模式
+set paste
+
 " 设置C/C++方式自动对齐
 set autoindent
 set cindent
+set smartindent
 
 " 设置编码方式
 set encoding=utf-8
@@ -64,6 +68,13 @@ set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 
 " 鼠标可用
 set mouse=c
+
+" 行列高亮
+set cursorline
+set cursorcolumn
+highlight CursorLine   cterm=NONE ctermbg=black guibg=NONE guifg=NONE
+highlight CursorColumn cterm=NONE ctermbg=black guibg=NONE guifg=NONE
+
 
 " tab缩进
 set tabstop=4
@@ -74,9 +85,6 @@ set smarttab
 " 解决插入模式下delete/backspce键失效问题
 set backspace=2
 set clipboard=unnamed
-
-" 粘贴模式
-set paste
 
 filetype plugin indent on
 syntax on

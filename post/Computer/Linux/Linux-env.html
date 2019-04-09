@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Linux 环境变量 - Creaink - Build something for life</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Creaink" /><meta name="description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助" /><meta name="keywords" content="Linux, Environment, Environ, Shell" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.53 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://creaink.github.io/post/Computer/Linux/Linux-env.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.56003f67.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Linux 环境变量" />
+<meta property="og:description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://creaink.github.io/post/Computer/Linux/Linux-env.html" /><meta property="article:published_time" content="2019-04-09T10:30:00&#43;08:00"/>
+<meta property="article:modified_time" content="2019-04-09T10:30:00&#43;08:00"/>
+
+<meta itemprop="name" content="Linux 环境变量">
+<meta itemprop="description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助">
+
+
+<meta itemprop="datePublished" content="2019-04-09T10:30:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-04-09T10:30:00&#43;08:00" />
+<meta itemprop="wordCount" content="4927">
+
+
+
+<meta itemprop="keywords" content="Linux,Shell," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux 环境变量"/>
+<meta name="twitter:description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Creaink</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/links.html">
+        <li class="mobile-menu-item">Links</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Creaink</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/links.html">Links</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Linux 环境变量</h1>
+
+      <div class="post-meta">
+        <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-04-09 </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 4927 words </span>
+          <span class="more-meta"> <i class="iconfont icon-clock"></i> 10 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#环境变量">环境变量</a></li>
+<li><a href="#shell-变量">Shell 变量</a></li>
+<li><a href="#环境变量的传递">环境变量的传递</a></li>
+<li><a href="#常用环境变量">常用环境变量</a>
+<ul>
+<li><a href="#shell-常用变量">Shell 常用变量</a></li>
+</ul></li>
+<li><a href="#实战">实战</a></li>
+<li><a href="#参考">参考</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>环境变量 (environment variables) 和 shell 变量 (shell variables) 的有区别吗？环境变量在进程之间是怎么传递的？</p>
+
+<h2 id="环境变量">环境变量</h2>
+
+<p><strong>环境变量</strong>是 UNIX/Linux 系统级别的概念，最常见的一个应当是 PATH 了。环境变量查找表会存储于每一个进程内存空间中的 mian 栈的上面的位置，具体参考我之前的关于虚拟内存部分的文章，环境变量查找表指向的值（环境变量）根据是其否进行二次修改，存储在 main 栈之上或者堆中，如《The Linux Programming Interface》书中的截图。</p>
+
+<p><img src="imgs/2019-04-08-21-00-44.png" alt="environ" /></p>
+
+<p>在 C 编程中，环境变量查找表可以视为在 <code>unistd.h</code> 中的导出变量 <code>extern char **environ;</code>，也可以由 main 函数传入，新建下面的文件 showenv.c。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="c1">// showenv.c
+</span><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="k">extern</span> <span class="kt">char</span> <span class="o">**</span><span class="n">environ</span><span class="p">;</span>
+<span class="c1">// env 和 environ 是一样的，都是指向的存储着环境变量字符串指针的数组
+</span><span class="c1"></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">env</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">env</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;env[%d] at %p = %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">env</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">env</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;End of Env</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+    <span class="n">getchar</span><span class="p">();</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>之后进行测试：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ gcc showenv.c -o showenv
+<span class="c1"># 打印当前进程的环境变量，限于篇幅和隐私省略部分，但是也可以看到下面有很多有意思的环境变量</span>
+$ ./showenv
+env<span class="o">[</span><span class="m">0</span><span class="o">]</span> at <span class="nv">0xbfa1a7ed</span> <span class="o">=</span> <span class="nv">HOME</span><span class="o">=</span>/home/creaink
+env<span class="o">[</span><span class="m">1</span><span class="o">]</span> at <span class="nv">0xbfa1a800</span> <span class="o">=</span> <span class="nv">LANG</span><span class="o">=</span>en_US.UTF-8
+env<span class="o">[</span><span class="m">11</span><span class="o">]</span> at <span class="nv">0xbfa1ae35</span> <span class="o">=</span> <span class="nv">PATH</span><span class="o">=</span>/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+env<span class="o">[</span><span class="m">12</span><span class="o">]</span> at <span class="nv">0xbfa1ae93</span> <span class="o">=</span> <span class="nv">PWD</span><span class="o">=</span>/home/creaink/program
+env<span class="o">[</span><span class="m">13</span><span class="o">]</span> at <span class="nv">0xbfa1aead</span> <span class="o">=</span> <span class="nv">SHELL</span><span class="o">=</span>/usr/bin/zsh
+env<span class="o">[</span><span class="m">21</span><span class="o">]</span> at <span class="nv">0xbfa1af76</span> <span class="o">=</span> <span class="nv">USER</span><span class="o">=</span>creaink
+env<span class="o">[</span><span class="m">24</span><span class="o">]</span> at <span class="nv">0xbfa1afb3</span> <span class="o">=</span> <span class="nv">ZSH</span><span class="o">=</span>/home/creaink/.oh-my-zsh
+env<span class="o">[</span><span class="m">25</span><span class="o">]</span> at <span class="nv">0xbfa1afd0</span> <span class="o">=</span> <span class="nv">_</span><span class="o">=</span>/home/creaink/program/./showenv</code></pre></td></tr></table>
+</div>
+</div>
+<p>同时每一个进程都是可以增删其自己进程的环境变量，如可以通过 C 库里面的 <code>setenv()</code> 和 <code>unsetenv()</code> 函数完成，下面新建 testenv.c 文件进行测试：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="c1">// testenv.c
+</span><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="k">extern</span> <span class="kt">char</span> <span class="o">**</span><span class="n">environ</span><span class="p">;</span>
+<span class="c1">// 更改 pos 位置上的环境变量的值
+</span><span class="c1"></span><span class="kt">void</span> <span class="nf">setEnvAt</span><span class="p">(</span><span class="kt">int</span> <span class="n">pos</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">val</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">environ</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">strchr</span><span class="p">(</span><span class="n">environ</span><span class="p">[</span><span class="n">pos</span><span class="p">],</span> <span class="sc">&#39;=&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="n">environ</span><span class="p">[</span><span class="n">pos</span><span class="p">];</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">name</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">char</span><span class="p">)</span><span class="o">*</span><span class="n">len</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+    <span class="n">memcpy</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">environ</span><span class="p">[</span><span class="n">pos</span><span class="p">],</span> <span class="n">len</span><span class="p">);</span>
+    <span class="n">name</span><span class="p">[</span><span class="n">len</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+
+    <span class="n">setenv</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="o">*</span><span class="n">b</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;stack: %p, heap: %p </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;env_arr_addr: %p, env[0]_addr: %p, env[1]_addr: %p, env_var_addr: %p </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">environ</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">environ</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">&amp;</span><span class="n">environ</span><span class="p">);</span>
+
+    <span class="n">setEnvAt</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#34;test 0&#34;</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;env: %p, env[0]: %p, value: %s </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">environ</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">environ</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+
+    <span class="n">setEnvAt</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;test 1&#34;</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;env[0]: %p, value: %s </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">environ</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">environ</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+
+    <span class="c1">// getchar();
+</span><span class="c1"></span>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>使用上面的程序进行试验：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ gcc testenv.c -o testenv
+$ ./testenv
+stack: 0xbfc5c224, heap: 0x9127008
+env_arr_addr: 0xbfc5c2ec, env<span class="o">[</span><span class="m">0</span><span class="o">]</span>_addr: 0xbfc5d7ed, env<span class="o">[</span><span class="m">1</span><span class="o">]</span>_addr: 0xbfc5d800, env_var_addr: 0x804a034
+env: 0xbfc5c2ec, env<span class="o">[</span><span class="m">0</span><span class="o">]</span>: 0x9127430, value: <span class="nv">HOME</span><span class="o">=</span><span class="nb">test</span> <span class="m">0</span>
+env<span class="o">[</span><span class="m">0</span><span class="o">]</span>: 0x9127430, value: <span class="nv">HOME</span><span class="o">=</span><span class="nb">test</span> <span class="m">0</span>
+
+<span class="c1"># 取消在 testenv.c 的 return 上的 getchar 再编译</span>
+$ gcc testenv.c -o testenv <span class="o">&amp;&amp;</span> ./testenv
+stack: 0xbfc74264, heap: 0x91bd008
+env_arr_addr: 0xbfc7432c, env<span class="o">[</span><span class="m">0</span><span class="o">]</span>_addr: 0xbfc747e0, env<span class="o">[</span><span class="m">1</span><span class="o">]</span>_addr: 0xbfc747f3, env_var_addr: 0x804a038
+env: 0xbfc7432c, env<span class="o">[</span><span class="m">0</span><span class="o">]</span>: 0x91bd430, value: <span class="nv">HOME</span><span class="o">=</span><span class="nb">test</span> <span class="m">0</span>
+env<span class="o">[</span><span class="m">0</span><span class="o">]</span>: 0x91bd430, value: <span class="nv">HOME</span><span class="o">=</span><span class="nb">test</span> <span class="m">0</span>
+
+<span class="c1"># 另外一个终端</span>
+$ program ps -ef <span class="p">|</span>grep testenv
+creaink  <span class="m">14577</span> <span class="m">13295</span>  <span class="m">0</span> <span class="m">18</span>:17 pts/3    <span class="m">00</span>:00:00 ./testenv
+$ program cat /proc/14577/maps
+<span class="m">08048000</span>-08049000 r-xp <span class="m">00000000</span> <span class="m">08</span>:01 <span class="m">789637</span>     /home/creaink/program/testenv
+<span class="m">08049000</span>-0804a000 r--p <span class="m">00000000</span> <span class="m">08</span>:01 <span class="m">789637</span>     /home/creaink/program/testenv
+0804a000-0804b000 rw-p <span class="m">00001000</span> <span class="m">08</span>:01 <span class="m">789637</span>     /home/creaink/program/testenv
+091bd000-091de000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>          <span class="o">[</span>heap<span class="o">]</span>
+b75bf000-b75c0000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>
+b75c0000-b7770000 r-xp <span class="m">00000000</span> <span class="m">08</span>:01 <span class="m">913947</span>     /lib/i386-linux-gnu/libc-2.23.so
+b7770000-b7772000 r--p 001af000 <span class="m">08</span>:01 <span class="m">913947</span>     /lib/i386-linux-gnu/libc-2.23.so
+b7772000-b7773000 rw-p 001b1000 <span class="m">08</span>:01 <span class="m">913947</span>     /lib/i386-linux-gnu/libc-2.23.so
+b7773000-b7776000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>
+b777c000-b777d000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>
+b777d000-b7780000 r--p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>          <span class="o">[</span>vvar<span class="o">]</span>
+b7780000-b7781000 r-xp <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>          <span class="o">[</span>vdso<span class="o">]</span>
+b7781000-b77a4000 r-xp <span class="m">00000000</span> <span class="m">08</span>:01 <span class="m">913923</span>     /lib/i386-linux-gnu/ld-2.23.so
+b77a4000-b77a5000 r--p <span class="m">00022000</span> <span class="m">08</span>:01 <span class="m">913923</span>     /lib/i386-linux-gnu/ld-2.23.so
+b77a5000-b77a6000 rw-p <span class="m">00023000</span> <span class="m">08</span>:01 <span class="m">913923</span>     /lib/i386-linux-gnu/ld-2.23.so
+bfc54000-bfc75000 rw-p <span class="m">00000000</span> <span class="m">00</span>:00 <span class="m">0</span>          <span class="o">[</span>stack<span class="o">]</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>会看到一个有点诡异的地方，在修改环境变量之前，第一个环境变量的值 <code>env[0]_addr</code> 存储在 0xbfc5d7ed，可以看到这个值是大于 <code>stack: 0xbfc5c224</code> 的，而环境变量的查找表 <code>env_arr_addr</code> 存储在 0xbfc5c2ec 也大于栈的地址但是小于第一个环境变量值存储的地址，这都符合前面提到的 memory mapping。而在修改环境变量之后，第一个环境变量的值 <code>env[0]_addr</code> 存储的位置发生了变化，变为了 0x9127430，可以看这是位于堆区域的，而查找表 <code>env_arr_addr</code> 的地址没有发生变化，在一次修改环境变量之后没有也发生变化。其原因与分析见 <a href="#环境变量的传递">环境变量的传递</a>。</p>
+
+<p>由上面的 <code>program cat /proc/14577/maps</code> 可以看出，env 的变量落在 <code>[stack]</code> 区域，而且每次运行程序地址都不一样，这是会有一个随机偏移量，为的是提高程序的安全性。</p>
+
+<p>由于环境变量存于进程的空间内所以在 <code>/proc/&lt;PID&gt;/environ</code> 下也有映射也是可以看到，或者通过 shell 的 <code>printenv</code> 或者 <code>env</code> 命令也可以看到其实是一些字符键值对。</p>
+
+<p>同时环境变量也就理所当然的可以通过 fork 传递给子进程的，上面的 <code>setenv()/unsetenv()</code> 是 C 里面的库函数的方式，在 shell 下可以通过内建 <code>export</code> 命令来完成，删除可以通过 <code>unset</code> 命令。说道这里应当会想起熟悉 <code>export PATH=/XXX/bin:$PAHT</code> 这句命令了，这句命令就是将用户的给的值和 <code>$PATH</code> shell 变量拼接在一起然后更新到环境变量 PATH 里面。这里有可能就会造成混淆了，又是 <code>$PATH</code> 又是 <code>PATH</code> ，有什么区别？</p>
+
+<h2 id="shell-变量">Shell 变量</h2>
+
+<p><strong>Shell 变量</strong> 也可以被称为<strong>局部环境变量</strong>，可以通过 <code>echo $&lt;VARNAME&gt;</code> 显示单个 shell 变量的值，要想列举可以使用 <code>set</code> 命令 (zsh 下是输出 ok 的，bash 下有可能不太对），使用 <code>VARNAME=varvalue</code> 的方式可以设置 shell 变量。对于 shell 变量和环境变量可以理解 shell 会将环境变量融合/映射到其 shell 变量当中，这样使用 <code>echo $PAHT</code> 也是可以的输出环境变量的值的。但是 shell 变量的值是不会在 fork 时候被子进程继承的，那么 shell 变量存储在哪？这个是个好问题。</p>
+
+<p>通过下面的例子可观察下环境变量与局部环境变量的差别：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nv">SVAR</span><span class="o">=</span>shell
+$ <span class="nb">export</span> <span class="nv">EVAR</span><span class="o">=</span>env
+$ <span class="nb">echo</span> <span class="nv">$SVAR</span> <span class="nv">$EVAR</span>
+env shell
+<span class="c1"># 但是在 proc 下的 environ 没有看到，这是因为这力只会映射初始的环境变量</span>
+$ cat /proc/<span class="nv">$$</span>/environ <span class="p">|</span>grep -a EVAR
+
+<span class="c1"># 但是在子进程就可以看到了环境变量，但是看不到 shell 变量，这里也可以使用子 bash 进程测试</span>
+$ cat /proc/self/environ <span class="p">|</span>grep -a <span class="s1">&#39;EVAR\|SVAR&#39;</span>
+<span class="nv">EVAR</span><span class="o">=</span>env
+
+<span class="c1"># 使用 printenv 是可以立即看见的</span>
+$ printenv <span class="p">|</span> grep <span class="s1">&#39;EVAR\|SVAR&#39;</span>
+<span class="nv">EVAR</span><span class="o">=</span>env
+
+<span class="c1"># 更改环境变量之后&#34;映射&#34;的 shell 变量也随之改变，并且不用重新 export，子进程也是最新的值</span>
+$ <span class="nb">export</span> <span class="nv">EVAR</span><span class="o">=</span>environment
+$ <span class="nb">echo</span> <span class="nv">$EVAR</span>
+environment
+$ cat /proc/self/environ <span class="p">|</span>grep -a <span class="s1">&#39;EVAR\|SVAR&#39;</span>
+<span class="nv">EVAR</span><span class="o">=</span>environment
+
+<span class="c1"># unset 可以同时删除环境变量和 shell 变量</span>
+$ <span class="nb">unset</span> EVAR SVAR
+$ <span class="nb">echo</span> <span class="nv">$EVAR</span> <span class="nv">$SVAR</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="环境变量的传递">环境变量的传递</h2>
+
+<p>这里就有一个问题，既然环境变量是通过继承 fork 而来的父进程的，那么 exec* 系列或者 init 进程的环境变量是哪里来的？</p>
+
+<p>先看看 init 进程：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 可以看到这里 pid 为 1 的 systemd 进程的环境变量和 PATH 非常简单</span>
+$ sudo cat /proc/1/environ
+<span class="nv">HOME</span><span class="o">=</span>/init<span class="o">=</span>/sbin/initNETWORK_SKIP_ENSLAVED<span class="o">=</span><span class="nv">recovery</span><span class="o">=</span><span class="nv">TERM</span><span class="o">=</span><span class="nv">linuxdrop_caps</span><span class="o">=</span><span class="nv">BOOT_IMAGE</span><span class="o">=</span>/boot/vmlinuz-4.15.0-46-genericPATH<span class="o">=</span>/sbin:/usr/sbin:/bin:/usr/binPWD<span class="o">=</span>/rootmnt<span class="o">=</span>/root
+
+<span class="c1"># 由 systemd 直接启动的 cron 的配置开业看到里面会提供如 EnvironmentFile 的选项去扩展从 systemd 进程继承的环境变量</span>
+$ cat /etc/systemd/system/multi-user.target.wants/cron.service
+<span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>Regular background program processing daemon
+<span class="nv">Documentation</span><span class="o">=</span>man:cron<span class="o">(</span><span class="m">8</span><span class="o">)</span>
+
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">EnvironmentFile</span><span class="o">=</span>-/etc/default/cron
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/sbin/cron -f <span class="nv">$EXTRA_OPTS</span>
+<span class="nv">IgnoreSIGPIPE</span><span class="o">=</span><span class="nb">false</span>
+<span class="nv">KillMode</span><span class="o">=</span>process
+
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target</code></pre></td></tr></table>
+</div>
+</div>
+<p>从上面的演示可以看到 init 进程有可能是直接给定的几个简单的环境变量，之后的其他进程会通过其他的方式如配置文件的方式进行扩展。<code>/etc/environment</code> 文件算是一个这样的文件，但是其被被哪些程序锁读取，有待研究。</p>
+
+<p>虽说 exec 代码段替换成新的程序的代码，废弃原有的数据段和堆栈段，并为新程序分配新的数据段与堆栈段，唯一留下进程号，但是默认情况下如 shell 命令如 exec 运行的程序还是继承了原来进程的环境变量这是怎么回事？</p>
+
+<p>通过 <code>man exec</code> 可以知道 exec 系列在 C 中有下面的可供调用的函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">execl</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="p">...</span>
+                <span class="cm">/* (char  *)</span> <span class="nb">NULL</span> <span class="err">*/</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">execlp</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="p">...</span>
+                <span class="cm">/* (char  *)</span> <span class="nb">NULL</span> <span class="err">*/</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">execle</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="p">...</span>
+                <span class="cm">/*, (char *)</span> <span class="nb">NULL</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span> <span class="k">const</span> <span class="n">envp</span><span class="p">[]</span> <span class="err">*/</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">execv</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="k">const</span> <span class="n">argv</span><span class="p">[]);</span>
+<span class="kt">int</span> <span class="nf">execvp</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="k">const</span> <span class="n">argv</span><span class="p">[]);</span>
+<span class="kt">int</span> <span class="nf">execvpe</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">file</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="k">const</span> <span class="n">argv</span><span class="p">[],</span> <span class="kt">char</span> <span class="o">*</span><span class="k">const</span> <span class="n">envp</span><span class="p">[]);</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><code>execl*</code> 和 <code>execv*</code> 的区别在于 arg 是否使用的是可变参。而且可以注意到 execle 和 execvpe 是可以传如环境变量参数的，那么其他的函数在不提供环境变量下的环境变量是如何处理的？这就得看看再看创建进程时候如何将环境变量传递的。</p>
+
+<p>这里再看看创建进程时候如何将环境变量传递的，fork 方式直接拷贝一份就不说了，环境变量肯定是一样的。对于 exec 系列这里主要关注 2 两个函数作为对比，一个 <code>execv</code> 不能指定环境变量，一个 <code>execvpe</code> 可以指定环境变量，这里可以自行用 <code>man exec</code> 看看其差别。在 <a href="https://code.woboq.org/userspace/glibc/posix/execv.c.html" target="_blank">execv</a> 源码中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cm">/* Execute PATH with arguments ARGV and environment from `environ&#39;.  */</span>
+<span class="kt">int</span>
+<span class="nf">execv</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="k">const</span> <span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="n">__execve</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">__environ</span><span class="p">);</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>对上面的代码主要讲明两点：</p>
+
+<ul>
+<li>execv 调用的 __execve ，最后其实会是调用的 <a href="https://code.woboq.org/linux/linux/fs/exec.c.html#do_execve" target="_blank">do_execve</a> 最终的最终会使用系统调用完成的，其细节与本文无关，这里就不涉及了。</li>
+<li><code>__execve (path, argv, __environ)</code> 里的参数 __environ 有点意思，这个是个导出的全局变量，在 <a href="https://code.woboq.org/userspace/glibc/posix/environ.c.html#__environ" target="_blank">__environ</a> 代码里可以看到 <code>char **__environ = NULL;</code> 那这个和 C 编程时候从 <code>&lt;unistd.h&gt;</code> 导出的 environ 有什么区别？其实在该文件的注释里已经给出答案 <code>This file just defines the '__environ' variable (and alias 'environ').</code> 也就是通过 <code>_weak_alias</code> 的 <a href="https://zh.wikipedia.org/wiki/弱符号" target="_blank">弱符号</a> 完成的。</li>
+</ul>
+
+<p>也就是默认的不提供环境变量的情况下会默认将 __environ 传入，也就是也能像 fork 一样继承，只不过是通过调用时候传参的方式实现的。新建一个 <code>testexec.c</code> 文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="c1">// testexec.c
+</span><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="k">extern</span> <span class="kt">char</span> <span class="o">**</span><span class="n">environ</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;please input argv&#34;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">// 这简单的设置了一个环境变量的值，然后调用输入的程序替换本进程时候传入
+</span><span class="c1"></span>    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">env</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#34;MYENV=myenv&#34;</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">};</span>
+    <span class="n">execvpe</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">&amp;</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">env</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>然后来实践验证一下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ gcc testexec.c -o testexec
+
+<span class="c1"># 使用 strace 分析使用 testexec 调用之前的 showenv 时候的系统调用情况，过滤只剩 execve</span>
+$ strace ./testexec ./showenv
+
+execve<span class="o">(</span><span class="s2">&#34;./exec&#34;</span>, <span class="o">[</span><span class="s2">&#34;./exec&#34;</span>, <span class="s2">&#34;./showenv&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">26</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
+execve<span class="o">(</span><span class="s2">&#34;./showenv&#34;</span>, <span class="o">[]</span>, <span class="o">[</span>/* <span class="m">1</span> var */<span class="o">])</span>  <span class="o">=</span> <span class="m">0</span>
+env<span class="o">[</span><span class="m">0</span><span class="o">]</span> at <span class="nv">0xbfb09fe6</span> <span class="o">=</span> <span class="nv">MYENV</span><span class="o">=</span>myenv
+End of Env
+
+<span class="c1"># 上面的 [/* 26 vars */] 是哪些参数？</span>
+$ ./showenv
+env<span class="o">[</span><span class="m">0</span><span class="o">]</span> at <span class="nv">0xbff117ed</span> <span class="o">=</span> <span class="nv">HOME</span><span class="o">=</span>/home/creaink
+...
+env<span class="o">[</span><span class="m">25</span><span class="o">]</span> at <span class="nv">0xbff11fd0</span> <span class="o">=</span> <span class="nv">_</span><span class="o">=</span>/home/creaink/program/./showenv</code></pre></td></tr></table>
+</div>
+</div>
+<p>上面的 strace 捕获到两个 execve 系统调用，第一个是用于加载 testexec ，注意这里的 execve 是系统调用，上面提到的 exec* 6 个函数只是 execve 或者 execveat 系统调用的封装，所以即使在程序里使用的是 <code>execvpe</code> 最后实际使用的系统调用也是 execve，系统调用列表参见 <a href="http://man7.org/linux/man-pages/man2/syscalls.2.html" target="_blank">syscalls</a>，其包装的实现的中间函数是前面提到的 <a href="https://code.woboq.org/linux/linux/fs/exec.c.html#do_execve" target="_blank">do_execve</a>。第二个 execve 即使程序里使用 execvpe 造成。</p>
+
+<p>第一的 execve 调用后面有 26 个忽略的参数其实就是环境变量，这个在后面运行 <code>./showenv</code> 的已验证，第二个 execve 调用的环境变量只有一个即在程序里设定的 <code>MYENV=myenv</code>。这就是 execv 在调用时候默认把 __environ 传给 execve 系统调用，这样替换的程序也继承了环境变量，而 execvpe 显式指定了环境变量就不会使用原有进程的 __environ 了。</p>
+
+<p>再来尝试解释最前面的那个问题：当 setenv 之后，为什么 environ 里的环境变量值的地址由 main 栈上面变为了堆，这对 fork 和 execv* 有什么影响。上面提到 environ 是个弱符号，编译连接生成 elf 文件时候可以没有定义，相对于强符号。由此可以推断，传入 execve 系统调用的环境变量查找表，其指向的值（可能在堆可能在 mian 栈上）和本身会被内核复制到 main 栈上面，当环境变量发生改变时候即调用 setenv 时候，会将 main 栈上的环境变量值赋值到堆中并修改环境变量表的指向，之后的修改就在堆上面了，如果发生 exec* 的时候，由于有 <code>__execve (path, argv, __environ)</code> 的默认参数也就少将该环境变量表传递给系统调用，这时候就和上面的一致了，即内核会将环境变量查找表的指向的值压入 mian 栈上。</p>
+
+<p>具体的是实现可以可以看看 <code>setenv()</code> 的 <a href="https://code.woboq.org/userspace/glibc/stdlib/setenv.c.html#__add_to_environ" target="_blank">__add_to_environ</a> 源码，这里就不具体分析了。之所以这样做，是无法再 main 栈上面进行内存分配，就算能，当有大量环境变量时候不能够保证该区域不会和 main 栈重叠，所以就是使用了堆，而 exec 创建进程时候是知道环境变量大小的所以就直接写在 mian 栈上面了。</p>
+
+<p>在 shell 中的 exec 命令其实就是默认把 __environ 传入的。env 命令除了可以显示环境变量之外，还可以对传入的环境变量进行细节控制：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 新开一个终端</span>
+$  <span class="nb">exec</span> ./showenv
+env<span class="o">[</span><span class="m">0</span><span class="o">]</span> at <span class="nv">0xbfed37ed</span> <span class="o">=</span> <span class="nv">HOME</span><span class="o">=</span>/home/creaink
+...
+env<span class="o">[</span><span class="m">25</span><span class="o">]</span> at <span class="nv">0xbfed3fd0</span> <span class="o">=</span> <span class="nv">_</span><span class="o">=</span>/home/creaink/program/./showenv
+End of Env
+
+<span class="c1"># 使用 -i 参数忽略所有的环境变量</span>
+$ env -i ./showenv
+End of Env</code></pre></td></tr></table>
+</div>
+</div>
+<p>env 命令还有更多用法，参见 <code>man env</code>。</p>
+
+<h2 id="常用环境变量">常用环境变量</h2>
+
+<p>路径与 SHELL 相关的</p>
+
+<ul>
+<li><code>PATH</code>    命令的搜索路径</li>
+<li><code>PWD</code>     当前目录</li>
+<li><code>OLDPWD</code>  上个目录，对于 zsh 来说，所以可以 <code>cd -</code>，这里的 - 就和 ~ 一样是缩写，如果不回车直接 TAB 会出现最近访问的路径</li>
+<li><code>SHELL</code>   当前 shell 程序路径</li>
+<li><code>HOME</code>    当前用户的家目录</li>
+<li><code>LOGNAME</code> 当前登录用户名</li>
+<li><code>USER</code>    当前登录用户名</li>
+<li><code>TERM</code>    如 xterm-256color</li>
+</ul>
+
+<p>默认配置相关</p>
+
+<ul>
+<li><code>LANG</code>    语言如，en_US.UTF-8</li>
+<li><code>PAGER</code>   默认的分页方式，如 <code>/usr/bin/less</code></li>
+<li><code>EDITOR</code>  默认文本编辑的路径，如 vim</li>
+<li><code>VISUAL</code>  默认可视化编辑，如 gedit</li>
+<li><code>BROWSER</code> 默认浏览器</li>
+</ul>
+
+<p>下面的在写 Makefile 什么时候会常用到：</p>
+
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Value Examples</th>
+<th>What it&rsquo;s for</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>CC</td>
+<td>gcc</td>
+<td>The name of the C compiler to use</td>
+</tr>
+
+<tr>
+<td>CXX</td>
+<td>g++</td>
+<td>The name of the C++ compiler to use</td>
+</tr>
+
+<tr>
+<td>CFLAGS</td>
+<td>-o out.o</td>
+<td>A list of debugging/optimization flags to pass to the C compiler</td>
+</tr>
+
+<tr>
+<td>CXXFLAGS</td>
+<td>-Wall</td>
+<td>A list of debugging/optimization flags to pass to the C++ compiler</td>
+</tr>
+
+<tr>
+<td>CPPFLAGS</td>
+<td>-DDEBUG</td>
+<td>A list of flags to pass to the C/C++ pre-processor/compiler</td>
+</tr>
+
+<tr>
+<td>LIBRARY_PATH</td>
+<td>/usr/lib/firefox</td>
+<td>A list of directories (separated by colons) in which library files should be searched for</td>
+</tr>
+
+<tr>
+<td>INCLUDE</td>
+<td>/opt/app/src/include</td>
+<td>A colon-separated list of directories in which header files should be searched for</td>
+</tr>
+
+<tr>
+<td>CPATH</td>
+<td>..:$HOME/include:/usr/local/include</td>
+<td>A colon-separated list of directories in which header files should be searched for</td>
+</tr>
+</tbody>
+</table>
+
+<p>还有 ssh 相关</p>
+
+<ul>
+<li><code>SSH_CLIENT</code>  如 192.168.48.1 63886 22</li>
+<li><code>SSH_CONNECTION</code> 如 192.168.48.1 63886 192.168.48.137 22</li>
+<li><code>SSH_TTY</code>     如/dev/pts/0</li>
+</ul>
+
+<h3 id="shell-常用变量">Shell 常用变量</h3>
+
+<p>注意下面的有些变量只适用于 sh 脚本编程：</p>
+
+<ul>
+<li><code>$0</code> 当前脚本的文件名</li>
+<li><code>$n</code> 传递给脚本或函数的参数。n 是一个数字，表示第几个参数。例如，第一个参数是$1，第二个参数是$2。</li>
+<li><code>$#</code> 传递给脚本或函数的参数个数。</li>
+<li><code>$*</code> 传递给脚本或函数的所有参数。</li>
+<li><code>$@</code> 传递给脚本或函数的所有参数。被双引号 (&rdquo; &ldquo;) 包含时，与 $* 稍有不同，下面将会讲到。</li>
+<li><code>$?</code> 上个命令的退出状态，或函数的返回值。一般情况下，大部分命令执行成功会返回 0，失败返回 1。</li>
+<li><code>$$</code> 当前 Shell 进程 ID。对于 Shell 脚本，就是这些脚本所在的进程 ID。</li>
+<li><code>$PPID</code> 父进程 PID</li>
+<li><code>$PS1</code> shell 命令行前面的部分如 bash <code>username@hostname:~$</code>，里面是一些占位符，shell 程序会进行填充，具体参见 <a href="https://www.linuxnix.com/linuxunix-shell-ps1-prompt-explained-in-detail/" target="_blank">ps1</a></li>
+</ul>
+
+<p>其中 <code>$*</code> 和 <code>$@</code> 的异同：</p>
+
+<ul>
+<li>都表示传递给函数或脚本的所有参数，不被双引号 (&rdquo; &ldquo;) 包含时，都以 &ldquo;$1&rdquo; &ldquo;$2&rdquo; … &ldquo;$n&rdquo; 的形式输出所有参数。</li>
+<li>但是当它们被双引号 (&rdquo; &ldquo;) 包含时，&rdquo;$*&rdquo; 会将所有的参数作为一个整体，以&rdquo;$1 $2 … $n&rdquo;的形式输出所有参数；&rdquo;$@&rdquo; 会将各个参数分开，以&rdquo;$1&rdquo; &ldquo;$2&rdquo; … &ldquo;$n&rdquo; 的形式输出所有参数。</li>
+</ul>
+
+<h2 id="实战">实战</h2>
+
+<p>之前遇到用 cron 定时更新 Let’s encrypt 的证书，结果更新失败的，查看日志发现是找不到 nginx，无法重启完成更新，下面探究一下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ crontab -e
+<span class="c1"># 添加下面的进进行测试，每隔一分钟输出一下</span>
+*/1 *   *   *   *    cat /proc/self/environ &gt; /home/creaink/env
+
+$ cat /home/creaink/env
+<span class="nv">LANGUAGE</span><span class="o">=</span>en_US:HOME<span class="o">=</span>/home/creainkLOGNAME<span class="o">=</span><span class="nv">creainkPATH</span><span class="o">=</span>/usr/bin:/binLANG<span class="o">=</span>en_US.UTF-8SHELL<span class="o">=</span>/bin/shPWD<span class="o">=</span>/home/creaink
+
+<span class="c1"># 发现 nginx 没有在上面的 path 里</span>
+$ where nginx
+/usr/sbin/nginx
+
+<span class="c1"># 但是神奇的的是 cron 的环境变量是有的</span>
+$ sudo cat /proc/<span class="k">$(</span>pgrep -f cron<span class="k">)</span>/environ
+<span class="nv">LANG</span><span class="o">=</span>en_US.UTF-8LANGUAGE<span class="o">=</span>en_US:PATH<span class="o">=</span>/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin%</code></pre></td></tr></table>
+</div>
+</div>
+<p>这是 cron 最终会调用 shell 去解释这行命令，默认的 shell 是 <code>/bin/sh</code> 而且是非登录非交互模式（该模式是基础的环境变量，只能预加载 <code>$BASE_ENV</code> 的文件来初始化一些东西）。所以解决方法有下面的几种</p>
+
+<p><strong>方法一</strong>，直接在命令前面加上 export ，如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-txt" data-lang="txt"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-txt" data-lang="txt">*/1 *   *   *   *   export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin  &amp;&amp; cat /proc/self/environ &gt; /home/creaink/env`</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>方法二</strong>，添加全局的环境变量，同时可以把 shell 改了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-txt" data-lang="txt"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-txt" data-lang="txt">SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+*/1 *   *   *   *    cat /proc/self/environ &gt; /home/creaink/env</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>方法三</strong>，使用 <code>$BASE_ENV</code> 指定一个初始化脚本，可以是 <code>.bashrc</code> 或者自定义的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-txt" data-lang="txt"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-txt" data-lang="txt">BASE_ENV=/home/creaink/xxx.sh
+*/1 *   *   *   *    cat /proc/self/environ &gt; /home/creaink/env</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="参考">参考</h2>
+
+<ul>
+<li>《The Linux Programming Interface》</li>
+<li><a href="https://code.woboq.org/userspace/glibc/stdlib/setenv.c.html#__add_to_environ" target="_blank">setenv.c</a></li>
+<li><a href="https://help.ubuntu.com/community/EnvironmentVariables" target="_blank">EnvironmentVariables</a></li>
+</ul>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-04-09</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div><footer class="post-footer">
+      <div class="post-tags">
+        <div style="margin-bottom:5px">
+          <i class="iconfont icon-folder-open"></i>
+            <a href="/categories/Linux/">Linux</a>
+            </div>
+        <div>
+          <i class="iconfont icon-label"></i>
+            <a href="/tags/Linux/">Linux</a>
+            <a href="/tags/Shell/">Shell</a>
+            </div>
+      </div>
+
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/Devtools/Tools/tmux.html">
+            <span class="next-text nav-default">tmux 终端复用神器</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="lv-container" data-id="city" data-uid="MTAyMC80MjAzOS8xODU4Ng">
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+
+        if (typeof LivereTower === 'function') { return; }
+
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+    <noscript>Please enable JavaScript to view the comments powered by <a href="https://livere.com/">LiveRe.</a></noscript>
+    </div>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:gcreaink@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/creaink" class="iconfont icon-github" title="github"></a>
+  <a href="https://creaink.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-131846852-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

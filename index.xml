@@ -6,10 +6,19 @@
     <description>Recent content on Creaink - Build something for life</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 24 Mar 2019 10:22:33 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 09 Apr 2019 10:30:00 +0800</lastBuildDate>
     
 	<atom:link href="https://creaink.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux 环境变量</title>
+      <link>https://creaink.github.io/post/Computer/Linux/Linux-env.html</link>
+      <pubDate>Tue, 09 Apr 2019 10:30:00 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/post/Computer/Linux/Linux-env.html</guid>
+      <description>&lt;p&gt;环境变量 (environment variables) 和 shell 变量 (shell variables) 的有区别吗？环境变量在进程之间是怎么传递的？&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>tmux 终端复用神器</title>
