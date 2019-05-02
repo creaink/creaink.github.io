@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="Creaink" /><meta name="description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助" /><meta name="keywords" content="Linux, Environment, Environ, Shell" />
+<meta name="author" content="Creaink" /><meta name="description" content="环境变量 (environment variables) 和 shell 变量 (shell variables) 的有区别吗?环境变量在进程之间是怎么传递的?" /><meta name="keywords" content="Linux, Environment, Environ, Shell" />
 
 
 
@@ -39,13 +39,13 @@
 
 
 <meta property="og:title" content="Linux 环境变量" />
-<meta property="og:description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助" />
+<meta property="og:description" content="环境变量 (environment variables) 和 shell 变量 (shell variables) 的有区别吗?环境变量在进程之间是怎么传递的?" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://creaink.github.io/post/Computer/Linux/Linux-env.html" /><meta property="article:published_time" content="2019-04-09T10:30:00&#43;08:00"/>
 <meta property="article:modified_time" content="2019-04-09T10:30:00&#43;08:00"/>
 
 <meta itemprop="name" content="Linux 环境变量">
-<meta itemprop="description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助">
+<meta itemprop="description" content="环境变量 (environment variables) 和 shell 变量 (shell variables) 的有区别吗?环境变量在进程之间是怎么传递的?">
 
 
 <meta itemprop="datePublished" content="2019-04-09T10:30:00&#43;08:00" />
@@ -57,7 +57,7 @@
 <meta itemprop="keywords" content="Linux,Shell," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Linux 环境变量"/>
-<meta name="twitter:description" content="Linux Namespace 是容器技术的关键支撑技术，这篇文章介绍了 Namespace 技术，并利用该技术对容器、Docker 技术的原理做了次实践，对理解容器的特点和局限性很有帮助"/>
+<meta name="twitter:description" content="环境变量 (environment variables) 和 shell 变量 (shell variables) 的有区别吗?环境变量在进程之间是怎么传递的?"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -900,7 +900,11 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
       
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/Backend/SpringBoot/Spring-boot-security.html">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Spring Boot：（六）Spring Security 入门</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
         <a class="next" href="/post/Devtools/Tools/tmux.html">
             <span class="next-text nav-default">tmux 终端复用神器</span>
             <span class="next-text nav-mobile">Next</span>

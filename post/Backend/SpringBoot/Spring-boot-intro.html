@@ -50,7 +50,7 @@
 
 <meta itemprop="datePublished" content="2019-01-28T10:00:00&#43;08:00" />
 <meta itemprop="dateModified" content="2019-01-28T10:00:00&#43;08:00" />
-<meta itemprop="wordCount" content="1821">
+<meta itemprop="wordCount" content="1996">
 
 
 
@@ -132,7 +132,7 @@
 
       <div class="post-meta">
         <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-01-28 </span>
-          <span class="more-meta"> <i class="iconfont icon-book"></i> 1821 words </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 1996 words </span>
           <span class="more-meta"> <i class="iconfont icon-clock"></i> 4 mins read </span>
         
       </div>
@@ -494,6 +494,10 @@
 <pre class="chroma"><code class="language-properties" data-lang="properties">server.port=8081</code></pre></td></tr></table>
 </div>
 </div>
+<p>更多的配置可参考 <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html" target="_blank">common-application-properties</a>。</p>
+
+<p>配置中的 <code>${VAL}</code> 既可以是 properties 中的键，也可以是 <code>System.getProperty</code> 方法得到的即 JVM 的参数（<code>java -Dkey=value</code>），也可以是 <code>System.getEnv</code> 得到的环境变量。或者是 spring 特有的通过 <code>java -jar xxx.jar --key=value</code> 的方式，如果有以上三种方式传入的 key 和配置里面重复，会以传入参数为准，更多参见<a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html" target="_blank">Externalized Configuration</a>。</p>
+
 <h2 id="便捷开发">便捷开发</h2>
 
 <p>为了方便平时的开发，通常还会做如下的事情。</p>
