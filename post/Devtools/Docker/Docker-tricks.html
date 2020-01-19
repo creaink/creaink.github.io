@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Docker 技巧 - Creaink - Build something for life</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Creaink" /><meta name="description" content="总结下平时积累的 docker 使用经验与技巧" /><meta name="keywords" content="docker 技巧, docker 安装加速, docker 开放端口, docker 备份 volume, windows docker-cli, docker 时区设置" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.53 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://creaink.github.io/post/Devtools/Docker/Docker-tricks.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.56003f67.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Docker 技巧" />
+<meta property="og:description" content="总结下平时积累的 docker 使用经验与技巧" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://creaink.github.io/post/Devtools/Docker/Docker-tricks.html" /><meta property="article:published_time" content="2020-01-18T23:34:43&#43;08:00"/>
+<meta property="article:modified_time" content="2020-01-18T23:34:43&#43;08:00"/>
+
+<meta itemprop="name" content="Docker 技巧">
+<meta itemprop="description" content="总结下平时积累的 docker 使用经验与技巧">
+
+
+<meta itemprop="datePublished" content="2020-01-18T23:34:43&#43;08:00" />
+<meta itemprop="dateModified" content="2020-01-18T23:34:43&#43;08:00" />
+<meta itemprop="wordCount" content="2733">
+
+
+
+<meta itemprop="keywords" content="Docker,Tricks," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Docker 技巧"/>
+<meta name="twitter:description" content="总结下平时积累的 docker 使用经验与技巧"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Creaink</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/links.html">
+        <li class="mobile-menu-item">Links</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Creaink</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/links.html">Links</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">About</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Docker 技巧</h1>
+
+      <div class="post-meta">
+        <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2020-01-18 </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 2733 words </span>
+          <span class="more-meta"> <i class="iconfont icon-clock"></i> 6 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#国内安装使用-docker">国内安装使用 docker</a>
+<ul>
+<li><a href="#在线安装">在线安装</a></li>
+<li><a href="#使用离线安装包">使用离线安装包</a></li>
+<li><a href="#使用预编译文件安装">使用预编译文件安装</a></li>
+<li><a href="#国内-docker-镜像源">国内 docker 镜像源</a></li>
+</ul></li>
+<li><a href="#开放-docker-daemon-端口">开放 docker daemon 端口</a>
+<ul>
+<li><a href="#nginx-转发-socket">nginx 转发 socket</a></li>
+<li><a href="#nginx-代理-socket">nginx 代理 socket</a></li>
+<li><a href="#docker-cli-连接远程的-dockerd">docker-cli 连接远程的 dockerd</a></li>
+</ul></li>
+<li><a href="#docker-命令">docker 命令</a>
+<ul>
+<li><a href="#使用-curl-命令创建-service">使用 curl 命令创建 service</a></li>
+</ul></li>
+<li><a href="#减小镜像体积">减小镜像体积</a></li>
+<li><a href="#备份与还原">备份与还原</a></li>
+<li><a href="#docker-实践技巧">Docker 实践技巧</a>
+<ul>
+<li><a href="#nginx-remote-ip-不正确">Nginx remote ip 不正确</a></li>
+<li><a href="#entrypoint-中的环境变量">ENTRYPOINT 中的环境变量</a></li>
+<li><a href="#时区设置">时区设置</a></li>
+<li><a href="#其他技巧">其他技巧</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>总结下平时积累的 docker 使用经验与技巧</p>
+
+<h2 id="国内安装使用-docker">国内安装使用 docker</h2>
+
+<p>相比在线安装，这里推荐使用国内源下载离线安装包进行安装，但也可以通过国内镜像源加速在线安装。</p>
+
+<h3 id="在线安装">在线安装</h3>
+
+<p>官方文档的 <a href="https://docs.docker.com/install/linux/docker-ce/debian/" target="_blank">docker 安装</a> 如果较慢的话，可以使用国内的镜像进行加速：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ sudo apt-get update
+$ sudo apt-get install <span class="se">\
+</span><span class="se"></span>    apt-transport-https <span class="se">\
+</span><span class="se"></span>    ca-certificates <span class="se">\
+</span><span class="se"></span>    curl <span class="se">\
+</span><span class="se"></span>    gnupg2 <span class="se">\
+</span><span class="se"></span>    software-properties-common
+
+<span class="c1"># 这里把源替换为国内的源</span>
+$ curl -fsSL https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian/gpg <span class="p">|</span> sudo apt-key add -
+$ sudo apt-key fingerprint 0EBFCD88
+$ sudo apt-get update
+$ sudo apt-get install docker-ce docker-ce-cli containerd.io</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="使用离线安装包">使用离线安装包</h3>
+
+<p>如 Ubuntu 16 代号是 xenial，就可在 <code>https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/ubuntu/dists/xenial/pool/stable/amd64/</code> 下载 containerd docker-ce-cli docker-ce 三个 deb 离线包，对于不同的版本替换上面 url 中的关键字即可。</p>
+
+<p>之后使用 <code>sudo dpkg -i</code> 安装三个包（最后安装 docker-ce），之后使用 <code>sudo systemctl start docker</code> 启动即可。</p>
+
+<p>如果不确定版本之间的关系。可以先安装 docker-ce，会提示失败然后显示其依赖的版本要求。</p>
+
+<h3 id="使用预编译文件安装">使用预编译文件安装</h3>
+
+<p>这里并不推荐使用 <code>https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/static/stable/x86_64/docker-19.03.5.tgz</code> 链接下载可执行文件然后自己编写 docker 的 systemd 启动项，该方法过于繁琐且容易出错，这里就不叙述了。</p>
+
+<h3 id="国内-docker-镜像源">国内 docker 镜像源</h3>
+
+<p>下载 docker 镜像时，使用默认的 <a href="https://hub.docker.com" target="_blank">Docker Hub</a> 可能有点慢，可以使用国内的镜像源，修改 <code>/etc/docker/daemon.json</code> 文件（如果没有该文件可先 touch 一个），在 registry-mirrors 里添加内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;registry-mirrors&#34;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&#34;https://dockerhub.azk8s.cn&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;https://reg-mirror.qiniu.com&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;http://hub-mirror.c.163.com&#34;</span>
+  <span class="p">]</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上面的是国内的几个有用的镜像源，除此之外还可以使用 Redhat 的 <a href="https://quay.io/" target="_blank">Quay.io</a>，不过这个是单独的 registry 而不是 docker hub 的镜像，所以资源可能少点。修改完后注意 <code>sudo systemctl restart docker</code> 重启服务，之后使用 <code>docker info</code> 检查是否添加上了。</p>
+
+<h2 id="开放-docker-daemon-端口">开放 docker daemon 端口</h2>
+
+<p>原有的 docker daemon 使用的是 unix socket 即 <code>unix:///var/run/docker.sock</code> 进行 RESTful 接口的交互。为了方便二次开发和平时测试，需要将其开放为 TCP 端口的方式。这里介绍修改启动参数和使用 nginx 转发两种方式。</p>
+
+<p>对于修改启动参数，不同的 linux 的 init 系统有着不同的方式，对于 Ubuntu 16 来说其 init 为 systemd，开放端口分下面几个步骤：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 1. 新建文件</span>
+$ sudo mkdir /etc/systemd/system/docker.service.d
+$ sudo vim /etc/systemd/system/docker.service.d/startup_options.conf
+
+<span class="c1"># 以下为需要粘进去的内容</span>
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="c1"># 必要步骤需要先清空</span>
+<span class="nv">ExecStart</span><span class="o">=</span>
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/bin/dockerd -H fd:// -H tcp://0.0.0.0:2376
+
+<span class="c1"># 2. 重启 systemd 和 docker.service</span>
+$ sudo systemctl daemon-reload
+$ sudo systemctl restart docker.service
+
+<span class="c1"># 测试一下端口是否开放成功</span>
+$ curl http://0.0.0.0:2376/info</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="nginx-转发-socket">nginx 转发 socket</h3>
+
+<p>也可以使用 nginx 作为转发，暴露 docker daemon 的接口，该 nginx 最方便的是作为容器运行，其 Dockerfile 如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">FROM</span><span class="s"> nginx:stable</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">RUN</span> <span class="nb">echo</span> <span class="s1">&#39;user  root;\n\
+</span><span class="s1">        worker_processes  1;\n\
+</span><span class="s1">        error_log  /var/log/nginx/error.log warn;\n\
+</span><span class="s1">        pid        /var/run/nginx.pid;\n\
+</span><span class="s1">        events {\n\
+</span><span class="s1">            worker_connections  1024;\n\
+</span><span class="s1">        }\n\
+</span><span class="s1">        stream {\n\
+</span><span class="s1">            server {\n\
+</span><span class="s1">                listen 80;\n\
+</span><span class="s1">                proxy_pass unix:/var/run/docker.sock;\n\
+</span><span class="s1">            }\n\
+</span><span class="s1">        }\n&#39;</span> <span class="se">\
+</span><span class="se"></span>    &gt; /etc/nginx/nginx.conf<span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">EXPOSE</span><span class="s"> 80</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">CMD</span><span class="s"> [&#34;nginx&#34;, &#34;-g&#34;, &#34;daemon off;&#34;]</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>之后使用下面的命令构建和启动和测试该容器：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ docker build . -t docker-socket-proxy
+$ docker run -d -p <span class="m">8376</span>:80  -v /var/run/docker.sock:/var/run/docker.sock docker-socket-proxy:latest
+$ curl http://0.0.0.0:8376/info</code></pre></td></tr></table>
+</div>
+</div>
+<p>相比直接修改启动文件，可避免 docker daemon 重启，同时该容器作为 service 运行时，可以通过域名直接访问，这样依赖于 docker api 的服务在部署时候就不必部署在 manager 节点之上且强耦合与管理节点的 ip，而是直接通过域名的方式访问部署在 manager 节点上的 docker-socket-proxy 服务，实现任意节点的部署。</p>
+
+<p>docker-socket-proxy 的使命是将 unix socket 暴露成 tcp ，docker api 虽然是 http 的协议，但是 nginx 没有必要去使用该层次信息，作为 tcp 透传即可（nginx 1.9 以上支持）。所以在 nginx.conf 配置里将 http 配置块省去，并直接添加上 tcp，修改原来的 www-data user 为 root 以便访问 unix socket 文件。</p>
+
+<p>如果要用到 http 层的信息的话，自己改写 nginx 配置文件使用 http 转发即可，不过需要注意的是：对于 docker api 中的 WebSocket 接口和有 <code>Transfer-Encoding: chunked</code> 头的 HTTP 请求（如日志查看）来说需要特殊处理下。</p>
+
+<h3 id="nginx-代理-socket">nginx 代理 socket</h3>
+
+<p>首先给出 nginx http 代理 docker daemon socket 到 <code>/api/docker/</code> 下的配置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-conf" data-lang="conf"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-conf" data-lang="conf">upstream docker {
+    server unix:/var/run/docker.sock fail_timeout=0;
+}
+
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    &#39;&#39; close;
+}
+
+server {
+    listen 80 default_server;
+
+    location /api/docker/ {
+        # 或者直接 proxy_pass http://unix:/var/run/docker.sock;
+        proxy_pass http://docker/;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection &#34;Upgrade&#34;;
+
+        proxy_read_timeout 1h;
+    }
+}</code></pre></td></tr></table>
+</div>
+</div>
+<p><a href="http://nginx.org/en/docs/http/websocket.html" target="_blank">WebSocket proxying</a> 需要显式的说明，nginx 才会处理。但是对于不是 ws 的接口怎么办？</p>
+
+<p>在 nginx 的文档当中可以找到使用 map 的方式定义变量，根据客户端请求中 <code>$http_upgrade</code> 的值，来构造改变 <code>$connection_upgrade</code> ，参考 <a href="https://www.cnblogs.com/kevingrace/p/9512287.html" target="_blank">Nginx 支持 WebSocket 反向代理-学习小结</a>。</p>
+
+<p>上面 nginx 的官方文档里提到默认的 <a href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_read_timeout" target="_blank">proxy_read_timeout</a> 是一分钟，如果没有读写动作的话会自动断开，这对对于 log 的 <code>Transfer-Encoding: chunked</code> 头 HTTP 请求来说也是一样的，文档里建议设置周期的 ping frames 去激活连接，但是对于 log 和 shell 来说的话不适用，所以这里就直接配置为 <code>proxy_read_timeout 1h</code>，超过一小时没有读写才断开。</p>
+
+<h3 id="docker-cli-连接远程的-dockerd">docker-cli 连接远程的 dockerd</h3>
+
+<p>可以使用命令 <code>docker -H 127.0.0.1:2576 ps</code> 的方式使用本机的 docker-cli 访问其他开放的 dockerd(docker daemon)，之后 alias 一下，可以更方便的使用。</p>
+
+<p>或者是修改环境变量 <a href="https://docs.docker.com/engine/reference/commandline/cli/#environment-variables" target="_blank">DOCKER_HOST</a> 以变更 docker-cli 的默认 dockerd。</p>
+
+<p>对于 windows 来说，如果不想在本地安装 docker，而是想在本地使用 docker 命令即 docker-cli 连接到远程的 docker  可以在 win 的包管理 choco 工具下搜索到 <a href="https://chocolatey.org/packages/docker-cli" target="_blank">Docker CLI</a> 然后安装，或者是直接在 <a href="https://github.com/StefanScherer/docker-cli-builder/releases" target="_blank">docker-cli-builder</a> 下载他人编译好的，之后同 <code>-H</code> 参数或者 <code>DOCKER_HOST</code> 环境变量指定远程 dockerd，这样就可以在 win 下的 cmd 或 powershell 中使用 docker 命令了。</p>
+
+<h2 id="docker-命令">docker 命令</h2>
+
+<p>如果使用的 ohmyzsh，可在 <code>~/.zshrc</code> 里面的 <code>plugin</code> 项里加入 docker 插件以提高补全率，同时将当前用户加入 docker 组，这样使用 docker 时不用加 sudo：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ sudo groupadd docker
+<span class="c1"># 重新登录终端生效</span>
+$ sudo usermod -aG docker <span class="si">${</span><span class="nv">USER</span><span class="si">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>其他有用的命令如下：</p>
+
+<ul>
+<li><p><code>docker ps</code></p>
+
+<ul>
+<li>一行太长可以使用 <code>docker ps -a| less -S</code> 滚屏查看</li>
+<li><code>docker ps -s</code> 可以看见容器大小</li>
+<li><code>docker ps --no-trunc</code> 完全展开信息</li>
+<li><code>docker ps --format &quot;table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}&quot;</code> 定义输出信息</li>
+</ul></li>
+
+<li><p>删除所有的镜像和容器，其中的 <code>-q</code> 参数是只显示 id 列表，达到迭代删除的目的</p>
+
+<ul>
+<li><code>docker image rm $(docker image ls -q)</code></li>
+<li><code>docker container rm $(docker ps -q)</code></li>
+</ul></li>
+
+<li><p>根据 docker-compose 去删除容器</p>
+
+<ul>
+<li><code>docker -f xxxx.yml stop</code></li>
+<li><code>docker -f xxxx.yml rm</code></li>
+</ul></li>
+
+<li><p>查看容器返回值 <code>docker inspect ID --format='{{.State.ExitCode}}'</code></p></li>
+
+<li><p>查看服务日志 <code>docker service logs -f --tail 10 ServerName</code></p></li>
+</ul>
+
+<h3 id="使用-curl-命令创建-service">使用 curl 命令创建 service</h3>
+
+<p>可以直接利用 curl 调用 dockerd 进行一些操作，比如可以 inspect 一下已有的 service 的配置粘贴到文件内，然后 curl 去创建，这样便于使用脚本批量的根据文件创建 docker 资源。如下面的 nginx service 的 nginx.json 文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;Name&#34;</span><span class="p">:</span> <span class="s2">&#34;nginx&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;TaskTemplate&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;ContainerSpec&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;Image&#34;</span><span class="p">:</span> <span class="s2">&#34;nginx:stable&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;Env&#34;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&#34;TZ=Asia/Shanghai&#34;</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&#34;Mode&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;Replicated&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;Replicas&#34;</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&#34;EndpointSpec&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;Mode&#34;</span><span class="p">:</span> <span class="s2">&#34;dnsrr&#34;</span>
+  <span class="p">},</span>
+  <span class="nt">&#34;Labels&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;test&#34;</span><span class="p">:</span> <span class="s2">&#34;nginx&#34;</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>可以由下面的命令创建：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">curl --unix-socket /var/run/docker.sock <span class="se">\
+</span><span class="se"></span>        http:/services/create <span class="se">\
+</span><span class="se"></span>        -H <span class="s2">&#34;Content-Type: application/json&#34;</span> <span class="se">\
+</span><span class="se"></span>        --request POST <span class="se">\
+</span><span class="se"></span>        -d @nginx.json</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="减小镜像体积">减小镜像体积</h2>
+
+<ul>
+<li><p>对于 debian 和 pip 清除安装后的缓存</p>
+
+<ul>
+<li><code>apt-get</code> 需要 <code>rm -rf /var/cache/apt/* &amp;&amp; rm -rf /var/lib/apt/lists/*</code></li>
+<li><code>pip</code> 需要 <code>rm -rf ~/.cache/pip</code></li>
+</ul></li>
+
+<li><p>如 alpine 的镜像，单独安装 build 依赖包，并在之后清除</p></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">RUN</span> apk --no-cache add --virtual build-dependencies <span class="se">\
+</span><span class="se"></span>      build-base <span class="se">\
+</span><span class="se"></span>      py-mysqldb <span class="se">\
+</span><span class="se"></span>      gcc <span class="se">\
+</span><span class="se"></span>      libc-dev <span class="se">\
+</span><span class="se"></span>      libffi-dev <span class="se">\
+</span><span class="se"></span>      mariadb-dev <span class="se">\
+</span><span class="se"></span>      <span class="o">&amp;&amp;</span> pip install -qq -r requirements.txt <span class="se">\
+</span><span class="se"></span>      <span class="o">&amp;&amp;</span> rm -rf .cache/pip <span class="se">\
+</span><span class="se"></span>      <span class="o">&amp;&amp;</span> apk del build-dependencies<span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">RUN</span> apk -q --no-cache add mariadb-client-libs</code></pre></td></tr></table>
+</div>
+</div>
+<ul>
+<li>对于如 Spring Boot 的 fat jar，里面包含了很共有的依赖，这时候可以使用 Google 的 maven 插件 <strong>Jib</strong> 合理的将 fat jar 分散到不同的镜像层。</li>
+</ul>
+
+<h2 id="备份与还原">备份与还原</h2>
+
+<p>镜像导出与导入：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ docker save openjdk:8-jre-stretch <span class="p">|</span> gzip &gt; openjdk.8-jre-stretch.tar.gz
+$ zcat openjdk.8-jre-stretch.tar.gz <span class="p">|</span> docker load</code></pre></td></tr></table>
+</div>
+</div>
+<p>Volume 备份与还原 docker 没有提供命令，但是可以通过运行一个容器挂载需要备份的容器，然后将其打包，还原时候再逆操作一下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-sh" data-lang="sh"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sh" data-lang="sh"><span class="c1"># 设置备份 volume 到 VOL，设置备份版本到 BKTAG</span>
+$ <span class="nv">VOL</span><span class="o">=</span>mysql-data
+$ <span class="nv">BKTAG</span><span class="o">=</span>untag
+
+<span class="c1"># 备份文件打包到当前文件夹</span>
+$ docker run --rm -v <span class="k">$(</span>VOL<span class="k">)</span>:/volume -v <span class="k">$(</span>PWD<span class="k">)</span>:/backup alpine <span class="se">\
+</span><span class="se"></span>        tar cf /backup/<span class="k">$(</span>VOL<span class="k">)</span>-<span class="k">$(</span>BKTAG<span class="k">)</span>.tar -C /volume ./
+<span class="c1"># 恢复备份</span>
+$ docker run --rm -v <span class="k">$(</span>VOL<span class="k">)</span>:/volume -v <span class="k">$(</span>PWD<span class="k">)</span>:/backup alpine <span class="se">\
+</span><span class="se"></span>        sh -c <span class="s2">&#34;rm -rf /volume/* /volume/..?* /volume/.[!.]* ; tar -C /volume/ -xf /backup/</span><span class="k">$(</span>VOL<span class="k">)</span><span class="s2">-</span><span class="k">$(</span>BKTAG<span class="k">)</span><span class="s2">.tar&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="docker-实践技巧">Docker 实践技巧</h2>
+
+<h3 id="nginx-remote-ip-不正确">Nginx remote ip 不正确</h3>
+
+<p>docker 通过 Nginx 负载均衡时候，容器内获取到的 HTTP 协议的 remote ip 是不正确的，<a href="http://answ.me/post/get-real-client-ip-in-docker/" target="_blank">参考</a> 解决办法是可以将 <code>/etc/default/docker</code> 添加 <code>DOCKER_OPTS=&quot;--userland-proxy=false&quot;</code></p>
+
+<h3 id="entrypoint-中的环境变量">ENTRYPOINT 中的环境变量</h3>
+
+<p>对于 java 类的镜像，在 dockerfile 中一般会定义 <code>ENV JAVA_OPTS=&quot;&quot;</code> 这样的环境变量，然后在 ENTRYPOINT 里作为 JVM 启动参数。</p>
+
+<p>但是，如 <code>ENTRYPOINT exec java $JAVA_OPTS  -jar /app.jar</code> 和 <code>ENTRYPOINT [&quot;sh&quot;, &quot;-c&quot;, &quot;java $JAVA_OPTS -jar /my.jar&quot;]</code> 的方式设定环境变量给 JVM 都是错误的。</p>
+
+<p>正确的方式是 <code>ENTRYPOINT [&quot;/bin/bash&quot;, &quot;-c&quot;, &quot;java $JAVA_OPTS -jar app.jar&quot;]</code></p>
+
+<h3 id="时区设置">时区设置</h3>
+
+<p>以 stretch (Debian) 为基础镜像的可以以 <code>TZ=Asia/Shanghai</code> 环境变量指定时区，这样可以在运行时候（docker run, compose）指定时区，或者在 Dockerfile 里直接 <code>ENV TZ=Asia/Shanghai</code>。</p>
+
+<p>其他基础镜像可使用挂载本地时区文件的方式 <code>/etc/localtime:/etc/localtime:ro</code> 来完成。</p>
+
+<h3 id="其他技巧">其他技巧</h3>
+
+<p>docker-compose 里面定义一个直接从文件系统挂载的 volume：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yml" data-lang="yml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yml" data-lang="yml">volumes<span class="p">:</span><span class="w">
+</span><span class="w">    </span>mysql-data<span class="p">:</span><span class="w">
+</span><span class="w">    </span>driver<span class="p">:</span><span class="w"> </span>local<span class="w">
+</span><span class="w">    </span>driver_opts<span class="p">:</span><span class="w">
+</span><span class="w">    </span>type<span class="p">:</span><span class="w"> </span>none<span class="w">
+</span><span class="w">    </span>o<span class="p">:</span><span class="w"> </span>bind<span class="w">
+</span><span class="w">    </span>device<span class="p">:</span><span class="w"> </span>/var/lib/mysql</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2020-01-18</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div><footer class="post-footer">
+      <div class="post-tags">
+        <div style="margin-bottom:5px">
+          <i class="iconfont icon-folder-open"></i>
+            <a href="/categories/Docker/">Docker</a>
+            </div>
+        <div>
+          <i class="iconfont icon-label"></i>
+            <a href="/tags/Docker/">Docker</a>
+            <a href="/tags/Tricks/">Tricks</a>
+            </div>
+      </div>
+
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/Backend/SpringBoot/Spring-boot-security.html">
+            <span class="next-text nav-default">Spring Boot：（六）Spring Security 入门</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="lv-container" data-id="city" data-uid="MTAyMC80MjAzOS8xODU4Ng">
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+
+        if (typeof LivereTower === 'function') { return; }
+
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+    <noscript>Please enable JavaScript to view the comments powered by <a href="https://livere.com/">LiveRe.</a></noscript>
+    </div>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:gcreaink@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/creaink" class="iconfont icon-github" title="github"></a>
+  <a href="https://creaink.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author"><a href="https://creaink.github.com" class="theme-link">Creaink</a></span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-131846852-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

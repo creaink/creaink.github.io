@@ -50,7 +50,7 @@
 
 <meta itemprop="datePublished" content="2019-01-30T22:00:00&#43;08:00" />
 <meta itemprop="dateModified" content="2019-01-30T22:00:00&#43;08:00" />
-<meta itemprop="wordCount" content="4650">
+<meta itemprop="wordCount" content="4741">
 
 
 
@@ -132,7 +132,7 @@
 
       <div class="post-meta">
         <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-01-30 </span>
-          <span class="more-meta"> <i class="iconfont icon-book"></i> 4650 words </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 4741 words </span>
           <span class="more-meta"> <i class="iconfont icon-clock"></i> 10 mins read </span>
         
       </div>
@@ -1078,6 +1078,10 @@
 
 <p>如果想要自定义如 404 错误的视图页面直接在如 <code>src/main/resources/templates/error/</code> 路径下创建如 404.html 等页面即可。</p>
 
+<ul class="task-list">
+<li><label><input type="checkbox" disabled class="task-list-item"> 如 model 等参数没有使用注解然而，也会在 controller 方法被调用时候注入过来，这是因为该类型有相应的 ArgumentResolver，也可以自己实现 HandlerMethodArgumentResolver 然后注册来完成一些有意思的事情，如从 redis 里获取 session 等。</label></li>
+</ul>
+
 <h2 id="参考">参考</h2>
 
 <ul>
@@ -1171,7 +1175,8 @@
 
   <span class="copyright-year">
     &copy; 
-    2019
+    2019 - 
+    2020
     <span class="heart">
       <i class="iconfont icon-heart"></i>
     </span>

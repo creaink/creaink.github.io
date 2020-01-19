@@ -50,7 +50,7 @@
 
 <meta itemprop="datePublished" content="2019-01-23T14:05:00&#43;08:00" />
 <meta itemprop="dateModified" content="2019-01-23T14:05:00&#43;08:00" />
-<meta itemprop="wordCount" content="2198">
+<meta itemprop="wordCount" content="2296">
 
 
 
@@ -132,7 +132,7 @@
 
       <div class="post-meta">
         <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-01-23 </span>
-          <span class="more-meta"> <i class="iconfont icon-book"></i> 2198 words </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 2296 words </span>
           <span class="more-meta"> <i class="iconfont icon-clock"></i> 5 mins read </span>
         
       </div>
@@ -169,7 +169,7 @@
 <p>Spring 基于 AspectJ 的动态代理的原理实现了 AOP，在正式开始之前先了解下面的几个概念：</p>
 
 <ul>
-<li><p>advice，某个切面在特定连接点处采取的操作，通常有如下的几种</p>
+<li>joinpoint, 连接点, 程序执行的某个特定位置
 
 <ul>
 <li>Before</li>
@@ -178,12 +178,9 @@
 <li>After-throwing</li>
 <li>Around</li>
 </ul></li>
-
-<li><p>pointcut, 切入点，匹配模式</p></li>
-
-<li><p>joinpoint, 连接点</p></li>
-
-<li><p>aspect, 切面</p></li>
+<li>pointcut, 切点, 如果连接点相当于数据中的记录，那么切点相当于查询条件，一个切点可以匹配多个连接点。</li>
+<li>advice, 增强,某个切面在特定连接点(joinpoint)处采取的操作即程序代码。</li>
+<li>aspect, 切面, 切面是由切点和增强（引介）组成的，它包括了对横切关注功能的定义，也包括了对连接点的定义。</li>
 </ul>
 
 <h2 id="注解式">注解式</h2>
@@ -622,7 +619,8 @@
 
   <span class="copyright-year">
     &copy; 
-    2019
+    2019 - 
+    2020
     <span class="heart">
       <i class="iconfont icon-heart"></i>
     </span>

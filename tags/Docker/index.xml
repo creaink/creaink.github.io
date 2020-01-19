@@ -6,10 +6,19 @@
     <description>Recent content in Docker on Creaink - Build something for life</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 08 Jan 2019 20:49:33 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 18 Jan 2020 23:34:43 +0800</lastBuildDate>
     
 	<atom:link href="https://creaink.github.io/tags/Docker/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Docker 技巧</title>
+      <link>https://creaink.github.io/post/Devtools/Docker/Docker-tricks.html</link>
+      <pubDate>Sat, 18 Jan 2020 23:34:43 +0800</pubDate>
+      
+      <guid>https://creaink.github.io/post/Devtools/Docker/Docker-tricks.html</guid>
+      <description>&lt;p&gt;总结下平时积累的 docker 使用经验与技巧&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Linux Namespace 技术与 Docker 原理浅析</title>

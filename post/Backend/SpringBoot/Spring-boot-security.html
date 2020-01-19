@@ -50,7 +50,7 @@
 
 <meta itemprop="datePublished" content="2019-05-02T10:00:00&#43;08:00" />
 <meta itemprop="dateModified" content="2019-05-02T10:00:00&#43;08:00" />
-<meta itemprop="wordCount" content="2468">
+<meta itemprop="wordCount" content="2904">
 
 
 
@@ -132,8 +132,8 @@
 
       <div class="post-meta">
         <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-05-02 </span>
-          <span class="more-meta"> <i class="iconfont icon-book"></i> 2468 words </span>
-          <span class="more-meta"> <i class="iconfont icon-clock"></i> 5 mins read </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 2904 words </span>
+          <span class="more-meta"> <i class="iconfont icon-clock"></i> 6 mins read </span>
         
       </div>
     </header>
@@ -158,7 +158,7 @@
   </div>
 </div>
     <div class="post-content">
-      
+      <p>Spring Security is a powerful and highly customizable authentication and access-control framework. It is the de-facto standard for securing Spring-based applications.</p>
 
 <h2 id="快速入门">快速入门</h2>
 
@@ -314,6 +314,9 @@ spring.security.user.password=password</code></pre></td></tr></table>
 </span><span class="lnt">18
 </span><span class="lnt">19
 </span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
@@ -332,6 +335,9 @@ spring.security.user.password=password</code></pre></td></tr></table>
     <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
         <span class="p">&lt;</span><span class="nt">label</span><span class="p">&gt;</span>password: <span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;password&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;password&#34;</span><span class="p">&gt;</span>
     <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">label</span><span class="p">&gt;</span>remember me: <span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;checkbox&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;remember-me&#34;</span><span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span><span class="p">&gt;</span>login<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -339,10 +345,6 @@ spring.security.user.password=password</code></pre></td></tr></table>
 </div>
 </div>
 <p>上面的文件命名存储在 <code>resources/staic/login.html</code>，这是因为需要将其当做静态文件进行分发，只要为于 <code>spring.resources.static-locations=classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/</code> 配置下即可，也可以在 application.properties 文件为 <code>spring.resources.static-locations</code> 项 append 新的路径。</p>
-
-<ul class="task-list">
-<li><label><input type="checkbox" disabled class="task-list-item"> remember me 和登录时间</label></li>
-</ul>
 
 <p>相应的登录控制器：</p>
 <div class="highlight"><div class="chroma">
@@ -386,6 +388,9 @@ spring.security.user.password=password</code></pre></td></tr></table>
 </span><span class="lnt">14
 </span><span class="lnt">15
 </span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span>
@@ -402,7 +407,10 @@ spring.security.user.password=password</code></pre></td></tr></table>
             <span class="o">.</span><span class="na">and</span><span class="o">()</span>
         <span class="o">.</span><span class="na">logout</span><span class="o">()</span>       <span class="c1">// 登出页面
 </span><span class="c1"></span>            <span class="o">.</span><span class="na">permitAll</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">and</span><span class="o">();</span>
+            <span class="o">.</span><span class="na">and</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">rememberMe</span><span class="o">()</span>   <span class="c1">// 默认表单字段名 remember-me，可以使用 rememberMeParameter 自定义
+</span><span class="c1"></span>            <span class="o">.</span><span class="na">key</span><span class="o">(</span><span class="s">&#34;uniqueAndSecret&#34;</span><span class="o">)</span> <span class="c1">// 最后会参与生成 cookie，相当于盐
+</span><span class="c1"></span>            <span class="o">.</span><span class="na">tokenValiditySeconds</span><span class="o">(</span><span class="n">3600</span><span class="o">*</span><span class="n">24</span><span class="o">);</span>
 <span class="o">}</span></code></pre></td></tr></table>
 </div>
 </div>
@@ -410,9 +418,44 @@ spring.security.user.password=password</code></pre></td></tr></table>
 
 <ul>
 <li>登录错误时候会被定向到自定义的 failureUrl，可以加上参数如这里是 <code>/login?error</code> 然后 controller 可以获取这个 error 然后渲染一下什么 <strong>用户名或密码错误</strong> 的。</li>
-<li>可以通过 hasRole 的方式进行角色权限的配置</li>
-<li>csrf 如果使用的是 cookie 保存用户登录态的话最好是加上的，同时权限的控制还有很多细节，具体参考文档</li>
+<li>可以通过 hasRole 的方式进行角色权限的配置。</li>
+<li>csrf 如果使用的是 cookie 保存用户登录态的话最好是加上的，同时权限的控制还有很多细节，具体参考文档。</li>
+<li>默认的 session 时间是 30 分钟，可以通过 <code>spring.session.timeout</code> 来设置，如 <code>spring.session.timeout=40m</code> 就是 40 分钟。</li>
+<li>在 session 过期之后，如果之前勾选设置了 remember me 选项，登录时候除了设置名为 SESSION 的 cookie 还会生成一个名为 remember-me 的 cookie，该 cookie 的值是由 <code>base64(username+&quot;:&quot;+expirationTime+&quot;:&quot;+md5Hex(username+&quot;:&quot;+expirationTime+&quot;:&quot;+password+&quot;:&quot;+key))</code> 这个公式得出的，这个 expirationTime 是由 tokenValiditySeconds 所决定的，当 session 的 cookie 过期之后，这个 remember cookie 由于其内含有用户名和密码的信息，其实就不用在次输入用户名和密码，能够再次生成一个 session，相当于两层 session。</li>
 </ul>
+
+<p>如果想要在 controller 里获取登录的用户名，可以使用 Principal 或者 Authentication：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloController</span> <span class="o">{</span>
+    <span class="nd">@GetMapping</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">hello</span><span class="o">(</span><span class="n">Principal</span> <span class="n">principal</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">&#34;Hello: &#34;</span> <span class="o">+</span> <span class="n">principal</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/name&#34;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">hello</span><span class="o">(</span><span class="n">Authentication</span> <span class="n">authentication</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">&#34;Hello: &#34;</span> <span class="o">+</span> <span class="n">authentication</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Authentication 功能会更多些，还可以获取到如 role, sessionId 等信息。</p>
 
 <h3 id="自定义登录处理">自定义登录处理</h3>
 
@@ -646,6 +689,8 @@ spring.session.redis.namespace=demo</code></pre></td></tr></table>
 </div>
 <p>之后可以在 redis-cli 使用 MONITOR 命令进行检验。</p>
 
+<p>需要注意的一点是，<strong>使用 spring security 之后会更改 http header 的默认参数</strong>，参考 <a href="https://docs.spring.io/spring-security/site/docs/5.0.x/reference/html/headers.html" target="_blank">Security HTTP Response Headers</a> 更改过后的 header 会导致缓存失效。解决方法：根据 <a href="https://www.javacodegeeks.com/2018/07/caching-spring-boot-spring-security.html" target="_blank">Caching in Spring Boot with Spring Security</a> 这篇文章可以配置 <code>spring.resources.cache.cachecontrol.max-age=</code> 缓存过期时间即可</p>
+
 <p>当然这篇文章只给出了一个简单的入门， Spring security 不仅仅是上面的一些内容，以后有时间可以再深入了解下。</p>
 
 <h2 id="参考">参考</h2>
@@ -655,7 +700,6 @@ spring.session.redis.namespace=demo</code></pre></td></tr></table>
 <li><a href="https://docs.spring.io/spring-session/docs/current/reference/html5/" target="_blank">spring session reference</a></li>
 <li><a href="https://hellokoding.com/registration-and-login-example-with-spring-security-spring-boot-spring-data-jpa-hsql-jsp/" target="_blank">spring security example</a></li>
 </ul>
-
     </div>
 
     <div class="post-copyright">
@@ -687,7 +731,11 @@ spring.session.redis.namespace=demo</code></pre></td></tr></table>
 
       
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/Devtools/Docker/Docker-tricks.html">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Docker 技巧</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
         <a class="next" href="/post/Computer/Linux/Linux-env.html">
             <span class="next-text nav-default">Linux 环境变量</span>
             <span class="next-text nav-mobile">Next</span>
@@ -738,7 +786,8 @@ spring.session.redis.namespace=demo</code></pre></td></tr></table>
 
   <span class="copyright-year">
     &copy; 
-    2019
+    2019 - 
+    2020
     <span class="heart">
       <i class="iconfont icon-heart"></i>
     </span>

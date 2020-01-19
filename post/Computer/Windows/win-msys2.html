@@ -55,7 +55,7 @@
 
 <meta itemprop="datePublished" content="2019-01-12T16:42:33&#43;08:00" />
 <meta itemprop="dateModified" content="2019-01-12T16:42:33&#43;08:00" />
-<meta itemprop="wordCount" content="3967">
+<meta itemprop="wordCount" content="4109">
 
 
 
@@ -139,8 +139,8 @@
 
       <div class="post-meta">
         <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-01-12 </span>
-          <span class="more-meta"> <i class="iconfont icon-book"></i> 3967 words </span>
-          <span class="more-meta"> <i class="iconfont icon-clock"></i> 8 mins read </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 4109 words </span>
+          <span class="more-meta"> <i class="iconfont icon-clock"></i> 9 mins read </span>
         
       </div>
     </header>
@@ -254,6 +254,7 @@
 </span><span class="lnt">27
 </span><span class="lnt">28
 </span><span class="lnt">29
+</span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-txt" data-lang="txt">Font=DejaVuSansMono NF
@@ -264,6 +265,7 @@ Columns=110
 Rows=35
 Scrollbar=none
 AllowBlinking=yes
+CursorType=block
 
 ForegroundColour=171,178,191
 BackgroundColour=30,33,39
@@ -368,7 +370,9 @@ $ pacman -Su</code></pre></td></tr></table>
 
 <li><p>也可以直接在 MSYS2 上安装 64 位的 git for windwows，需要参考 <a href="https://github.com/git-for-windows/git/wiki/Install-inside-MSYS2-proper" target="_blank">Install inside MSYS2 proper</a>，不过 gfw 在 zsh 下面好像有 compdef 的错误。</p></li>
 
-<li><p>可以自行挂载常用 win 下的目录到 MSYS2 的 home 目录。</p></li>
+<li><p>可以自行挂载常用 win 下的目录到 MSYS2 的 home 目录。要想快速 cd 到某个目录，可以在 window 的文件管理将该文件夹拖动到 mintty 窗口，一般会将 <code>D:\data\</code> 转为如 <code>/d/data/</code> 的形式。</p></li>
+
+<li><p>可能使用 zsh 的默认样式，由于 git 状态获取的原因会比较慢，因为 zsh-async 在 window 下用不了，这时候可以使用 <a href="https://github.com/agkozak/agkozak-zsh-prompt" target="_blank">agkozak-zsh-prompt</a> window 下可以用的异步样式。</p></li>
 </ul>
 
 <h3 id="知识点">知识点</h3>
@@ -381,6 +385,7 @@ $ pacman -Su</code></pre></td></tr></table>
 <li><code>-S</code> 同步软件，即下载</li>
 <li><code>-Sl</code> 列出可用软件包</li>
 <li><code>-R</code> 删除包</li>
+<li><code>-Q</code> 列出当前安装的包</li>
 </ul>
 
 <h4 id="msys2-mingw32-64">MSYS2 MinGW32/64</h4>
@@ -498,8 +503,35 @@ $ pacman -Su</code></pre></td></tr></table>
 </div>
 <p>另外在 msys2 下要想使用 python 虚拟环境，就得使用 <code>source venv/Scripts/activate</code> 的形式了。</p>
 
-<p><strong>watch 命令缺失</strong>，该命令需要单独安装：<code>pacman -S procps-ng</code>，同理一些其他的命令行的缺失可以在搜索引擎里以 <code>MSYS2 xxx</code> 的形式得到解答。</p>
-
+<p><strong>watch 命令缺失</strong>，该命令需要单独安装：<code>pacman -S procps-ng</code>，同理一些其他的命令行的缺失可以在搜索引擎里以 <code>MSYS2 xxx</code> 的形式得到解答。下面列出常用的包：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-txt" data-lang="txt"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-txt" data-lang="txt">vim
+git
+tmux
+tree
+zsh
+rsync
+winpty
+procps-ng
+inetutils
+curl
+openbsd-netcat</code></pre></td></tr></table>
+</div>
+</div>
 <h2 id="参考">参考</h2>
 
 <ul>
@@ -597,7 +629,8 @@ $ pacman -Su</code></pre></td></tr></table>
 
   <span class="copyright-year">
     &copy; 
-    2019
+    2019 - 
+    2020
     <span class="heart">
       <i class="iconfont icon-heart"></i>
     </span>

@@ -50,7 +50,7 @@
 
 <meta itemprop="datePublished" content="2019-03-16T10:16:00&#43;08:00" />
 <meta itemprop="dateModified" content="2019-03-16T10:16:00&#43;08:00" />
-<meta itemprop="wordCount" content="8958">
+<meta itemprop="wordCount" content="8976">
 
 
 
@@ -132,7 +132,7 @@
 
       <div class="post-meta">
         <span class="post-time">&nbsp;<i class="iconfont icon-calendar"></i> 2019-03-16 </span>
-          <span class="more-meta"> <i class="iconfont icon-book"></i> 8958 words </span>
+          <span class="more-meta"> <i class="iconfont icon-book"></i> 8976 words </span>
           <span class="more-meta"> <i class="iconfont icon-clock"></i> 18 mins read </span>
         
       </div>
@@ -427,7 +427,7 @@
 <span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span><span class="p">;</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>对于 innodb 来说，不同事务隔离级别和索引类别最后会使用不同的加锁方式。如下面的两条 SQL:</p>
+<p>对于 innodb 来说，不同事务隔离级别和索引类别最后会使用不同的加锁方式，事务中获取的锁在事务结束后才会释放。如下面的两条 SQL:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-SQL" data-lang="SQL"><span class="lnt">1
@@ -1063,7 +1063,8 @@ mysql&gt; show warnings<span class="p">;</span>
 
   <span class="copyright-year">
     &copy; 
-    2019
+    2019 - 
+    2020
     <span class="heart">
       <i class="iconfont icon-heart"></i>
     </span>

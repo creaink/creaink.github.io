@@ -108,13 +108,8 @@ sudo apt-get remove docker docker-engine docker.io containerd runc
 sudo apt-get update
 sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
 
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+curl -fsSL https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian/gpg | sudo apt-key add -
 sudo apt-key fingerprint 0EBFCD88
-
-sudo add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
 
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
@@ -126,7 +121,11 @@ sudo usermod -aG docker ${USER}
 sudo touch /etc/docker/daemon.json
 cat > /etc/docker/daemon.json << EOF
 {
-  "registry-mirrors": ["https://docker.mirrors.ustc.edu.cn"]
+  "registry-mirrors": [
+    "https://dockerhub.azk8s.cn",
+    "https://reg-mirror.qiniu.com",
+    "http://hub-mirror.c.163.com"
+  ]
 }
 EOF
 
@@ -236,6 +235,9 @@ sudo hwclock --localtime --systohc
 
 
 # vnc install
+# sudo apt-get install --reinstall ubuntu-desktop
+# sudo service lightdm restart
+# nohup compiz --display :0 --replace &
 sudo apt-get install x11vnc -y
 sudo x11vnc -storepasswd /etc/x11vnc.pass
 
